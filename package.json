@@ -7,11 +7,29 @@
     "vscode": "^1.84.0"
   },
   "categories": [
-    "Other"
+    "Formatters"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:abl"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "abl",
+        "aliases": [
+          "OpenEdge",
+          "OpenEdge ABL",
+          "Progress OpenEdge"
+        ],
+        "extensions": [
+          ".p",
+          ".i",
+          ".cls",
+          ".w"
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "ablformatter3.helloWorld",
