@@ -13,10 +13,7 @@ export class AblParserHelper implements IParserHelper {
         console.log("Hello Parser!");
 
         const ablPromise = Parser.Language.load(
-            path.join(
-                context.extensionPath,
-                "node_modules/@usagi-coffee/tree-sitter-abl/tree-sitter-abl.wasm"
-            )
+            path.join(context.extensionPath, "resources/tree-sitter-abl.wasm")
         );
 
         ablPromise.then((abl) => {
