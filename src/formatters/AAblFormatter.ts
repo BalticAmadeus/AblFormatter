@@ -3,13 +3,12 @@ import { IAblFormatterRunner } from "./IAblFormatterRunner";
 import { IAblFormatter } from "./IAblFormatter";
 
 export abstract class AAblFormatter {
-    protected ablFormatterRunner: IAblFormatterRunner | undefined = undefined;
+    protected ablFormatterRunner: IAblFormatterRunner | undefined;
 
     protected ranges: Range[] = [];
 
-    public setRunner(ablFormatterRunner: IAblFormatterRunner): IAblFormatter {
+    public constructor(ablFormatterRunner: IAblFormatterRunner) {
         this.ablFormatterRunner = ablFormatterRunner;
-        return this.getSelf();
     }
 
     protected abstract getSelf(): IAblFormatter;

@@ -19,12 +19,6 @@ export class AblFormatterRunner implements IAblFormatterRunner {
         return this;
     }
 
-    public addFormatter(ablFormatter: IAblFormatter): IAblFormatterRunner {
-        ablFormatter.setRunner(this);
-        this.ablFormatters.push(ablFormatter);
-        return this;
-    }
-
     public setFormatters(ablFormatters: IAblFormatter[]): IAblFormatterRunner {
         this.ablFormatters = ablFormatters;
         return this;

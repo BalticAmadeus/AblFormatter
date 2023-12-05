@@ -8,7 +8,6 @@ export interface IAblFormatterRunner {
     getDocument(): TextDocument;
 
     start(): IAblFormatterRunner;
-    addFormatter(ablFormatter: IAblFormatter): IAblFormatterRunner;
     setDocument(document: TextDocument): IAblFormatterRunner;
     setParserResult(parserResult: ParseResult): IAblFormatterRunner;
     setFormatters(ablFormatter: IAblFormatter[]): IAblFormatterRunner;

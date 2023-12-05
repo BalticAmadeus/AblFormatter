@@ -57,7 +57,7 @@
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "typescript": "^5.2.2",
-    "@usagi-coffee/tree-sitter-abl": "0.0.2"
+    "@usagi-coffee/tree-sitter-abl": "0.0.3"
   },
   "dependencies": {
     "web-tree-sitter": "0.20.8"

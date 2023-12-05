@@ -7,5 +7,5 @@ export interface IAblFormatter {
 
     getSourceChanges(): SourceChanges;
 
-    setRunner(ablFormatterRunner: AblFormatterRunner): IAblFormatter;
+    //setRunner(ablFormatterRunner: AblFormatterRunner): IAblFormatter;
 }

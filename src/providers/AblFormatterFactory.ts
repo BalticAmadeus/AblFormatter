@@ -14,9 +14,9 @@ export class AblFormatterFactory {
         }
 
         return [
-            new AblTokenFormatter().setRunner(this.runner),
-            //new AblAssignFormatter().setRunner(this.runner),
-            new TreeLogger().setRunner(this.runner),
+            new AblTokenFormatter(this.runner),
+            new AblAssignFormatter(this.runner),
+            new TreeLogger(this.runner),
         ];
     }
 
