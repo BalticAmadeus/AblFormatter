@@ -1,6 +1,6 @@
 {
-  "name": "ablformatter3",
-  "displayName": "ABLformatter3",
+  "name": "AblFormatter",
+  "displayName": "AblFormatter",
   "description": "TODO",
   "version": "0.0.1",
   "engines": {
@@ -32,7 +32,7 @@
     ],
     "commands": [
       {
-        "command": "ablformatter3.helloWorld",
+        "command": "AblFormatter.helloWorld",
         "title": "Hello World"
       }
     ]

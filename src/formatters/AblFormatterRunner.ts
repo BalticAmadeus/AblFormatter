@@ -5,6 +5,11 @@ import Parser from "web-tree-sitter";
 import { SourceChanges } from "../model/SourceChanges";
 import { IAblFormatterRunner } from "./IAblFormatterRunner";
 
+//TODO
+// In the future there will be issues with this logic as multiple Formatters may change same parts of code.
+// It should be solved by making ABLFormatterRunner store Edits and by partially re-parsing Tree every time
+// when document Edits come from any Formatter.
+// Also, simmple formatters may be separated from those wthat format multiple statements.
 export class AblFormatterRunner implements IAblFormatterRunner {
     private document: TextDocument | undefined;
     private parserResult: ParseResult | undefined;

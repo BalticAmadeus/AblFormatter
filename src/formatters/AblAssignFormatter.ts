@@ -17,6 +17,15 @@ type AssignBlock = {
 };
 
 export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
+    // Possible settings strcuture:
+    // Currently hardcoded configuration in UPPERCASE
+    // New line after assign        YES      |   no
+    // assignments intendation      NEW TAB* |   no  |   by first line
+    // Align right expression       YES      |   no
+    // Put ending dot in new line   YES      |   no
+    // Format one line statements   YES      |   no
+    // * Tab width should be inherited from global VSC setting
+
     private textEdit: TextEdit[] = [];
 
     parseNode(node: SyntaxNode): void {
