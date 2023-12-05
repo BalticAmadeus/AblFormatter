@@ -43,6 +43,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
+    "ui-test": "extest setup-and-run './out/ui-test/*-test.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable -m 'src/ui-test/MyMochaOptions.ts'",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -57,7 +58,7 @@
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "typescript": "^5.2.2",
-    "@usagi-coffee/tree-sitter-abl": "0.0.3"
+    "vscode-extension-tester": "^6.0.0"
   },
   "dependencies": {
     "web-tree-sitter": "0.20.8"

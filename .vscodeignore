@@ -1,4 +1,5 @@
 .vscode/**
+.ext_dir/**
 .vscode-test/**
 src/**
 .gitignore
