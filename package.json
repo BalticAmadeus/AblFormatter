@@ -39,9 +39,9 @@
     ]
   },
   "scripts": {
-    "co": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",
+    "copy-wasm": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",
     "delete-out": "rimraf out",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run co",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run copy-wasm",
     "build": "npm run esbuild",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "vscode:prepublish": "npm run esbuild-base -- --minify",
@@ -50,7 +50,8 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "prep-ui-test": "npm run delete-out && npm run compile && extest setup-tests -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable",
-    "run-ui-test": "extest run-tests './out/ui-test/*-test.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable -m 'src/ui-test/MyMochaOptions.ts'",
+    "run-ui-test": "npm run copy-test-cases && npm run compile && extest run-tests './out/ui-test/testRunner.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable",
+    "copy-test-cases": "copyfiles -u 2 ./resources/samples/* .test_dir/samples",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
