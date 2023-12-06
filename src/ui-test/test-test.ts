@@ -16,6 +16,11 @@ describe("My Test Suite", () => {
     // test whatever we want using webdriver, here we are just checking the page title
     it("My Test Case", async () => {
         const title = await driver.getTitle();
-        assert.equal(title, "whatever");
+        assert.equal(title, "Welcome - Visual Studio Code");
+    });
+
+    it("My Test Case 2", async () => {
+        const title = await driver.getTitle();
+        assert.notEqual(title, "Hello");
     });
 });

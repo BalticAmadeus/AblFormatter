@@ -1,7 +1,7 @@
 out
 dist
-.ext_dir/**
-.test_dir/**
+.ext_dir/
+.test_dir/
 node_modules
 .vscode-test/
 *.vsix

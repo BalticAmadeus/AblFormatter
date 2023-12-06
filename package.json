@@ -3,6 +3,7 @@
   "displayName": "AblFormatter",
   "description": "TODO",
   "version": "0.0.1",
+  "repository": {},
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -38,12 +39,18 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "co": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",
+    "delete-out": "rimraf out",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run co",
+    "build": "npm run esbuild",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "ui-test": "extest setup-and-run './out/ui-test/*-test.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable -m 'src/ui-test/MyMochaOptions.ts'",
+    "prep-ui-test": "npm run delete-out && npm run compile && extest setup-tests -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable",
+    "run-ui-test": "extest run-tests './out/ui-test/*-test.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable -m 'src/ui-test/MyMochaOptions.ts'",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -54,10 +61,13 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
-    "typescript": "^5.2.2"
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vscode-extension-tester": "^6.0.0"
   },
   "dependencies": {
     "web-tree-sitter": "0.20.8"
