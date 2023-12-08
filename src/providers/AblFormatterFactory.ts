@@ -1,4 +1,5 @@
 import { AblAssignFormatter } from "../formatters/AblAssignFormatter";
+import { AblFindFormatter } from "../formatters/AblFindFormatter";
 import { AblFormatterRunner } from "../formatters/AblFormatterRunner";
 import { AblTokenFormatter } from "../formatters/AblTokenFormatter";
 import { IAblFormatter } from "../formatters/IAblFormatter";
@@ -16,6 +17,7 @@ export class AblFormatterFactory {
         return [
             new AblTokenFormatter(this.runner),
             new AblAssignFormatter(this.runner),
+            new AblFindFormatter(this.runner),
             new TreeLogger(this.runner),
         ];
     }
