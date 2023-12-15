@@ -4,4 +4,5 @@ export enum TestList {
     Define2,
     Find1,
     Find2,
+    Find3,
 }

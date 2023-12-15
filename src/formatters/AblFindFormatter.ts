@@ -108,13 +108,11 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         let resultString = "";
 
         if (logicalExpression === null) {
-            return node.text;
+            return node.text.trim();
         }
 
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa", logicalExpression.type);
-
         if (logicalExpression.type !== "logical_expression") {
-            return node.text;
+            return logicalExpression.text.trim();
         }
 
         logicalExpression.children.forEach((child) => {
@@ -127,7 +125,6 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getExpressionString(node: SyntaxNode, separator: string): string {
-        console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", node.type);
         switch (node.type) {
             case "comparison_expression": {
                 return node.text.trim();
