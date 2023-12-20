@@ -7,6 +7,7 @@ import { IAblFormatter } from "../formatters/IAblFormatter";
 import { IAblFormatterRunner } from "../formatters/IAblFormatterRunner";
 import { TreeLogger } from "../formatters/TreeLogger";
 import { ConfigurationManager } from "../utils/ConfigurationManager";
+import { AblBlockFormatter } from "../formatters/AblBlockFormatter";
 
 export class AblFormatterFactory {
     private runner: IAblFormatterRunner | undefined;
@@ -16,6 +17,7 @@ export class AblFormatterFactory {
         "treeLogging",
         "defineFormatting",
         "findFormatting",
+        "DEBUG-blockFormatting",
     ];
 
     public getFormatters(): IAblFormatter[] {
@@ -41,6 +43,10 @@ export class AblFormatterFactory {
         if (ConfigurationManager.get(formatterName)!) {
             return true;
         }
+
+        if (formatterName.startsWith("DEBUG-")) {
+            return true;
+        }
         return false;
     }
 
@@ -58,6 +64,8 @@ export class AblFormatterFactory {
                 return new AblTokenFormatter(this.runner);
             case "findFormatting":
                 return new AblFindFormatter(this.runner);
+            case "DEBUG-blockFormatting":
+                return new AblBlockFormatter(this.runner);
         }
 
         return undefined;

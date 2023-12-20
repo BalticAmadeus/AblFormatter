@@ -5,7 +5,12 @@ import { AAblFormatter } from "./AAblFormatter";
 import { MyRange } from "../model/MyRange";
 
 export class TreeLogger extends AAblFormatter implements IAblFormatter {
+    private errorCounter: number = 0;
+
     parseNode(node: SyntaxNode): void {
+        if (node.type === "ERROR") {
+            this.errorCounter++;
+        }
         console.log(
             node.id,
             " \t ",
@@ -19,6 +24,7 @@ export class TreeLogger extends AAblFormatter implements IAblFormatter {
         );
     }
     getSourceChanges(): SourceChanges {
+        console.log("Number of parser errrors: " + this.errorCounter);
         return {
             textEdits: [],
         };
