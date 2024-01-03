@@ -3,6 +3,7 @@
   "displayName": "AblFormatter",
   "description": "TODO",
   "version": "0.0.1",
+  "repository": {},
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -13,6 +14,7 @@
     "onLanguage:abl"
   ],
   "main": "./out/extension.js",
+  "publisher": "BalticAmadeus",
   "contributes": {
     "languages": [
       {
@@ -30,6 +32,66 @@
         ]
       }
     ],
+    "configuration": {
+      "title": "AblFormatter",
+      "properties": {
+        "AblFormatter.assignFormatting": {
+          "order": 1,
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Enable/disable ASSIGN statement formatting."
+        },
+        "AblFormatter.assignFormattingAssignLocation": {
+          "order": 100,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should assigns be located on same or new line after ASSIGN keyword?"
+        },
+        "AblFormatter.assignFormattingAlignRightExpression": {
+          "order": 101,
+          "type": "string",
+          "default": "Yes",
+          "enum": [
+            "Yes",
+            "No"
+          ],
+          "description": "Should right expression be aligned by longest one?"
+        },
+        "AblFormatter.assignFormattingEndDotLocation": {
+          "order": 102,
+          "type": "string",
+          "default": "New aligned",
+          "enum": [
+            "New",
+            "New aligned",
+            "Same"
+          ],
+          "description": "Should end dot be located on same or new line after ASSIGN statement?"
+        },
+        "AblFormatter.defineFormatting": {
+          "order": 2,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable DEFINE formatting"
+        },
+        "AblFormatter.findFormatting": {
+          "order": 3,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable FIND formatting"
+        },
+        "AblFormatter.treeLogging": {
+          "order": 10000,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable tree printing to console"
+        }
+      }
+    },
     "commands": [
       {
         "command": "AblFormatter.helloWorld",
@@ -38,11 +100,19 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "copy-wasm": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",
+    "delete-out": "rimraf out",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run copy-wasm",
+    "build": "npm run esbuild",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
+    "prep-ui-test": "npm run delete-out && npm run compile && extest setup-tests -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable",
+    "run-ui-test": "npm run copy-test-cases && npm run compile && extest run-tests './out/ui-test/testRunner.js' -s ./.test_dir -e ./.ext_dir -c 1.84.2 -t stable",
+    "copy-test-cases": "copyfiles -u 2 ./resources/samples/* .test_dir/samples",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -53,10 +123,13 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
-    "typescript": "^5.2.2"
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2",
+    "vscode-extension-tester": "^6.0.0"
   },
   "dependencies": {
     "web-tree-sitter": "0.20.8"

@@ -1,4 +1,4 @@
-import { TextDocument } from "vscode";
+import { TextDocument, WorkspaceConfiguration } from "vscode";
 import { SourceChanges } from "../model/SourceChanges";
 import { IAblFormatter } from "./IAblFormatter";
 import { ParseResult } from "../model/ParseResult";

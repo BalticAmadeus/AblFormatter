@@ -4,6 +4,7 @@ import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
+import { ConfigurationManager } from "../utils/ConfigurationManager";
 
 type AssingLine = {
     leftValue: string;
@@ -118,10 +119,22 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     private getPrettyBlock(assignBlock: AssignBlock): string {
         const block = " "
             .repeat(assignBlock.intendationColumn)
-            .concat("ASSIGN")
-            .concat("\r\n")
+            .concat(ConfigurationManager.getCasing()! ? "ASSIGN" : "assign")
+            .concat(this.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
-            .concat(" ".repeat(assignBlock.intendationColumn))
+            .concat(this.endDotLocationNew() ? "\r\n" : "")
+            .concat(
+                this.endDotLocationNew()
+                    ? " ".repeat(
+                          assignBlock.intendationColumn +
+                              (this.endDotAlignment()
+                                  ? this.newLineAfterAssign()
+                                      ? 4
+                                      : 7
+                                  : 0)
+                      )
+                    : ""
+            )
             .concat(".");
         return block;
     }
@@ -131,13 +144,21 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         assignBlock.assignValues.forEach((assignLine) => {
             assigns = assigns.concat(
                 " "
-                    .repeat(assignBlock.intendationColumn + 4)
+                    .repeat(
+                        this.newLineAfterAssign()
+                            ? assignBlock.intendationColumn + 4
+                            : assigns === ""
+                            ? 0
+                            : assignBlock.intendationColumn + 7
+                    )
                     .concat(assignLine.leftValue)
                     .concat(
-                        " ".repeat(
-                            assignBlock.longestLeft -
-                                assignLine.leftValue.length
-                        )
+                        this.alignRightExpression()
+                            ? " ".repeat(
+                                  assignBlock.longestLeft -
+                                      assignLine.leftValue.length
+                              )
+                            : ""
                     )
                     .concat(" = ")
                     .concat(assignLine.rightValue)
@@ -145,7 +166,48 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             );
         });
 
-        return assigns;
+        return assigns.trimEnd();
+    }
+
+    private newLineAfterAssign() {
+        if (
+            "New" === ConfigurationManager.get("assignFormattingAssignLocation")
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private alignRightExpression() {
+        if (
+            "Yes" ===
+            ConfigurationManager.get("assignFormattingAlignRightExpression")
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private endDotLocationNew() {
+        if (
+            "New" ===
+                ConfigurationManager.get("assignFormattingEndDotLocation") ||
+            "New aligned" ===
+                ConfigurationManager.get("assignFormattingEndDotLocation")
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    private endDotAlignment() {
+        if (
+            "New aligned" ===
+            ConfigurationManager.get("assignFormattingEndDotLocation")
+        ) {
+            return true;
+        }
+        return false;
     }
 
     private isAssignment(value: SyntaxNode): boolean {
