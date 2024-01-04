@@ -17,7 +17,7 @@ export class AblFormatterFactory {
         "treeLogging",
         "defineFormatting",
         "findFormatting",
-        "DEBUG-blockFormatting",
+        // "DEBUG-blockFormatting",
     ];
 
     public getFormatters(): IAblFormatter[] {
