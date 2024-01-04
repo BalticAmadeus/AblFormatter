@@ -1,5 +1,8 @@
-// Place your settings in this file to overwrite default and user settings.
+// By default disable all formatters for UI tests
 {
     "abl.completion.upperCase": true,
-    "AblFormatter.assignFormattingEndDotLocation": "New",
+    "AblFormatter.assignFormatting": false,
+    "AblFormatter.defineFormatting": false,
+    "AblFormatter.findFormatting": false,
+    "AblFormatter.treeLogging": false,
 }
