@@ -72,7 +72,7 @@ export class AblFormatterFactory {
     }
 
     public getFormatterRunner(): IAblFormatterRunner {
-        this.runner = new AblFormatterRunner();
+        this.runner = new AblFormatterRunner(this);
         return this.runner;
     }
 }
