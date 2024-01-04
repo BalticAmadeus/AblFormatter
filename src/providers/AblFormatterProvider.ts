@@ -32,7 +32,6 @@ export class AblFormatterProvider
                 .getFormatterRunner()
                 .setDocument(document)
                 .setParserResult(result)
-                .setFormatters(this.formatterFactory.getFormatters())
                 .start();
 
             console.log(

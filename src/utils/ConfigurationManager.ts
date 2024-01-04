@@ -5,6 +5,7 @@ export class ConfigurationManager {
     private static reloadExternalConfig = true;
     private static configuration: WorkspaceConfiguration;
     private static externalConfiguration: WorkspaceConfiguration;
+    private static overridingSettings: any | undefined;
     public static _ = workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration("AblFormatter")) {
             ConfigurationManager.reloadConfig = true;
@@ -24,7 +25,7 @@ export class ConfigurationManager {
                 workspace.getConfiguration("AblFormatter");
         }
 
-        return ConfigurationManager.configuration.get(name);
+        return this.getConfig(name);
     }
 
     public static getCasing(): any {
@@ -34,6 +35,39 @@ export class ConfigurationManager {
                 workspace.getConfiguration("abl.completion");
         }
 
-        return ConfigurationManager.externalConfiguration.get("upperCase");
+        return this.getCassingConfig();
+    }
+
+    public static setOverridingSettings(settings: any) {
+        this.overridingSettings = settings;
+    }
+
+    private static getCassingConfig(): any {
+        const config =
+            ConfigurationManager.externalConfiguration.get("upperCase");
+        if (this.overridingSettings !== undefined) {
+            const overridingConfig =
+                this.overridingSettings["abl.completion.upperCase"];
+
+            if (overridingConfig !== undefined) {
+                window.showInformationMessage("Found overriding settings!");
+                return overridingConfig;
+            }
+        }
+        return config;
+    }
+
+    private static getConfig(name: string): any {
+        const config = ConfigurationManager.configuration.get(name);
+        if (this.overridingSettings !== undefined) {
+            const overridingConfig =
+                this.overridingSettings["AblFormatter." + name];
+
+            if (overridingConfig !== undefined) {
+                window.showInformationMessage("Found overriding settings!");
+                return overridingConfig;
+            }
+        }
+        return config;
     }
 }

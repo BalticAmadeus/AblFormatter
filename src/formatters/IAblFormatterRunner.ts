@@ -10,5 +10,4 @@ export interface IAblFormatterRunner {
     start(): IAblFormatterRunner;
     setDocument(document: TextDocument): IAblFormatterRunner;
     setParserResult(parserResult: ParseResult): IAblFormatterRunner;
-    setFormatters(ablFormatter: IAblFormatter[]): IAblFormatterRunner;
 }
