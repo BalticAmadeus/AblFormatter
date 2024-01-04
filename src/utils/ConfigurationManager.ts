@@ -34,6 +34,15 @@ export class ConfigurationManager {
                 workspace.getConfiguration("abl.completion");
         }
 
+        const newLocal =
+            ConfigurationManager.externalConfiguration.get("upperCase");
+
+        if (newLocal === undefined) {
+            window.showInformationMessage("TEST2 " + newLocal);
+        } else if (newLocal !== true && newLocal !== false) {
+            window.showInformationMessage("TEST4 " + newLocal);
+        }
+
         return ConfigurationManager.externalConfiguration.get("upperCase");
     }
 }
