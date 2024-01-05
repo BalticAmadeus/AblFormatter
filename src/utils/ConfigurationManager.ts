@@ -6,7 +6,6 @@ export class ConfigurationManager {
     private static configuration: WorkspaceConfiguration;
     private static externalConfiguration: WorkspaceConfiguration;
     private static overridingSettings: any | undefined;
-
     public static _ = workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration("AblFormatter")) {
             ConfigurationManager.reloadConfig = true;
@@ -31,17 +30,12 @@ export class ConfigurationManager {
 
     public static getCasing(): any {
         if (ConfigurationManager.reloadExternalConfig) {
+            ConfigurationManager.reloadExternalConfig = false;
             ConfigurationManager.externalConfiguration =
                 workspace.getConfiguration("abl.completion");
         }
-        ConfigurationManager.externalConfiguration =
-            workspace.getConfiguration("abl.completion");
-        window.showInformationMessage(
-            `Config Value ${ConfigurationManager.externalConfiguration.get(
-                "upperCase"
-            )}`
-        );
-        return ConfigurationManager.externalConfiguration.get("upperCase");
+
+        return this.getCassingConfig();
     }
 
     public static setOverridingSettings(settings: any) {
@@ -49,25 +43,13 @@ export class ConfigurationManager {
     }
 
     private static getCassingConfig(): any {
-        window.showInformationMessage(
-            `Config Value 0 ${ConfigurationManager.externalConfiguration.get(
-                "upperCase"
-            )}
-            SPACE
-            ${this.get("upperCase")} SPACE
-            ${this.externalConfiguration.get("upperCase")}`
-        );
-
-        let config =
+        const config =
             ConfigurationManager.externalConfiguration.get("upperCase");
-
-        window.showInformationMessage(`Config Value ${config}`);
 
         if (config === undefined || (config !== true && config !== false)) {
             window
                 .showErrorMessage(
-                    "abl.completion.upperCase setting not set or set incorrectly. Update settings file. Current value - " +
-                        config,
+                    `abl.completion.upperCase setting not set or set incorrectly. Update settings file. Current value - ${config}. Expected values - true or false `,
                     "Settings"
                 )
                 .then((selection) => {
