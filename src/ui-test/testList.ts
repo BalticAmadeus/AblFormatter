@@ -5,4 +5,7 @@ export enum TestList {
     Find1,
     Find2,
     Find3,
+    For1,
+    For2,
+    For3
 }
