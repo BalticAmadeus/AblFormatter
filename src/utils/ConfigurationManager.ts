@@ -1,4 +1,4 @@
-import { WorkspaceConfiguration, window, workspace } from "vscode";
+import { WorkspaceConfiguration, window, workspace, commands } from "vscode";
 
 export class ConfigurationManager {
     private static reloadConfig = true;
@@ -6,6 +6,7 @@ export class ConfigurationManager {
     private static configuration: WorkspaceConfiguration;
     private static externalConfiguration: WorkspaceConfiguration;
     private static overridingSettings: any | undefined;
+
     public static _ = workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration("AblFormatter")) {
             ConfigurationManager.reloadConfig = true;
@@ -30,12 +31,17 @@ export class ConfigurationManager {
 
     public static getCasing(): any {
         if (ConfigurationManager.reloadExternalConfig) {
-            ConfigurationManager.reloadExternalConfig = false;
             ConfigurationManager.externalConfiguration =
                 workspace.getConfiguration("abl.completion");
         }
-
-        return this.getCassingConfig();
+        ConfigurationManager.externalConfiguration =
+            workspace.getConfiguration("abl.completion");
+        window.showInformationMessage(
+            `Config Value ${ConfigurationManager.externalConfiguration.get(
+                "upperCase"
+            )}`
+        );
+        return ConfigurationManager.externalConfiguration.get("upperCase");
     }
 
     public static setOverridingSettings(settings: any) {
@@ -43,8 +49,40 @@ export class ConfigurationManager {
     }
 
     private static getCassingConfig(): any {
-        const config =
+        window.showInformationMessage(
+            `Config Value 0 ${ConfigurationManager.externalConfiguration.get(
+                "upperCase"
+            )}
+            SPACE
+            ${this.get("upperCase")} SPACE
+            ${this.externalConfiguration.get("upperCase")}`
+        );
+
+        let config =
             ConfigurationManager.externalConfiguration.get("upperCase");
+
+        window.showInformationMessage(`Config Value ${config}`);
+
+        if (config === undefined || (config !== true && config !== false)) {
+            window
+                .showErrorMessage(
+                    "abl.completion.upperCase setting not set or set incorrectly. Update settings file. Current value - " +
+                        config,
+                    "Settings"
+                )
+                .then((selection) => {
+                    switch (selection) {
+                        case "Settings":
+                            commands.executeCommand(
+                                "workbench.action.openWorkspaceSettingsFile"
+                            );
+                            return;
+                        default:
+                            return;
+                    }
+                });
+        }
+
         if (this.overridingSettings !== undefined) {
             const overridingConfig =
                 this.overridingSettings["abl.completion.upperCase"];
