@@ -101,7 +101,16 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         }
 
         this.assignByValue(node);
-        this.assignforBodyValue(node);
+
+        const bodyNode = this.getForBodyNode(node);
+
+        if (bodyNode !== undefined) {
+            this.forBodyValue = this.getPrettyBodyBlock(
+                bodyNode,
+                "\r\n".concat(" ".repeat(this.forBlockValueColumn))
+            );
+        }
+
         this.assignEndValue(node);
     }
 
@@ -286,27 +295,47 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         });
     }
 
-    private assignforBodyValue(node: SyntaxNode): void {
+    private getForBodyNode(node: SyntaxNode): SyntaxNode | undefined {
+        let bodyNode;
+        
         node.children.forEach((child) => {
             if (child.type !== "body") {
                 return;
             }
 
+            bodyNode = child;
+
+            if (bodyNode === null) {
+                return;
+            }
+
+        });
+
+        return bodyNode;
+    }
+
+    private getPrettyBodyBlock(node: SyntaxNode, separator: string): string {
+        let resultString = "";
+
+        node.children.forEach((child) => {
             if (this.ablFormatterRunner === undefined) {
                 return "";
             }
 
-            const bodyNode = child.child(0);
+            const bodyNode = child;
 
             if (bodyNode === null) {
                 return "";
             }
 
-            this.forBodyValue = this.ablFormatterRunner
-                        .getDocument()
-                        .getText(new MyRange(bodyNode));
-
+            resultString = resultString + 
+                this.ablFormatterRunner
+                    .getDocument()
+                    .getText(new MyRange(bodyNode))
+                + separator;
         });
+
+        return resultString;
     }
 
     private assignEndValue(node: SyntaxNode): void {
@@ -379,7 +408,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             .concat(":")
             .concat(this.forBodyValue === "" ? " " : "\r\n")
             .concat(this.forBodyValue === "" ? "" : " ".repeat(this.forBlockValueColumn))
-            .concat(this.forBodyValue)
+            .concat(this.forBodyValue.trim())
             .concat(this.queryTuningNoPrefetchKey === "" ? "" : " ")
             .concat(this.queryTuningNoPrefetchKey.trim())
             .concat("\r\n")
