@@ -1,4 +1,4 @@
-import { WorkspaceConfiguration, window, workspace } from "vscode";
+import { WorkspaceConfiguration, window, workspace, commands } from "vscode";
 
 export class ConfigurationManager {
     private static reloadConfig = true;
@@ -45,6 +45,26 @@ export class ConfigurationManager {
     private static getCassingConfig(): any {
         const config =
             ConfigurationManager.externalConfiguration.get("upperCase");
+
+        if (config === undefined || (config !== true && config !== false)) {
+            window
+                .showErrorMessage(
+                    `abl.completion.upperCase setting not set or set incorrectly. Update settings file. Current value - ${config}. Expected values - true or false `,
+                    "Settings"
+                )
+                .then((selection) => {
+                    switch (selection) {
+                        case "Settings":
+                            commands.executeCommand(
+                                "workbench.action.openWorkspaceSettingsFile"
+                            );
+                            return;
+                        default:
+                            return;
+                    }
+                });
+        }
+
         if (this.overridingSettings !== undefined) {
             const overridingConfig =
                 this.overridingSettings["abl.completion.upperCase"];
