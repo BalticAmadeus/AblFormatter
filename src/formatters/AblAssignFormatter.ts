@@ -120,15 +120,15 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         const block = " "
             .repeat(assignBlock.intendationColumn)
             .concat(FormatterSettings.casing! ? "ASSIGN" : "assign")
-            .concat(FormatterSettings.newLineAfterAssign ? "\r\n" : " ")
+            .concat(FormatterSettings.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
-            .concat(FormatterSettings.endDotLocationNew ? "\r\n" : "")
+            .concat(FormatterSettings.endDotLocationNew() ? "\r\n" : "")
             .concat(
-                FormatterSettings.endDotLocationNew
+                FormatterSettings.endDotLocationNew()
                     ? " ".repeat(
                           assignBlock.intendationColumn +
-                              (FormatterSettings.endDotAlignment
-                                  ? FormatterSettings.newLineAfterAssign
+                              (FormatterSettings.endDotAlignment()
+                                  ? FormatterSettings.newLineAfterAssign()
                                       ? 4
                                       : 7
                                   : 0)
@@ -145,7 +145,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             assigns = assigns.concat(
                 " "
                     .repeat(
-                        FormatterSettings.newLineAfterAssign
+                        FormatterSettings.newLineAfterAssign()
                             ? assignBlock.intendationColumn + 4
                             : assigns === ""
                             ? 0
@@ -153,7 +153,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                     )
                     .concat(assignLine.leftValue)
                     .concat(
-                        FormatterSettings.alignRightExpression
+                        FormatterSettings.alignRightExpression()
                             ? " ".repeat(
                                   assignBlock.longestLeft -
                                       assignLine.leftValue.length
