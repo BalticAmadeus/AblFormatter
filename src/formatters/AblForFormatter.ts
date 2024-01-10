@@ -2,6 +2,7 @@ import { SyntaxNode } from "web-tree-sitter";
 import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
+import { AblFormatterCommon } from "./AblFormatterCommon";
 import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
 
@@ -23,6 +24,8 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     private endValue = "";
 
     private textEdit: TextEdit[] = [];
+
+    private ablFormatterCommon: AblFormatterCommon = new AblFormatterCommon();
 
     protected getSelf(): IAblFormatter {
         return this;
@@ -83,7 +86,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         this.startColumn = node.startPosition.column;
         this.forKey = this.getForKey(node);
         this.forTypeKey = this.getForTypeKey(node);
-        this.recordValue = this.getRecordValue(node);
+        this.recordValue = this.getRecordValue(node, this.forTypeKey !== "");
         this.recordValueColumn = this.startColumn + this.forKey.length + this.forTypeKey.length + 1; // +1 is a space between FOR EACH
         this.forBlockValueColumn = this.startColumn + this.tab;
 
@@ -94,10 +97,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         if (whereNode !== undefined) {
             this.whereKey = this.getWhereKey(whereNode);
 
-            this.whereValue = this.getPrettyWhereBlock(
-                whereNode,
-                "\r\n".concat(" ".repeat(this.recordValueColumn))
-            );
+            this.whereValue = this.getPrettyWhereBlock(whereNode, "\r\n".concat(" ".repeat(this.recordValueColumn)));
         }
 
         this.assignByValue(node);
@@ -105,9 +105,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         const bodyNode = this.getForBodyNode(node);
 
         if (bodyNode !== undefined) {
-            this.forBodyValue = this.getPrettyBodyBlock(
-                bodyNode,
-                "\r\n".concat(" ".repeat(this.forBlockValueColumn))
+            this.forBodyValue = this.getPrettyBodyBlock(bodyNode, "\r\n".concat(" ".repeat(this.forBlockValueColumn))
             );
         }
 
@@ -139,39 +137,11 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getForKey(node: SyntaxNode): string {
-        const forNode = node.child(0);
-
-        if (forNode === null) {
-            return "";
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return "";
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(forNode));
+        return this.ablFormatterCommon.getStatementKey(node, this.ablFormatterRunner);
     }
 
-    private getRecordValue(node: SyntaxNode): string {
-        const recordValue = node.child(2);
-
-        if (recordValue === null) {
-            return "";
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return "";
-        }
-
-        if (recordValue.type !== "identifier") {
-            return "";
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(recordValue));
+    private getRecordValue(node: SyntaxNode, isSecond: boolean): string {
+        return this.ablFormatterCommon.getRecordValue(node, isSecond, this.ablFormatterRunner);
     }
 
     private assignQueryTuningStatements(node: SyntaxNode): void {
@@ -213,63 +183,15 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getWhereNode(node: SyntaxNode): SyntaxNode | undefined {
-        let whereNode;
-
-        node.children.forEach((child) => {
-            if (child.type !== "where_clause") {
-                return;
-            }
-
-            whereNode = child;
-
-            if (whereNode === null) {
-                return;
-            }
-
-        });
-
-        return whereNode;
+        return this.ablFormatterCommon.getNodeByType(node, "where_clause");
     }
 
     private getWhereKey(whereNode: SyntaxNode): string {
-        const whereKey = whereNode.child(0);
-
-        if (whereKey === null) {
-            return "";
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return "";
-        }
-
-        if (whereKey.type !== "WHERE") {
-            return "";
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(whereKey));
+        return this.ablFormatterCommon.getKeyByType(whereNode, "WHERE", this.ablFormatterRunner);
     }
 
     private getPrettyWhereBlock(node: SyntaxNode, separator: string): string {
-        const logicalExpression = node.child(1);
-        let resultString = "";
-
-        if (logicalExpression === null) {
-            return node.text.trim();
-        }
-
-        if (logicalExpression.type !== "logical_expression") {
-            return logicalExpression.text.trim();
-        }
-
-        logicalExpression.children.forEach((child) => {
-            resultString = resultString.concat(
-                this.getExpressionString(child, separator)
-            );
-        });
-
-        return resultString.replace(" (", "(");
+        return this.ablFormatterCommon.getPrettyWhereBlock(node, separator);
     }
 
     private assignByValue(node: SyntaxNode): void {
@@ -296,22 +218,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getForBodyNode(node: SyntaxNode): SyntaxNode | undefined {
-        let bodyNode;
-        
-        node.children.forEach((child) => {
-            if (child.type !== "body") {
-                return;
-            }
-
-            bodyNode = child;
-
-            if (bodyNode === null) {
-                return;
-            }
-
-        });
-
-        return bodyNode;
+        return this.ablFormatterCommon.getNodeByType(node, "body");
     }
 
     private getPrettyBodyBlock(node: SyntaxNode, separator: string): string {
@@ -362,30 +269,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getExpressionString(node: SyntaxNode, separator: string): string {
-        switch (node.type) {
-            case "comparison_expression": {
-                return node.text.trim();
-            }
-            case "AND":
-            case "OR": {
-                return " ".concat(node.text.trim()).concat(separator);
-            }
-            case "parenthesized_expression": {
-                let resultString = "";
-
-                node.children.forEach((child) => {
-                    child.children.forEach((child2) => {
-                        resultString = resultString.concat(
-                            this.getExpressionString(child2, separator)
-                        );
-                    });
-                });
-
-                return "(".concat(resultString).concat(")");
-            }
-        }
-
-        return "";
+        return this.ablFormatterCommon.getExpressionString(node, separator);
     }
 
     private getPrettyBlock(): string {
@@ -417,5 +301,4 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             .concat(".");
         return block;
     }
-
 }

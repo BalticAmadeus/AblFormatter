@@ -84,6 +84,12 @@
           "default": "true",
           "description": "Enable FIND formatting"
         },
+        "AblFormatter.forFormatting": {
+          "order": 4,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable FOR formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",

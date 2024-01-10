@@ -2,6 +2,7 @@ import { SyntaxNode } from "web-tree-sitter";
 import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
+import { AblFormatterCommon } from "./AblFormatterCommon";
 import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
 
@@ -26,6 +27,8 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     private queryTuningNoErrorKey = ""; // NO-ERROR
 
     private textEdit: TextEdit[] = [];
+
+    private ablFormatterCommon: AblFormatterCommon = new AblFormatterCommon();
 
     protected getSelf(): IAblFormatter {
         return this;
@@ -89,7 +92,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         this.recordValue = this.getRecordValue(node, this.findTypeKey !== "");
         this.recordValueColumn = this.startColumn + 6 + this.findTypeKey.length;
 
-        const whereNode = this.getWhereNode(node, this.findTypeKey !== "");
+        const whereNode = this.getWhereNode(node);
 
         if (whereNode !== undefined) {
             this.whereKey = this.getWhereKey(whereNode);
@@ -104,51 +107,11 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getPrettyWhereBlock(node: SyntaxNode, separator: string): string {
-        const logicalExpression = node.child(1);
-        let resultString = "";
-
-        if (logicalExpression === null) {
-            return node.text.trim();
-        }
-
-        if (logicalExpression.type !== "logical_expression") {
-            return logicalExpression.text.trim();
-        }
-
-        logicalExpression.children.forEach((child) => {
-            resultString = resultString.concat(
-                this.getExpressionString(child, separator)
-            );
-        });
-
-        return resultString.replace(" (", "(");
+        return this.ablFormatterCommon.getPrettyWhereBlock(node, separator);
     }
 
     private getExpressionString(node: SyntaxNode, separator: string): string {
-        switch (node.type) {
-            case "comparison_expression": {
-                return node.text.trim();
-            }
-            case "AND":
-            case "OR": {
-                return " ".concat(node.text.trim()).concat(separator);
-            }
-            case "parenthesized_expression": {
-                let resultString = "";
-
-                node.children.forEach((child) => {
-                    child.children.forEach((child2) => {
-                        resultString = resultString.concat(
-                            this.getExpressionString(child2, separator)
-                        );
-                    });
-                });
-
-                return "(".concat(resultString).concat(")");
-            }
-        }
-
-        return "";
+        return this.ablFormatterCommon.getExpressionString(node, separator);
     }
 
     private getPrettyBlock(): string {
@@ -182,19 +145,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getFindKey(node: SyntaxNode): string {
-        const findNode = node.child(0);
-
-        if (findNode === null) {
-            return ""; // ERROR
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return ""; //ERROR
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(findNode));
+        return this.ablFormatterCommon.getStatementKey(node, this.ablFormatterRunner);
     }
 
     private getFindTypeKey(node: SyntaxNode): string {
@@ -223,60 +174,15 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getRecordValue(node: SyntaxNode, isSecond: boolean): string {
-        const recordValue = isSecond ? node.child(2) : node.child(1);
-
-        if (recordValue === null) {
-            return ""; // ERROR
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return ""; //ERROR
-        }
-
-        if (recordValue.type !== "identifier") {
-            return ""; //ERROR
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(recordValue));
+        return this.ablFormatterCommon.getRecordValue(node, isSecond, this.ablFormatterRunner);
     }
 
-    private getWhereNode(
-        node: SyntaxNode,
-        isThird: boolean
-    ): SyntaxNode | undefined {
-        const whereNode = isThird ? node.child(3) : node.child(2);
-
-        if (whereNode === null) {
-            return undefined;
-        }
-
-        if (whereNode.type !== "where_clause") {
-            return undefined;
-        }
-
-        return whereNode;
+    private getWhereNode(node: SyntaxNode): SyntaxNode | undefined {
+        return this.ablFormatterCommon.getNodeByType(node, "where_clause");
     }
 
     private getWhereKey(whereNode: SyntaxNode): string {
-        const whereKey = whereNode.child(0);
-
-        if (whereKey === null) {
-            return ""; // ERROR
-        }
-
-        if (this.ablFormatterRunner === undefined) {
-            return ""; //ERROR
-        }
-
-        if (whereKey.type !== "WHERE") {
-            return ""; //ERROR
-        }
-
-        return this.ablFormatterRunner
-            .getDocument()
-            .getText(new MyRange(whereKey));
+        return this.ablFormatterCommon.getKeyByType(whereNode, "WHERE", this.ablFormatterRunner);
     }
 
     private assignQueryTuningStatements(node: SyntaxNode): void {
