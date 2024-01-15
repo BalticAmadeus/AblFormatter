@@ -1,6 +1,7 @@
 import { workspace } from "vscode";
 import { AblAssignFormatter } from "../formatters/AblAssignFormatter";
 import { AblFindFormatter } from "../formatters/AblFindFormatter";
+import { AblForFormatter } from "../formatters/AblForFormatter";
 import { AblFormatterRunner } from "../formatters/AblFormatterRunner";
 import { AblTokenFormatter } from "../formatters/AblTokenFormatter";
 import { IAblFormatter } from "../formatters/IAblFormatter";
@@ -17,7 +18,8 @@ export class AblFormatterFactory {
         "treeLogging",
         "defineFormatting",
         "findFormatting",
-        // "DEBUG-blockFormatting",
+        "forFormatting",
+        //"DEBUG-blockFormatting",
     ];
 
     public getFormatters(): IAblFormatter[] {
@@ -64,6 +66,8 @@ export class AblFormatterFactory {
                 return new AblTokenFormatter(this.runner);
             case "findFormatting":
                 return new AblFindFormatter(this.runner);
+            case "forFormatting":
+                return new AblForFormatter(this.runner);
             case "DEBUG-blockFormatting":
                 return new AblBlockFormatter(this.runner);
         }

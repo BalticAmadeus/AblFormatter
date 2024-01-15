@@ -84,6 +84,12 @@
           "default": "true",
           "description": "Enable FIND formatting"
         },
+        "AblFormatter.forFormatting": {
+          "order": 4,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable FOR formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
@@ -125,6 +131,7 @@
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
     "copyfiles": "^2.4.1",
+    "esbuild": "0.19.11",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",

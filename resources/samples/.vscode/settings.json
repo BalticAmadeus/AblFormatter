@@ -4,5 +4,6 @@
     "AblFormatter.assignFormatting": false,
     "AblFormatter.defineFormatting": false,
     "AblFormatter.findFormatting": false,
+    "AblFormatter.forFormatting": false,
     "AblFormatter.treeLogging": false,
 }
