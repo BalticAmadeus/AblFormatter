@@ -35,6 +35,12 @@
     "configuration": {
       "title": "AblFormatter",
       "properties": {
+        "AblFormatter.tabSize": {
+          "order": 0,
+          "type": "number",
+          "default": 4,
+          "markdownDescription": "The number of spaces a tab is equal to."
+        },
         "AblFormatter.assignFormatting": {
           "order": 1,
           "type": "boolean",

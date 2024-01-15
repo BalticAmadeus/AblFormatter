@@ -4,7 +4,7 @@ import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
-import { ConfigurationManager } from "../utils/ConfigurationManager";
+import { FormatterSettings } from "../model/FormatterSettings";
 
 type AssingLine = {
     leftValue: string;
@@ -119,16 +119,16 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     private getPrettyBlock(assignBlock: AssignBlock): string {
         const block = " "
             .repeat(assignBlock.intendationColumn)
-            .concat(ConfigurationManager.getCasing()! ? "ASSIGN" : "assign")
-            .concat(this.newLineAfterAssign() ? "\r\n" : " ")
+            .concat(FormatterSettings.casing! ? "ASSIGN" : "assign")
+            .concat(FormatterSettings.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
-            .concat(this.endDotLocationNew() ? "\r\n" : "")
+            .concat(FormatterSettings.endDotLocationNew() ? "\r\n" : "")
             .concat(
-                this.endDotLocationNew()
+                FormatterSettings.endDotLocationNew()
                     ? " ".repeat(
                           assignBlock.intendationColumn +
-                              (this.endDotAlignment()
-                                  ? this.newLineAfterAssign()
+                              (FormatterSettings.endDotAlignment()
+                                  ? FormatterSettings.newLineAfterAssign()
                                       ? 4
                                       : 7
                                   : 0)
@@ -145,7 +145,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             assigns = assigns.concat(
                 " "
                     .repeat(
-                        this.newLineAfterAssign()
+                        FormatterSettings.newLineAfterAssign()
                             ? assignBlock.intendationColumn + 4
                             : assigns === ""
                             ? 0
@@ -153,7 +153,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                     )
                     .concat(assignLine.leftValue)
                     .concat(
-                        this.alignRightExpression()
+                        FormatterSettings.alignRightExpression()
                             ? " ".repeat(
                                   assignBlock.longestLeft -
                                       assignLine.leftValue.length
@@ -167,47 +167,6 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         });
 
         return assigns.trimEnd();
-    }
-
-    private newLineAfterAssign() {
-        if (
-            "New" === ConfigurationManager.get("assignFormattingAssignLocation")
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private alignRightExpression() {
-        if (
-            "Yes" ===
-            ConfigurationManager.get("assignFormattingAlignRightExpression")
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private endDotLocationNew() {
-        if (
-            "New" ===
-                ConfigurationManager.get("assignFormattingEndDotLocation") ||
-            "New aligned" ===
-                ConfigurationManager.get("assignFormattingEndDotLocation")
-        ) {
-            return true;
-        }
-        return false;
-    }
-
-    private endDotAlignment() {
-        if (
-            "New aligned" ===
-            ConfigurationManager.get("assignFormattingEndDotLocation")
-        ) {
-            return true;
-        }
-        return false;
     }
 
     private isAssignment(value: SyntaxNode): boolean {
