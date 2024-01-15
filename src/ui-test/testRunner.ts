@@ -1,3 +1,4 @@
+import * as chai from "chai";
 import * as assert from "assert";
 import {
     ActivityBar,
@@ -6,6 +7,10 @@ import {
     EditorView,
     Workbench,
     ViewItem,
+    Notification,
+    NotificationType,
+    TreeItem,
+    Key,
 } from "vscode-extension-tester";
 import { TestList } from "./testList";
 
@@ -64,6 +69,69 @@ describe("My Test Suite", () => {
         await browser.openResources(".test_dir/samples");
     });
 
+    // Check if noticitation appears and dissapers when settings file is present
+    it("Notifications Center", async () => {
+        const workbench = await new Workbench();
+
+        // get notifications from the notifications center
+        let center = await workbench.openNotificationsCenter();
+        let notifications = await center.getNotifications(NotificationType.Any);
+
+        // Renaming setting file
+        await renameFile("settings.json", "settings123456");
+
+        await openFile("assign1.p");
+        await workbench.executeCommand("Format Document");
+
+        // Get our notification
+        let notification!: Notification;
+        for (const not of notifications) {
+            const message = await not.getMessage();
+            if (await message.includes("abl.completion.upperCase")) {
+                notification = not;
+            }
+        }
+
+        if ((await typeof notification) !== "undefined") {
+            chai.expect(
+                (await notification.getText()).startsWith(
+                    "abl.completion.upperCase setting not set or set incorrectly. Update settings file. Current value"
+                )
+            );
+
+            chai.expect(await notification.getType()).equals(
+                NotificationType.Error
+            );
+        } else {
+            await renameFile("settings123456.json", "settings");
+            assert.fail(
+                "Notification abl.completion.upperCase setting not set or set incorrectly not found"
+            );
+        }
+
+        await center.clearAllNotifications();
+
+        // Renaming settings file back
+        await renameFile("settings123456.json", "settings");
+
+        // Format again and see what happens no notification should be shown
+        center = await workbench.openNotificationsCenter();
+        await openFile("assign1.p");
+        await workbench.executeCommand("Format Document");
+
+        center = await workbench.openNotificationsCenter();
+        notifications = await center.getNotifications(NotificationType.Any);
+
+        for (const not of notifications) {
+            const message = await not.getMessage();
+            if (await message.includes("abl.completion.upperCase")) {
+                assert.fail(
+                    "No more error notification should be shown with settings file corrected"
+                );
+            }
+        }
+    });
+
     async function openFile(fileName: string) {
         const control = await new ActivityBar().getViewControl("Explorer");
 
@@ -78,6 +146,64 @@ describe("My Test Suite", () => {
         const section = await view.getContent().getSection("samples");
 
         await section.openItem(fileName);
+    }
+
+    // Renames file in .vscode folder
+    async function renameFile(fileName: string, newFileName: string) {
+        const control = await new ActivityBar().getViewControl("Explorer");
+
+        if (control === undefined) {
+            return;
+        }
+
+        const view = await control.openView().then((view) => {
+            return view;
+        });
+
+        const section = await view.getContent().getSection("samples");
+        const visibleItems = await section.getVisibleItems();
+
+        // expand .vscode folder if not expanded already
+        for (const item of visibleItems) {
+            if ((await item.getText()) === ".vscode") {
+                const treeItem = item as TreeItem;
+                if ((await treeItem.isExpanded()) === false) {
+                    treeItem.expand();
+                }
+                break;
+            }
+        }
+
+        // Find file, press rename and send new name
+        const visibleFile = await section.findItem(fileName, 2);
+        if (visibleFile !== undefined) {
+            await visibleFile.select();
+
+            // Get right click menu items
+            const menu = await visibleFile.openContextMenu();
+            const contextMenus = await menu.getItems();
+
+            for (const contexMenu of contextMenus) {
+                if ((await contexMenu.getLabel()) === "Rename...") {
+                    await contexMenu.select();
+
+                    /* 
+                        WTF WHY control and shift is pressed down
+                        This was caused by execute command
+                        await workbench.executeCommand("Format Document");
+                    */
+                    await driver
+                        .actions()
+                        .keyUp(Key.CONTROL)
+                        .keyUp(Key.SHIFT)
+                        .sendKeys(newFileName.toString())
+                        .sendKeys(Key.ENTER)
+                        .perform();
+
+                    break;
+                }
+            }
+        }
     }
 
     async function getFileName(
