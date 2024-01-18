@@ -8,4 +8,5 @@ Already implemented:
 - FIND statement formatting
 - FOR statement formatting
 - ASSIGN statement formatting
+- DEFINE statement formatting
 - CASE statement formatting
