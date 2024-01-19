@@ -2,6 +2,7 @@ import { workspace } from "vscode";
 import { AblAssignFormatter } from "../formatters/AblAssignFormatter";
 import { AblFindFormatter } from "../formatters/AblFindFormatter";
 import { AblForFormatter } from "../formatters/AblForFormatter";
+import { AblCaseFormatter } from "../formatters/AblCaseFormatter";
 import { AblFormatterRunner } from "../formatters/AblFormatterRunner";
 import { AblTokenFormatter } from "../formatters/AblTokenFormatter";
 import { IAblFormatter } from "../formatters/IAblFormatter";
@@ -19,6 +20,7 @@ export class AblFormatterFactory {
         "defineFormatting",
         "findFormatting",
         "forFormatting",
+        "caseFormatting",
         //"DEBUG-blockFormatting",
     ];
 
@@ -68,6 +70,8 @@ export class AblFormatterFactory {
                 return new AblFindFormatter(this.runner);
             case "forFormatting":
                 return new AblForFormatter(this.runner);
+            case "caseFormatting":
+                return new AblCaseFormatter(this.runner);
             case "DEBUG-blockFormatting":
                 return new AblBlockFormatter(this.runner);
         }

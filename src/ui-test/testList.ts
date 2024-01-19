@@ -7,5 +7,8 @@ export enum TestList {
     Find3,
     For1,
     For2,
-    For3
+    For3,
+    Case1,
+    Case2,
+    Case3
 }

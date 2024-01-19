@@ -41,6 +41,16 @@ export class FormatterSettings {
         return ConfigurationManager.get("findFormatting") ? true : false;
     }
 
+    //for settings
+    public static forFormatting() {
+        return ConfigurationManager.get("forFormatting") ? true : false;
+    }
+
+    //case settings
+    public static caseFormatting() {
+        return ConfigurationManager.get("caseFormatting") ? true : false;
+    }
+
     //logging settings
     public static treeLogging() {
         return ConfigurationManager.get("treeLogging") ? true : false;

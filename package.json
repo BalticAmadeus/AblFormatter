@@ -96,6 +96,12 @@
           "default": "true",
           "description": "Enable FOR formatting"
         },
+        "AblFormatter.caseFormatting": {
+          "order": 5,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable CASE formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
