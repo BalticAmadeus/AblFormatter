@@ -9,5 +9,6 @@ export enum TestList {
     For2,
     For3,
     Case1,
-    Case2
+    Case2,
+    Case3
 }

@@ -3,9 +3,9 @@ import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { AblFormatterCommon } from "./AblFormatterCommon";
-import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
 import { FormatterSettings } from "../model/FormatterSettings";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
     private startColumn = 0;
@@ -29,7 +29,7 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
             return;
         }
 
-        if (node.type !== "case_statement") {
+        if (node.type !== SyntaxNodeType.CaseStatement) {
             return;
         }
 
@@ -103,7 +103,7 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getCaseBodyNode(node: SyntaxNode): SyntaxNode | undefined {
-        return this.ablFormatterCommon.getNodeByType(node, "case_body");
+        return this.ablFormatterCommon.getNodeByType(node, SyntaxNodeType.CaseBody);
     }
 
     private getCaseBodyBlock(node: SyntaxNode): string {
@@ -132,10 +132,10 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
         let resultString = "";
         let doBlock = false;
 
-        if (node.type === "case_when_branch" || node.type === "case_otherwise_branch") {
+        if (node.type === SyntaxNodeType.CaseWhenBranch || node.type === SyntaxNodeType.CaseOtherwiseBranch) {
 
             node.children.forEach((child) => {
-                if (child.type === "do_block") {
+                if (child.type === SyntaxNodeType.DoBlock) {
                     doBlock = true;
                 }
             });
@@ -153,23 +153,26 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
 
     private getCaseExpressionString(node: SyntaxNode, separator: string, doBlock: boolean): string {
         switch (node.type) {
-            case "THEN":
+            case SyntaxNodeType.ThenKeyword:
                 if (doBlock) {
                     return node.text;
                 } else {
                     return ` ${node.text.trim()}${separator}`;
                 }
-            case "AND":
-            case "OR":
-            case "OTHERWISE":
+            case SyntaxNodeType.AndKeyword:
+            case SyntaxNodeType.OrKeyword:
+            case SyntaxNodeType.OtherwiseKeyword:
                 return ` ${node.text.trim()}${separator}`;
-            case "do_block":
+            case SyntaxNodeType.DoBlock:
                 let resultString = "";
 
                 node.children.forEach((child) => {
-                    if (child.type === "body") {
-                        resultString = " DO:" + "\r\n".concat(" ".repeat(this.caseBlockWhenValueColumn)) + child.text + 
-                                                "\r\n".concat(" ".repeat(this.caseBlockValueColumn)) + "END.";
+                    if (child.type === SyntaxNodeType.Body) {
+                        resultString = (FormatterSettings.casing() ? " DO:" : " do:") + 
+                                       "\r\n".concat(" ".repeat(this.caseBlockWhenValueColumn)) + 
+                                       child.text + 
+                                       "\r\n".concat(" ".repeat(this.caseBlockValueColumn)) + 
+                                       (FormatterSettings.casing() ? "END." : "end.");
                     }
                 });
 
@@ -190,7 +193,7 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
             .concat(this.caseBodyValue.trim())
             .concat("\r\n")
             .concat(" ".repeat(this.startColumn))
-            .concat("END CASE")
+            .concat(FormatterSettings.casing() ? "END CASE" : "end case")
             .concat(".");
 
         return block;
