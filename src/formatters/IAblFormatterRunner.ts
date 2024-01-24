@@ -1,7 +1,7 @@
-import { TextDocument, WorkspaceConfiguration } from "vscode";
+import { TextDocument, } from "vscode";
 import { SourceChanges } from "../model/SourceChanges";
-import { IAblFormatter } from "./IAblFormatter";
 import { ParseResult } from "../model/ParseResult";
+import { IParserHelper } from "../parser/IParserHelper";
 
 export interface IAblFormatterRunner {
     getSourceChanges(): SourceChanges;
@@ -10,4 +10,5 @@ export interface IAblFormatterRunner {
     start(): IAblFormatterRunner;
     setDocument(document: TextDocument): IAblFormatterRunner;
     setParserResult(parserResult: ParseResult): IAblFormatterRunner;
+    setParserHelper(parserHelper: IParserHelper): IAblFormatterRunner;
 }

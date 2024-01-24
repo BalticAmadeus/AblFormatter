@@ -3,10 +3,11 @@ import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { Range, TextEdit } from "vscode";
+import { FormatterSettings } from "../model/FormatterSettings";
 
 export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
     private currentIndentation = 0;
-    private indentationSize = 4;
+    private indentationSize = FormatterSettings.tabSize();
     private codeLineIndentations: number[] = []; // Position is equal to line number (starts with 0), IndentationLevel
 
     parseNode(node: SyntaxNode): void {

@@ -18,8 +18,6 @@ export class AblFormatterProvider
 
     provideDocumentFormattingEdits(
         document: vscode.TextDocument,
-        options: vscode.FormattingOptions,
-        token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
@@ -32,6 +30,7 @@ export class AblFormatterProvider
                 .getFormatterRunner()
                 .setDocument(document)
                 .setParserResult(result)
+                .setParserHelper(this.parserHelper)
                 .start();
 
             console.log(

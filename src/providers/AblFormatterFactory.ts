@@ -1,4 +1,3 @@
-import { workspace } from "vscode";
 import { AblAssignFormatter } from "../formatters/AblAssignFormatter";
 import { AblFindFormatter } from "../formatters/AblFindFormatter";
 import { AblForFormatter } from "../formatters/AblForFormatter";
@@ -14,6 +13,10 @@ import { AblBlockFormatter } from "../formatters/AblBlockFormatter";
 export class AblFormatterFactory {
     private runner: IAblFormatterRunner | undefined;
 
+    private readonly baseFormatterNames = [
+        "blockFormatting",
+    ];
+
     private readonly formatterNames = [
         "assignFormatting",
         "treeLogging",
@@ -21,8 +24,26 @@ export class AblFormatterFactory {
         "findFormatting",
         "forFormatting",
         "caseFormatting",
-        //"DEBUG-blockFormatting",
     ];
+
+    public getBaseFormatters(): IAblFormatter[] {
+        console.log("Getting base formatters ... ");
+        const formatters = this.baseFormatterNames.map((formatterName) => {
+            if (this.enabled(formatterName)) {
+                const formatter = this.getFormatter(formatterName);
+                if (formatter !== undefined) {
+                    console.log("Base formatter activated: ", formatterName);
+                    return formatter;
+                } else {
+                    console.log("Base formatter disabled: ", formatterName);
+                }
+            }
+        });
+
+        return formatters.filter(
+            (formatter): formatter is IAblFormatter => formatter !== undefined
+        );
+    }
 
     public getFormatters(): IAblFormatter[] {
         console.log("Getting formatters ... ");
@@ -72,7 +93,7 @@ export class AblFormatterFactory {
                 return new AblForFormatter(this.runner);
             case "caseFormatting":
                 return new AblCaseFormatter(this.runner);
-            case "DEBUG-blockFormatting":
+            case "blockFormatting":
                 return new AblBlockFormatter(this.runner);
         }
 
