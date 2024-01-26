@@ -6,5 +6,6 @@
     "AblFormatter.findFormatting": false,
     "AblFormatter.forFormatting": false,
     "AblFormatter.caseFormatting": false,
+    "AblFormatter.blockFormatting": false,
     "AblFormatter.treeLogging": false,
 }

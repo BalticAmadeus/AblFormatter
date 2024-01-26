@@ -11,6 +11,10 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
     private codeLineIndentations: number[] = []; // Position is equal to line number (starts with 0), IndentationLevel
 
     parseNode(node: SyntaxNode): void {
+        if (!FormatterSettings.blockFormatting()) {
+            return;
+        }
+
         if (node.type === "source_code") {
             this.codeLineIndentations = Array(node.endPosition.row + 1).fill(0);
         }

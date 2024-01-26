@@ -51,6 +51,11 @@ export class FormatterSettings {
         return ConfigurationManager.get("caseFormatting") ? true : false;
     }
 
+    //block settings
+    public static blockFormatting() {
+        return ConfigurationManager.get("blockFormatting") ? true : false;
+    }
+
     //logging settings
     public static treeLogging() {
         return ConfigurationManager.get("treeLogging") ? true : false;
