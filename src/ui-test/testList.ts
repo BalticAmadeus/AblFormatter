@@ -11,5 +11,8 @@ export enum TestList {
     Case1,
     Case2,
     Case3,
-    Multilayer
+    Multilayer,
+    Block1,
+    Block2,
+    Block3
 }
