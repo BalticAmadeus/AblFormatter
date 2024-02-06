@@ -56,6 +56,11 @@ export class FormatterSettings {
         return ConfigurationManager.get("blockFormatting") ? true : false;
     }
 
+    //if settings
+    public static ifFormatting() {
+        return ConfigurationManager.get("ifFormatting") ? true : false;
+    }
+
     //logging settings
     public static treeLogging() {
         return ConfigurationManager.get("treeLogging") ? true : false;
