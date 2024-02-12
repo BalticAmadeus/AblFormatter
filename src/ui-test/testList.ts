@@ -14,5 +14,6 @@ export enum TestList {
     Multilayer,
     Block1,
     Block2,
-    Block3
+    Block3,
+    Temptable1
 }

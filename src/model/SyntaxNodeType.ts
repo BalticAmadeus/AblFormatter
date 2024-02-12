@@ -5,9 +5,14 @@ export enum SyntaxNodeType {
     CaseOtherwiseBranch = "case_otherwise_branch",
     DoBlock             = "do_block",
     Body                = "body",
+    TemptableDefinition = "temp_table_definition",
+    FieldDefinition     = "field_definition",
+    IndexDefinition     = "index_definition",
     // keywords
     ThenKeyword      = "THEN",
     AndKeyword       = "AND",
     OrKeyword        = "OR",
-    OtherwiseKeyword = "OTHERWISE"
+    OtherwiseKeyword = "OTHERWISE",
+    FieldKeyword     = "FIELD",
+    IndexKeyword     = "INDEX"
 }

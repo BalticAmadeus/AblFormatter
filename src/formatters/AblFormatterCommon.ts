@@ -10,7 +10,7 @@ import { MyRange } from "../model/MyRange";
 
 export class AblFormatterCommon {
     public getExpressionString(node: SyntaxNode, separator: string): string {
-        switch (node.type) {
+        switch (node.type.trim()) {
             case "comparison_expression":
                 return node.text.trim();
             case "AND":

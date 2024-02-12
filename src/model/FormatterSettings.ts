@@ -56,6 +56,11 @@ export class FormatterSettings {
         return ConfigurationManager.get("blockFormatting") ? true : false;
     }
 
+    //temp-table settings
+    public static temptableFormatting() {
+        return ConfigurationManager.get("temptableFormatting") ? true : false;
+    }
+
     //logging settings
     public static treeLogging() {
         return ConfigurationManager.get("treeLogging") ? true : false;

@@ -9,6 +9,7 @@ import { IAblFormatterRunner } from "../formatters/IAblFormatterRunner";
 import { TreeLogger } from "../formatters/TreeLogger";
 import { ConfigurationManager } from "../utils/ConfigurationManager";
 import { AblBlockFormatter } from "../formatters/AblBlockFormatter";
+import { AblTemptableFormatter } from "../formatters/AblTemptableFormatter";
 
 export class AblFormatterFactory {
     private runner: IAblFormatterRunner | undefined;
@@ -24,6 +25,7 @@ export class AblFormatterFactory {
         "findFormatting",
         "forFormatting",
         "caseFormatting",
+        "temptableFormatting",
     ];
 
     public getBaseFormatters(): IAblFormatter[] {
@@ -95,6 +97,8 @@ export class AblFormatterFactory {
                 return new AblCaseFormatter(this.runner);
             case "blockFormatting":
                 return new AblBlockFormatter(this.runner);
+            case "temptableFormatting":
+                return new AblTemptableFormatter(this.runner);
         }
 
         return undefined;

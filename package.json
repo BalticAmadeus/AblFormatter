@@ -108,6 +108,12 @@
           "default": "true",
           "description": "Enable block formatting"
         },
+        "AblFormatter.temptableFormatting": {
+          "order": 8,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable TEMP-TABLE formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
