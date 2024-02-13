@@ -164,19 +164,7 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
             case SyntaxNodeType.OtherwiseKeyword:
                 return ` ${node.text.trim()}${separator}`;
             case SyntaxNodeType.DoBlock:
-                let resultString = "";
-
-                node.children.forEach((child) => {
-                    if (child.type === SyntaxNodeType.Body) {
-                        resultString = (FormatterSettings.casing() ? " DO:" : " do:") + 
-                                       "\r\n".concat(" ".repeat(this.caseBlockWhenValueColumn)) + 
-                                       child.text + 
-                                       "\r\n".concat(" ".repeat(this.caseBlockValueColumn)) + 
-                                       (FormatterSettings.casing() ? "END." : "end.");
-                    }
-                });
-
-                return resultString;
+                return this.ablFormatterCommon.getDoBlock(node, this.caseBlockWhenValueColumn, this.caseBlockValueColumn);
             default:
                 return node.text;
         }

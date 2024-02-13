@@ -5,13 +5,17 @@ import { IAblFormatter } from "./IAblFormatter";
 import { Range, TextEdit } from "vscode";
 import { FormatterSettings } from "../model/FormatterSettings";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
+import { AblFormatterCommon } from "./AblFormatterCommon";
 
 export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
     private startColumn = 0;
+    private nextLineOfComparison = 3;
     private ifBlockValueColumn = 0;
     private ifBodyValue = "";
 
     private textEdit: TextEdit[] = [];
+
+    private ablFormatterCommon: AblFormatterCommon = new AblFormatterCommon();
     
     protected getSelf(): IAblFormatter {
         return this;
@@ -35,8 +39,6 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
         const newBlock = this.getPrettyBlock();
 
         console.log("newBlock", newBlock);
-        console.log("pos", node.startPosition);
-        console.log("pos", node.endPosition);
 
         if (
             this.ablFormatterRunner
@@ -50,7 +52,6 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -112,20 +113,7 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                     return `${node.text.trim()}${separator}`;
                 }
             case SyntaxNodeType.DoBlock:
-                let resultString = "";
-
-                node.children.forEach((child) => {
-                    if (child.type === SyntaxNodeType.Body) {
-                        resultString = (FormatterSettings.casing() ? " DO:" : " do:") + 
-                                       "\r\n".concat(" ".repeat(this.ifBlockValueColumn)) + 
-                                       child.text + 
-                                       "\r\n".concat(" ".repeat(this.startColumn)) + 
-                                       (FormatterSettings.casing() ? "END." : "end.") + 
-                                       "\r\n".concat(" ".repeat(this.startColumn));
-                    }
-                });
-
-                return resultString;
+                return this.ablFormatterCommon.getDoBlock(node, this.ifBlockValueColumn, this.startColumn);
             case SyntaxNodeType.AblStatement:
                 return node.text + "\r\n".concat(" ".repeat(this.startColumn));
             case SyntaxNodeType.ElseStatement:
@@ -150,7 +138,7 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
 
                 node.children.forEach((child) => {
                     resultLogicalExString = resultLogicalExString.concat(
-                        this.getIfExpressionString(child, "\r\n".concat(" ".repeat(this.startColumn + 3)), false)
+                        this.getIfExpressionString(child, "\r\n".concat(" ".repeat(this.startColumn + this.nextLineOfComparison)), false)
                     );
                 });
 

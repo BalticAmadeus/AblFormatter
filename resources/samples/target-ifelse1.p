@@ -14,13 +14,17 @@ if a < b or
     message "not equals".
 end.
 else do:
-    if a = b then
-        message "equals".
-    else
-        message "error".
+    do while a < 100:
+        if a = b then
+            message "equals".
+        else
+            message "error".
+    end.
 end.
 
 do iCount = 1 to 5:
     iTotal = iTotal + iCount.
+    if iTotal = 3 then
+        message "3".
 end.
 display iTotal.
