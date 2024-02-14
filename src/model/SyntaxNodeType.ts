@@ -5,8 +5,13 @@ export enum SyntaxNodeType {
     CaseOtherwiseBranch = "case_otherwise_branch",
     DoBlock             = "do_block",
     Body                = "body",
+    IfStatement         = "if_statement",
+    ElseStatement       = "else_statement",
+    AblStatement        = "abl_statement",
+    LogicalExpression   = "logical_expression",
     // keywords
     ThenKeyword      = "THEN",
+    ElseKeyword      = "ELSE",
     AndKeyword       = "AND",
     OrKeyword        = "OR",
     OtherwiseKeyword = "OTHERWISE"
