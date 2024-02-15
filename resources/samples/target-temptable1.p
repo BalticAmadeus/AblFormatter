@@ -15,3 +15,7 @@ DEFINE TEMP-TABLE temp-item
     FIELD inventory LIKE Item.Price LABEL "Inventory Value"
     INDEX cat-page IS PRIMARY cat-page ASCENDING
     INDEX inventory-value inventory DESCENDING.
+
+DEFINE SERIALIZABLE TEMP-TABLE ttCustomer NO-UNDO REFERENCE-ONLY
+    LIKE Customer
+    INDEX CustNum IS PRIMARY UNIQUE CustNum.

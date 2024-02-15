@@ -19,5 +19,6 @@ export enum SyntaxNodeType {
     OrKeyword        = "OR",
     OtherwiseKeyword = "OTHERWISE",
     FieldKeyword     = "FIELD",
-    IndexKeyword     = "INDEX"
+    IndexKeyword     = "INDEX",
+    LikeKeyword      = "LIKE"
 }

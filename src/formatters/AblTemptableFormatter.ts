@@ -50,7 +50,6 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -72,7 +71,7 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
         };
     }
 
-    private collectTemptableStructure(node: SyntaxNode) {
+    private collectTemptableStructure(node: SyntaxNode): void {
         this.startColumn          = node.startPosition.column;
         this.temptableValueColumn = this.startColumn + FormatterSettings.tabSize();
         this.temptableBodyValue   = this.getTemptableBlock(node);
@@ -103,6 +102,13 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
                 });
 
                 return separator + resultTemptableString;
+            case SyntaxNodeType.LikeKeyword:
+                if (node.parent!.type.trim() === SyntaxNodeType.FieldDefinition ||
+                    node.parent!.type.trim() === SyntaxNodeType.IndexDefinition) {
+                 return " " + node.text.trim();
+                } else {
+                    return separator + node.text.trim();
+                }
             case SyntaxNodeType.FieldKeyword:
             case SyntaxNodeType.IndexKeyword:
                 return node.text.trim();
