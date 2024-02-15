@@ -7,6 +7,8 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IAblFormatterRunner } from "./IAblFormatterRunner";
 import { MyRange } from "../model/MyRange";
+import { FormatterSettings } from "../model/FormatterSettings";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblFormatterCommon {
     public getExpressionString(node: SyntaxNode, separator: string): string {
@@ -99,5 +101,22 @@ export class AblFormatterCommon {
         });
 
         return resultString.replace(" (", "(");
+    }
+
+    public getDoBlock(node: SyntaxNode, blockValueColumn: number, startColumn: number): string {
+        let resultString = "";
+
+        node.children.forEach((child) => {
+            if (child.type === SyntaxNodeType.Body) {
+                resultString = (FormatterSettings.casing() ? " DO:" : " do:") + 
+                               "\r\n".concat(" ".repeat(blockValueColumn)) + 
+                               child.text + 
+                               "\r\n".concat(" ".repeat(startColumn)) + 
+                               (FormatterSettings.casing() ? "END." : "end.") + 
+                               "\r\n".concat(" ".repeat(startColumn));
+            }
+        });
+        
+        return resultString;
     }
 }

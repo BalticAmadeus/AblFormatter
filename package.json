@@ -108,6 +108,12 @@
           "default": "true",
           "description": "Enable block formatting"
         },
+        "AblFormatter.ifFormatting": {
+          "order": 7,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable IF formatting"
+        },
         "AblFormatter.temptableFormatting": {
           "order": 8,
           "type": "boolean",
