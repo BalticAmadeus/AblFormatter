@@ -10,3 +10,5 @@ Already implemented:
 - ASSIGN statement formatting
 - DEFINE statement formatting
 - CASE statement formatting
+- IF statement formatting
+- TEMP-TABLE statement formatting
