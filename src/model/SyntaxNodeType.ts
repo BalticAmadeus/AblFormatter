@@ -9,10 +9,16 @@ export enum SyntaxNodeType {
     ElseStatement       = "else_statement",
     AblStatement        = "abl_statement",
     LogicalExpression   = "logical_expression",
+    TemptableDefinition = "temp_table_definition",
+    FieldDefinition     = "field_definition",
+    IndexDefinition     = "index_definition",
     // keywords
     ThenKeyword      = "THEN",
     ElseKeyword      = "ELSE",
     AndKeyword       = "AND",
     OrKeyword        = "OR",
-    OtherwiseKeyword = "OTHERWISE"
+    OtherwiseKeyword = "OTHERWISE",
+    FieldKeyword     = "FIELD",
+    IndexKeyword     = "INDEX",
+    LikeKeyword      = "LIKE"
 }

@@ -8,5 +8,6 @@
     "AblFormatter.caseFormatting": false,
     "AblFormatter.blockFormatting": false,
     "AblFormatter.ifFormatting": false,
+    "AblFormatter.temptableFormatting": false,
     "AblFormatter.treeLogging": false,
 }

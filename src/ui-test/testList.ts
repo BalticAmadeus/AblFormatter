@@ -15,5 +15,6 @@ export enum TestList {
     Block1,
     Block2,
     Block3,
-    Ifelse1
+    Ifelse1,
+    Temptable1
 }
