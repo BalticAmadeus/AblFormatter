@@ -1,4 +1,4 @@
-import { TextDocument, TextEdit, WorkspaceEdit, workspace } from "vscode";
+import { Range, TextDocument, TextEdit, TextEditorEdit, WorkspaceEdit, window, workspace } from "vscode";
 import { ParseResult } from "../model/ParseResult";
 import { IAblFormatter } from "./IAblFormatter";
 import Parser, { SyntaxNode } from "web-tree-sitter";
@@ -8,9 +8,12 @@ import { ConfigurationManager } from "../utils/ConfigurationManager";
 import { AblFormatterFactory } from "../providers/AblFormatterFactory";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
+import { MemoryFile } from "../model/MemoryFile";
 
 export class AblFormatterRunner implements IAblFormatterRunner {
     private document: TextDocument | undefined;
+    private inMemoryDocument: TextDocument | undefined;
+    private originalDocument: TextDocument | undefined;
     private parserResult: ParseResult | undefined;
     private ablBaseFormatters: IAblFormatter[] = [];
     private ablFormatters: IAblFormatter[] = [];
@@ -64,24 +67,53 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
         return this;
     }
-
     private async applyEdits() {
         if (this.document) {
-            const edit = new WorkspaceEdit();
 
-            if (this.accumulatedEdits.length > 0) {
-                edit.set(this.document.uri, this.accumulatedEdits);
-                await workspace.applyEdit(edit);
+            let modifiedContent = "";
+
+            // Apply edits to in-memory file content
+            this.accumulatedEdits.forEach(edit => {
+                modifiedContent = modifiedContent +
+                                  edit.newText +
+                                  "\r\n";
+            });
+
+            if (modifiedContent.length === 0) {
+                modifiedContent = this.document.getText();
             }
 
-            // Open the document to get changes immediately and parse it
-            const document    = await workspace.openTextDocument(this.document.uri);
-            this.parserResult = this.parserHelper!.parse(new FileIdentifier(this.document!.fileName, this.document!.version), document.getText());
+            // create the in-memory document
+            let memfile = MemoryFile.createDocument("ts");
+            memfile.write(modifiedContent);
+
+            // create a vscode.TextDocument from the in-memory document.
+            this.inMemoryDocument = await workspace.openTextDocument(memfile.getUri());
+            this.originalDocument = this.getDocument();
+
+            this.setDocument(this.inMemoryDocument);
+
+            this.parserResult = this.parserHelper!.parse(new FileIdentifier(this.document.fileName, this.document.version), this.getDocument().getText());
 
             this.visitTree(this.parserResult.tree.rootNode, this.ablFormatters);
 
-            edit.set(this.document.uri, this.getSourceChanges().textEdits);
-            await workspace.applyEdit(edit);
+            let editor = window.activeTextEditor;
+
+            editor!.edit((edit: TextEditorEdit) => {
+                edit.replace(new Range(this.originalDocument!.lineAt(0).range.start, this.originalDocument!.lineAt(this.originalDocument!.lineCount - 1).range.end), this.getDocument().getText());
+            }, {undoStopBefore: false, undoStopAfter: false})
+            .then(async success => {
+                if (!success) {
+                    return;
+                }
+
+                this.getSourceChanges().textEdits.forEach((textEdit) => {
+                    editor!.edit((edit: TextEditorEdit) => {
+                        edit.replace(textEdit.range, textEdit.newText);
+                    }, {undoStopBefore: false, undoStopAfter: false});
+                });
+
+            });
         }
     }
 
@@ -129,7 +161,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
         if (firstChildNode === null) {
             return undefined;
         }
-
+        
         if (!firstChildNode.text.includes("formatterSettingsOverride")) {
             return undefined;
         }
