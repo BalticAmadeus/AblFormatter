@@ -71,6 +71,10 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
         };
     }
 
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
+    }
+
     private collectTemptableStructure(node: SyntaxNode): void {
         this.startColumn          = node.startPosition.column;
         this.temptableValueColumn = this.startColumn + FormatterSettings.tabSize();
