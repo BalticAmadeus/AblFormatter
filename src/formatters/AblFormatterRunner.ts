@@ -157,7 +157,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
             startNum = startNum + 1;
 
-            this.addFormattersChanges(editor, count, startNum);
+            this.addFormattersChanges(editor, count, startNum); 
 
         });
     }
