@@ -40,7 +40,7 @@ export class AblFormatterCommon {
             return "";
         }
 
-        return ablFormatterRunner.getDocument().getText(new MyRange(recordValue));
+        return recordValue.text;
     }
 
     public getStatementKey(node: SyntaxNode, ablFormatterRunner: IAblFormatterRunner | undefined): string {
@@ -50,7 +50,7 @@ export class AblFormatterCommon {
             return "";
         }
 
-        return ablFormatterRunner.getDocument().getText(new MyRange(statementNode));
+        return statementNode.text;
     }
 
     public getNodeByType(node: SyntaxNode, type: string): SyntaxNode | undefined {
@@ -79,7 +79,7 @@ export class AblFormatterCommon {
             return "";
         }
 
-        return ablFormatterRunner.getDocument().getText(new MyRange(keyByType));
+        return keyByType.text;
     }
 
     public getPrettyWhereBlock(node: SyntaxNode, separator: string): string {

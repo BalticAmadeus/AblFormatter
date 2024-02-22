@@ -20,13 +20,13 @@ export class AblFormatterFactory {
     ];
 
     private readonly formatterNames = [
-        "assignFormatting",
-        "treeLogging",
-        "defineFormatting",
-        "findFormatting",
         "forFormatting",
-        "caseFormatting",
+        "findFormatting",
         "ifFormatting",
+        "caseFormatting",
+        "assignFormatting",
+        "defineFormatting",
+        "treeLogging",      
         "temptableFormatting",
     ];
 

@@ -12,8 +12,8 @@ export function register_memoryFileProvider ({ subscriptions }: vscode.Extension
             provideTextDocumentContent(uri: vscode.Uri): string
             {
                 let memDoc = MemoryFile.getDocument (uri);
-                if (memDoc == null)
-                    return "";
+                if (memDoc === null)
+                    {return "";}
                 return memDoc.read ();
             }
   })();
@@ -43,8 +43,8 @@ class MemoryFileManagement
     {
       let path = MemoryFileManagement._getNextDocId ();
 
-        if (extension != "")
-            path += "." + extension;
+        if (extension !== "")
+            {path += "." + extension;}
 
         let self = new MemoryFile(path);
 
@@ -72,7 +72,7 @@ export class MemoryFile
 
     constructor (path: string)
     {
-        this.uri = vscode.Uri.from ({scheme: _SCHEME, path: path})
+        this.uri = vscode.Uri.from ({scheme: _SCHEME, path: path});
     }
 
     public write(strContent: string){

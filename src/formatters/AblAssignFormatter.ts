@@ -57,13 +57,9 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             }
 
             const assignLine: AssingLine = {
-                leftValue: this.ablFormatterRunner
-                    .getDocument()
-                    .getText(new MyRange(leftChild))
+                leftValue: leftChild.text
                     .trim(),
-                rightValue: this.ablFormatterRunner
-                    .getDocument()
-                    .getText(new MyRange(rightChild))
+                rightValue: rightChild.text
                     .trim(),
             };
 
@@ -82,6 +78,8 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock(assignBlock);
 
+        console.log("newBlock", newBlock);
+
         if (
             this.ablFormatterRunner
                 .getDocument()
@@ -94,7 +92,6 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -114,6 +111,10 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private getPrettyBlock(assignBlock: AssignBlock): string {

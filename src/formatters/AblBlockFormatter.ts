@@ -87,6 +87,10 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
         };
     }
 
+    clearSourceChanges(): void {
+        let textEdits: TextEdit[] = [];
+    }
+
     private getTrimedLine(indentationLevel: number, range: Range): string {
         const text = this.ablFormatterRunner?.getDocument().getText(range);
         if (text === undefined) {
