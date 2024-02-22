@@ -60,7 +60,6 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -80,6 +79,10 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+    
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectForStructure(node: SyntaxNode) {
@@ -128,9 +131,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             forTypeNode.type === "FIRST" ||
             forTypeNode.type === "LAST"
         ) {
-            return this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(forTypeNode));
+            return forTypeNode.text;
         } else {
             return "";
         }
@@ -160,9 +161,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                 return "";
             }
 
-            const text = this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(tuneNode));
+            const text = tuneNode.text;
 
             switch (tuneNode.type) {
                 case "SHARE-LOCK":
@@ -210,9 +209,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                 return "";
             }
 
-            this.byValue = this.ablFormatterRunner
-                        .getDocument()
-                        .getText(new MyRange(byNode));
+            this.byValue = byNode.text;
 
         });
     }
@@ -236,9 +233,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             }
 
             resultString = resultString + 
-                this.ablFormatterRunner
-                    .getDocument()
-                    .getText(new MyRange(bodyNode))
+                bodyNode.text
                 + separator;
         });
 
@@ -261,9 +256,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                 return "";
             }
 
-            this.endValue = this.ablFormatterRunner
-                        .getDocument()
-                        .getText(new MyRange(endNode));
+            this.endValue = endNode.text;
 
         });
     }

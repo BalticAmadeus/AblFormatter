@@ -63,7 +63,6 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -83,6 +82,10 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectFindStructure(node: SyntaxNode) {
@@ -165,9 +168,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
             findTypeNode.type === "NEXT" ||
             findTypeNode.type === "PREV"
         ) {
-            return this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(findTypeNode));
+            return findTypeNode.text;
         } else {
             return ""; //EMPTY
         }
@@ -201,9 +202,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
                 return ""; // ERROR
             }
 
-            const text = this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(tuneNode));
+            const text = tuneNode.text;
 
             switch (tuneNode.type) {
                 case "SHARE-LOCK":

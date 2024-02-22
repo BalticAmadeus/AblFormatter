@@ -38,8 +38,6 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock();
 
-        console.log("newBlock", newBlock);
-
         if (
             this.ablFormatterRunner
                 .getDocument()
@@ -71,6 +69,10 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectIfStructure(node: SyntaxNode) {

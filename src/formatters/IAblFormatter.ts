@@ -5,4 +5,6 @@ export interface IAblFormatter {
     parseNode(node: Parser.SyntaxNode): void;
 
     getSourceChanges(): SourceChanges;
+
+    clearSourceChanges(): void;
 }

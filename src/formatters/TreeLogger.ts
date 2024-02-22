@@ -18,7 +18,7 @@ export class TreeLogger extends AAblFormatter implements IAblFormatter {
             " \t ",
             node.type,
             " \t ",
-            this.ablFormatterRunner?.getDocument().getText(new MyRange(node))
+            node.text
             // " \t ",
             // node.text
         );
@@ -28,6 +28,9 @@ export class TreeLogger extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: [],
         };
+    }
+
+    clearSourceChanges(): void {
     }
 
     protected getSelf(): IAblFormatter {
