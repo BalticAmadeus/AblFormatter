@@ -147,7 +147,7 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                 return resultLogicalExString;
             case SyntaxNodeType.AndKeyword:
             case SyntaxNodeType.OrKeyword:
-                return node.text + separator;
+                return " " + node.text.trim() + separator;
             default:
                 return node.text;
         }

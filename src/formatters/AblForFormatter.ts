@@ -3,8 +3,8 @@ import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { AblFormatterCommon } from "./AblFormatterCommon";
-import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     private startColumn = 0;
@@ -32,7 +32,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     parseNode(node: SyntaxNode): void {
-        if (node.type !== "for_statement") {
+        if (node.type !== SyntaxNodeType.ForStatement) {
             return;
         }
 
@@ -127,9 +127,9 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
         }
 
         if (
-            forTypeNode.type === "EACH" ||
-            forTypeNode.type === "FIRST" ||
-            forTypeNode.type === "LAST"
+            forTypeNode.type === SyntaxNodeType.EachKeyword ||
+            forTypeNode.type === SyntaxNodeType.FirstKeyword ||
+            forTypeNode.type === SyntaxNodeType.LastKeyword
         ) {
             return forTypeNode.text;
         } else {
@@ -151,7 +151,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                 return;
             }
 
-            if (child.type !== "query_tuning") {
+            if (child.type !== SyntaxNodeType.QueryTuning) {
                 return;
             }
 
@@ -164,16 +164,16 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             const text = tuneNode.text;
 
             switch (tuneNode.type) {
-                case "SHARE-LOCK":
-                case "EXCLUSIVE-LOCK": {
+                case SyntaxNodeType.ShareLockKeyword:
+                case SyntaxNodeType.ExclLockKeyword: {
                     this.queryTuningLockKey = text;
                     break;
                 }
-                case "NO-LOCK": {
+                case SyntaxNodeType.NoLockKeyword: {
                     this.queryTuningLockKey = text;
                     break;
                 }
-                case "NO-PREFETCH": {
+                case SyntaxNodeType.NoPrefetchKeyword: {
                     this.queryTuningNoPrefetchKey = text;
                     break;
                 }
@@ -182,11 +182,11 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getWhereNode(node: SyntaxNode): SyntaxNode | undefined {
-        return this.ablFormatterCommon.getNodeByType(node, "where_clause");
+        return this.ablFormatterCommon.getNodeByType(node, SyntaxNodeType.WhereClause);
     }
 
     private getWhereKey(whereNode: SyntaxNode): string {
-        return this.ablFormatterCommon.getKeyByType(whereNode, "WHERE", this.ablFormatterRunner);
+        return this.ablFormatterCommon.getKeyByType(whereNode, SyntaxNodeType.WhereKeyword, this.ablFormatterRunner);
     }
 
     private getPrettyWhereBlock(node: SyntaxNode, separator: string): string {
@@ -195,7 +195,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
 
     private assignByValue(node: SyntaxNode): void {
         node.children.forEach((child) => {
-            if (child.type !== "sort_clause") {
+            if (child.type !== SyntaxNodeType.SortClause) {
                 return;
             }
 
@@ -215,7 +215,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getForBodyNode(node: SyntaxNode): SyntaxNode | undefined {
-        return this.ablFormatterCommon.getNodeByType(node, "body");
+        return this.ablFormatterCommon.getNodeByType(node, SyntaxNodeType.Body);
     }
 
     private getPrettyBodyBlock(node: SyntaxNode, separator: string): string {
@@ -242,7 +242,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
 
     private assignEndValue(node: SyntaxNode): void {
         node.children.forEach((child) => {
-            if (child.type !== "END") {
+            if (child.type !== SyntaxNodeType.EndKeyword) {
                 return;
             }
 
