@@ -48,10 +48,6 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock();
 
-        console.log("newBlock", newBlock);
-        console.log("pos", node.startPosition);
-        console.log("pos", node.endPosition);
-
         if (
             this.ablFormatterRunner
                 .getDocument()

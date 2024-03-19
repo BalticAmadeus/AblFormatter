@@ -148,6 +148,10 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
             case SyntaxNodeType.AndKeyword:
             case SyntaxNodeType.OrKeyword:
                 return " " + node.text.trim() + separator;
+            case SyntaxNodeType.ComparisonExpression:
+                return node.text.trim();
+            case SyntaxNodeType.IfKeyword:
+                return node.text.trim() + " ";
             default:
                 return node.text;
         }

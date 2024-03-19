@@ -78,8 +78,6 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock(assignBlock);
 
-        console.log("newBlock", newBlock);
-
         if (
             this.ablFormatterRunner
                 .getDocument()

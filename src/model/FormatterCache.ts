@@ -30,6 +30,20 @@ export class FormatterCache {
         fs.writeFileSync(this.cacheFilePath, JSON.stringify(cache, null, 2), 'utf-8');
     }
 
+    private static clearCacheFile() {
+        try {
+            fs.unlinkSync(this.cacheFilePath);
+        } catch (error) {
+            // Handle error if file deletion fails
+            console.error("Error clearing cache file:", error);
+        }
+    }
+
+    public static clearCache() {
+        this.cache.clear();
+        this.clearCacheFile();
+    }
+
     public static getTree(key: string): Parser.Tree {
         return this.cache.get(key);
     }

@@ -6,6 +6,7 @@ import { AblFormatterProvider } from "./providers/AblFormatterProvider";
 import { Constants } from "./model/Constants";
 import { AblParserHelper } from "./parser/AblParserHelper";
 import { register_memoryFileProvider } from "./model/MemoryFile";
+import { FormatterCache } from "./model/FormatterCache";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -44,4 +45,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+    FormatterCache.clearCache();
+}

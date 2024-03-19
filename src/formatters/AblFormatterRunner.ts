@@ -33,6 +33,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
     private nodeByRanges: SyntaxNode | undefined;
     private editableParent: SyntaxNode | undefined;
     private formattedBefore: boolean = false;
+    private parserResultForSaving: ParseResult | undefined;
 
     public constructor(factory: AblFormatterFactory) {
         this.factory = factory;
@@ -93,6 +94,8 @@ export class AblFormatterRunner implements IAblFormatterRunner {
             this.changedRanges = FormatterCache.getTree(this.filePath!)!.getChangedRanges(this.parserResult.tree);
 
             this.changedRanges.forEach((range) => {
+
+                // first find the changed node (keep in mind, searching by ranges not always returns the corect node)
                 this.nodeByRanges = this.findNodeByRanges(this.parserResult!.tree.rootNode, range);
 
                 this.editableParent = this.getEditableParentForStatements(this.nodeByRanges!.parent!);
@@ -130,7 +133,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
         this.visitTree(this.parserResult.tree.rootNode, this.ablBaseFormatters);
 
-        // Store the accumulated edits
+        // Store the accumulated base edits (only block editing)
         this.accumulatedEdits = this.getBaseSourceChanges().textEdits;
         
         this.applyEdits().then(() => {
@@ -166,6 +169,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
             
             this.getText(false, this.editor!);
 
+            // first adding changes by base formatters (currently block formatting)
             this.editor!.edit((edit: TextEditorEdit) => {
                 edit.replace(this.textRange!, this.inMemoryDocument!.getText().trim());
             }, {undoStopBefore: false, undoStopAfter: false})
@@ -194,6 +198,11 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
         this.selection = this.editor!.selection;
 
+        /**
+         *  Getting the correct editing range.
+         *  Three cases: selected text, already formatted file (so formatting only the parent node)
+         *  and the whole file text
+         **/
         if (this.selection && !this.selection.isEmpty) {
             this.textRange = new Range(this.selection.start.line + this.getSourceChanges().textEdits[startNum].range.start.line, 
                                        this.selection.start.character + this.getSourceChanges().textEdits[startNum].range.start.character, 
@@ -221,17 +230,24 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
             this.parserResult = this.parserHelper!.parse(new FileIdentifier(editor.document!.fileName, editor.document!.version), this.documentText!);
 
-            FormatterCache.setTree(this.filePath!, this.parserResult!.tree);
-
             this.visitTree(this.parserResult.tree.rootNode, this.ablFormatters);
 
             startNum = startNum + 1;
 
             this.addFormattersChanges(editor, count, startNum); 
 
+            // saving the current tree to cache
+            this.parserResultForSaving = this.parserHelper!.parse(new FileIdentifier(editor.document!.fileName, editor.document!.version), editor.document!.getText());
+            FormatterCache.setTree(this.filePath!, this.parserResultForSaving!.tree);
+
         }); 
     }
 
+    /**
+     *  Method for getting the correct text and it's ranges for editing.
+     *  Three cases: selected text, already formatted file (so formatting only the parent node)
+     *  and the whole file text
+     **/
     private getText(fromEditor: boolean, editor: TextEditor): void {
         this.selection = this.editor!.selection;
 
