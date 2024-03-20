@@ -34,6 +34,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
     private editableParent: SyntaxNode | undefined;
     private formattedBefore: boolean = false;
     private parserResultForSaving: ParseResult | undefined;
+    private enablePartialFormatting: boolean = false;
 
     public constructor(factory: AblFormatterFactory) {
         this.factory = factory;
@@ -84,7 +85,8 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
         this.formattedBefore = false;
 
-        if (cachedHash === currentHash) {
+        if (this.enablePartialFormatting &&
+            cachedHash === currentHash) {
             console.log('File has been formatted before.');
 
             this.parserResult = this.parserHelper!.parse(new FileIdentifier(this.document!.fileName, this.document!.version), this.getDocument().getText());
