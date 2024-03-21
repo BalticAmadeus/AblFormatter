@@ -41,10 +41,6 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock();
 
-        console.log("newBlock", newBlock);
-        console.log("pos", node.startPosition);
-        console.log("pos", node.endPosition);
-
         if (
             this.ablFormatterRunner
                 .getDocument()
@@ -57,7 +53,6 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -77,6 +72,10 @@ export class AblCaseFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectCaseStructure(node: SyntaxNode) {

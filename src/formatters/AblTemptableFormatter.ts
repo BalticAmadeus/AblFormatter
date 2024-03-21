@@ -34,10 +34,6 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
 
         const newBlock = this.getPrettyBlock();
 
-        console.log("newBlock", newBlock);
-        console.log("pos", node.startPosition);
-        console.log("pos", node.endPosition);
-
         if (
             this.ablFormatterRunner
                 .getDocument()
@@ -69,6 +65,10 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectTemptableStructure(node: SyntaxNode): void {

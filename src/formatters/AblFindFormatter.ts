@@ -5,6 +5,7 @@ import { IAblFormatter } from "./IAblFormatter";
 import { AblFormatterCommon } from "./AblFormatterCommon";
 import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     // TODO find with current keyword structure
@@ -35,7 +36,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     parseNode(node: SyntaxNode): void {
-        if (node.type !== "find_statement") {
+        if (node.type !== SyntaxNodeType.FindStatement) {
             return;
         }
 
@@ -46,10 +47,6 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         this.collectFindStructure(node);
 
         const newBlock = this.getPrettyBlock();
-
-        console.log("newBlock", newBlock);
-        console.log("pos", node.startPosition);
-        console.log("pos", node.endPosition);
 
         if (
             this.ablFormatterRunner
@@ -63,7 +60,6 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -83,6 +79,10 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectFindStructure(node: SyntaxNode) {
@@ -160,14 +160,12 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
         }
 
         if (
-            findTypeNode.type === "FIRST" ||
-            findTypeNode.type === "LAST" ||
-            findTypeNode.type === "NEXT" ||
-            findTypeNode.type === "PREV"
+            findTypeNode.type === SyntaxNodeType.FirstKeyword ||
+            findTypeNode.type === SyntaxNodeType.LastKeyword ||
+            findTypeNode.type === SyntaxNodeType.NextKeyword ||
+            findTypeNode.type === SyntaxNodeType.PrevKeyword
         ) {
-            return this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(findTypeNode));
+            return findTypeNode.text;
         } else {
             return ""; //EMPTY
         }
@@ -178,11 +176,11 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private getWhereNode(node: SyntaxNode): SyntaxNode | undefined {
-        return this.ablFormatterCommon.getNodeByType(node, "where_clause");
+        return this.ablFormatterCommon.getNodeByType(node, SyntaxNodeType.WhereClause);
     }
 
     private getWhereKey(whereNode: SyntaxNode): string {
-        return this.ablFormatterCommon.getKeyByType(whereNode, "WHERE", this.ablFormatterRunner);
+        return this.ablFormatterCommon.getKeyByType(whereNode, SyntaxNodeType.WhereKeyword, this.ablFormatterRunner);
     }
 
     private assignQueryTuningStatements(node: SyntaxNode): void {
@@ -191,7 +189,7 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
                 return; //ERROR
             }
 
-            if (child.type !== "query_tuning") {
+            if (child.type !== SyntaxNodeType.QueryTuning) {
                 return;
             }
 
@@ -201,26 +199,24 @@ export class AblFindFormatter extends AAblFormatter implements IAblFormatter {
                 return ""; // ERROR
             }
 
-            const text = this.ablFormatterRunner
-                .getDocument()
-                .getText(new MyRange(tuneNode));
+            const text = tuneNode.text;
 
             switch (tuneNode.type) {
-                case "SHARE-LOCK":
-                case "EXCLUSIVE-LOCK":
-                case "NO-LOCK": {
+                case SyntaxNodeType.ShareLockKeyword:
+                case SyntaxNodeType.ExclLockKeyword:
+                case SyntaxNodeType.NoLockKeyword: {
                     this.queryTuningLockKey = text;
                     break;
                 }
-                case "NO-WAIT": {
+                case SyntaxNodeType.NoWaitKeyword: {
                     this.queryTuningNoWaitKey = text;
                     break;
                 }
-                case "NO-PREFETCH": {
+                case SyntaxNodeType.NoPrefetchKeyword: {
                     this.queryTuningNoPrefetchKey = text;
                     break;
                 }
-                case "NO-ERROR": {
+                case SyntaxNodeType.NoErrorKeyword: {
                     this.queryTuningNoErrorKey = text;
                     break;
                 }

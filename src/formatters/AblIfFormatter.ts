@@ -38,8 +38,6 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock();
 
-        console.log("newBlock", newBlock);
-
         if (
             this.ablFormatterRunner
                 .getDocument()
@@ -71,6 +69,10 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: this.textEdit,
         };
+    }
+
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
     }
 
     private collectIfStructure(node: SyntaxNode) {
@@ -145,7 +147,11 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                 return resultLogicalExString;
             case SyntaxNodeType.AndKeyword:
             case SyntaxNodeType.OrKeyword:
-                return node.text + separator;
+                return " " + node.text.trim() + separator;
+            case SyntaxNodeType.ComparisonExpression:
+                return node.text.trim();
+            case SyntaxNodeType.IfKeyword:
+                return node.text.trim() + " ";
             default:
                 return node.text;
         }

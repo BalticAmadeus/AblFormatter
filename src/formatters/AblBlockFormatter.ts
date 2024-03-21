@@ -4,6 +4,7 @@ import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
 import { Range, TextEdit } from "vscode";
 import { FormatterSettings } from "../model/FormatterSettings";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
     private currentIndentation = 0;
@@ -15,12 +16,12 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
             return;
         }
 
-        if (node.type === "source_code") {
+        if (node.type === SyntaxNodeType.SourceCode) {
             this.codeLineIndentations = Array(node.endPosition.row + 1).fill(0);
         }
 
         if (this.isCodeBlock(node)) {
-            if (node.type === "case_body") {
+            if (node.type === SyntaxNodeType.CaseBody) {
                 //Add 1 to case
                 this.indentBlock(
                     node.startPosition.row + 1,
@@ -35,7 +36,7 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
 
     private isCodeBlock(node: SyntaxNode): boolean {
 
-        if (node.type === "body" || node.type === "case_body") {
+        if (node.type === SyntaxNodeType.Body || node.type === SyntaxNodeType.CaseBody) {
             const startLine = node.startPosition.row;
             const endLine = node.endPosition.row;
     
@@ -85,6 +86,10 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
         return {
             textEdits: textEdits,
         };
+    }
+
+    clearSourceChanges(): void {
+        let textEdits: TextEdit[] = [];
     }
 
     private getTrimedLine(indentationLevel: number, range: Range): string {

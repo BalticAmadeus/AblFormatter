@@ -5,10 +5,14 @@ import Parser from "web-tree-sitter";
 import { AblFormatterProvider } from "./providers/AblFormatterProvider";
 import { Constants } from "./model/Constants";
 import { AblParserHelper } from "./parser/AblParserHelper";
+import { register_memoryFileProvider } from "./model/MemoryFile";
+import { FormatterCache } from "./model/FormatterCache";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+    register_memoryFileProvider(context);
+
     await Parser.init().then(() => {});
 
     const formatter = new AblFormatterProvider(new AblParserHelper(context));
@@ -41,4 +45,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+    FormatterCache.clearCache();
+}

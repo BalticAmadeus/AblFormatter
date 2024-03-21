@@ -2,9 +2,9 @@ import { SyntaxNode } from "web-tree-sitter";
 import { SourceChanges } from "../model/SourceChanges";
 import { AAblFormatter } from "./AAblFormatter";
 import { IAblFormatter } from "./IAblFormatter";
-import { MyRange } from "../model/MyRange";
 import { Range, TextEdit } from "vscode";
 import { FormatterSettings } from "../model/FormatterSettings";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 type AssingLine = {
     leftValue: string;
@@ -30,7 +30,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     private textEdit: TextEdit[] = [];
 
     parseNode(node: SyntaxNode): void {
-        if (node.type !== "assign_statement") {
+        if (node.type !== SyntaxNodeType.AssignStatement) {
             return;
         }
         const assignments = node.children.filter(this.isAssignment);
@@ -57,13 +57,9 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             }
 
             const assignLine: AssingLine = {
-                leftValue: this.ablFormatterRunner
-                    .getDocument()
-                    .getText(new MyRange(leftChild))
+                leftValue: leftChild.text
                     .trim(),
-                rightValue: this.ablFormatterRunner
-                    .getDocument()
-                    .getText(new MyRange(rightChild))
+                rightValue: rightChild.text
                     .trim(),
             };
 
@@ -94,7 +90,6 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                     )
                 ) === newBlock
         ) {
-            console.log("SAME");
             return;
         }
         this.textEdit?.push(
@@ -116,10 +111,14 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         };
     }
 
+    clearSourceChanges(): void {
+        this.textEdit.length = 0;
+    }
+
     private getPrettyBlock(assignBlock: AssignBlock): string {
         const block = " "
             .repeat(assignBlock.intendationColumn)
-            .concat(FormatterSettings.casing! ? "ASSIGN" : "assign")
+            .concat(FormatterSettings.casing! ? SyntaxNodeType.AssignKeyword : "assign")
             .concat(FormatterSettings.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
             .concat(FormatterSettings.endDotLocationNew() ? "\r\n" : "")
@@ -174,7 +173,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private isAssign(value: SyntaxNode): boolean {
-        return value.type === "ASSIGN";
+        return value.type === SyntaxNodeType.AssignKeyword;
     }
 
     protected getSelf(): IAblFormatter {

@@ -48,6 +48,9 @@ export class AblTokenFormatter extends AAblFormatter implements IAblFormatter {
         };
     }
 
+    clearSourceChanges(): void {
+    }
+
     protected getSelf(): IAblFormatter {
         return this;
     }
