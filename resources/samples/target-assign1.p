@@ -19,7 +19,7 @@ FUNCTION GET_STUFF RETURNS Progress.Json.ObjectModel.JsonObject (cParam1 AS CHAR
 
     // Vacation
 
-    for each vacation no-lock
+    for each vacation no-lock where
              vacation.id > 100:
 
     end.

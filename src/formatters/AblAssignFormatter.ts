@@ -35,6 +35,10 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         }
         const assignments = node.children.filter(this.isAssignment);
 
+        if (assignments.length === 1) {
+            return;
+        }
+
         let assingValues: AssingLine[] = [];
         let longestLeft = 0;
         const intendationColumn = node.children.filter(this.isAssign)[0]
@@ -57,10 +61,8 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             }
 
             const assignLine: AssingLine = {
-                leftValue: leftChild.text
-                    .trim(),
-                rightValue: rightChild.text
-                    .trim(),
+                leftValue: leftChild.text.trim(),
+                rightValue: rightChild.text.trim(),
             };
 
             assingValues.push(assignLine);
@@ -118,7 +120,11 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     private getPrettyBlock(assignBlock: AssignBlock): string {
         const block = " "
             .repeat(assignBlock.intendationColumn)
-            .concat(FormatterSettings.casing! ? SyntaxNodeType.AssignKeyword : "assign")
+            .concat(
+                FormatterSettings.casing!
+                    ? SyntaxNodeType.AssignKeyword
+                    : "assign"
+            )
             .concat(FormatterSettings.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
             .concat(FormatterSettings.endDotLocationNew() ? "\r\n" : "")

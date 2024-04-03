@@ -35,27 +35,38 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private isCodeBlock(node: SyntaxNode): boolean {
-
-        if (node.type === SyntaxNodeType.Body || node.type === SyntaxNodeType.CaseBody) {
+        if (
+            node.type === SyntaxNodeType.Body ||
+            node.type === SyntaxNodeType.CaseBody ||
+            node.type === SyntaxNodeType.ClassBody
+        ) {
             const startLine = node.startPosition.row;
             const endLine = node.endPosition.row;
-    
+
             // Check if the text is the same across the entire range
-            if (this.isTextSameAcrossRange(node.text, startLine, endLine)) {
-                return true;
-            }
+            //WTF
+            // if (this.isTextSameAcrossRange(node.text, startLine, endLine)) {
+            //     return true;
+            // }
+            return true;
         }
 
         return false;
     }
 
-    private isTextSameAcrossRange(text: string, startLine: number, endLine: number): boolean {
-        const lineText = this.ablFormatterRunner?.getDocument().getText(new Range(startLine, 0, endLine, 10000));
+    private isTextSameAcrossRange(
+        text: string,
+        startLine: number,
+        endLine: number
+    ): boolean {
+        const lineText = this.ablFormatterRunner
+            ?.getDocument()
+            .getText(new Range(startLine, 0, endLine, 10000));
 
         if (lineText === undefined || lineText.trim() !== text.trim()) {
             return false;
         }
-    
+
         return true;
     }
 

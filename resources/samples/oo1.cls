@@ -1,13 +1,9 @@
-BLOCK-LEVEL ON ERROR UNDO, THROW.
+/* formatterSettingsOverride */
+/*  { "AblFormatter.defineFormatting": true,
+    "abl.completion.upperCase": true}*/
 
-USING Common.Language.ILanguageService.
-USING Common.Language.ILanguageRepository.
-USING Common.Language.Language.
-USING Common.Language.LanguageError.
-USING Common.Language.LanguageService.
-
-CLASS Common.Language.LanguageService IMPLEMENTS ILanguageService:
-  DEFINE PRIVATE VARIABLE oRepo AS ILanguageRepository NO-UNDO.
+CLASS A:
+  DEFINE PROTECTED VARIABLE oRepo AS ILanguageRepository NO-UNDO.
 
   CONSTRUCTOR PUBLIC LanguageService (poRepo AS ILanguageRepository):
     THIS-OBJECT:oRepo = poRepo.

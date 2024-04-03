@@ -16,7 +16,7 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
     private textEdit: TextEdit[] = [];
 
     private ablFormatterCommon: AblFormatterCommon = new AblFormatterCommon();
-    
+
     protected getSelf(): IAblFormatter {
         return this;
     }
@@ -76,9 +76,10 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private collectIfStructure(node: SyntaxNode) {
-        this.startColumn        = node.startPosition.column;
-        this.ifBlockValueColumn = this.startColumn + FormatterSettings.tabSize();
-        this.ifBodyValue        = this.getCaseBodyBranchBlock(node);
+        this.startColumn = node.startPosition.column;
+        this.ifBlockValueColumn =
+            this.startColumn + FormatterSettings.tabSize();
+        this.ifBodyValue = this.getCaseBodyBranchBlock(node);
     }
 
     private getCaseBodyBranchBlock(node: SyntaxNode): string {
@@ -90,17 +91,25 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                 doBlock = true;
             }
         });
-        
+
         node.children.forEach((child) => {
             resultString = resultString.concat(
-                this.getIfExpressionString(child, "\r\n".concat(" ".repeat(this.ifBlockValueColumn)), doBlock)
+                this.getIfExpressionString(
+                    child,
+                    "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
+                    doBlock
+                )
             );
         });
 
         return resultString.trim();
     }
 
-    private getIfExpressionString(node: SyntaxNode, separator: string, doBlock: boolean): string {
+    private getIfExpressionString(
+        node: SyntaxNode,
+        separator: string,
+        doBlock: boolean
+    ): string {
         switch (node.type.trim()) {
             case SyntaxNodeType.ThenKeyword:
                 if (doBlock) {
@@ -115,7 +124,11 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                     return `${node.text.trim()}${separator}`;
                 }
             case SyntaxNodeType.DoBlock:
-                return this.ablFormatterCommon.getDoBlock(node, this.ifBlockValueColumn, this.startColumn);
+                return this.ablFormatterCommon.getDoBlock(
+                    node,
+                    this.ifBlockValueColumn,
+                    this.startColumn
+                );
             case SyntaxNodeType.AblStatement:
                 return node.text + "\r\n".concat(" ".repeat(this.startColumn));
             case SyntaxNodeType.ElseStatement:
@@ -130,17 +143,31 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
 
                 node.children.forEach((child) => {
                     resultElseString = resultElseString.concat(
-                        this.getIfExpressionString(child, "\r\n".concat(" ".repeat(this.ifBlockValueColumn)), doElseBlock)
+                        this.getIfExpressionString(
+                            child,
+                            "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
+                            doElseBlock
+                        )
                     );
                 });
 
                 return resultElseString;
+            case SyntaxNodeType.BooleanLiteral:
+                return node.text.trim();
             case SyntaxNodeType.LogicalExpression:
                 let resultLogicalExString = "";
 
                 node.children.forEach((child) => {
                     resultLogicalExString = resultLogicalExString.concat(
-                        this.getIfExpressionString(child, "\r\n".concat(" ".repeat(this.startColumn + this.nextLineOfComparison)), false)
+                        this.getIfExpressionString(
+                            child,
+                            "\r\n".concat(
+                                " ".repeat(
+                                    this.startColumn + this.nextLineOfComparison
+                                )
+                            ),
+                            false
+                        )
                     );
                 });
 
