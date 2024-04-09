@@ -9,5 +9,5 @@
     "AblFormatter.blockFormatting": false,
     "AblFormatter.ifFormatting": false,
     "AblFormatter.temptableFormatting": false,
-    "AblFormatter.treeLogging": true,
+    "AblFormatter.treeLogging": false,
 }

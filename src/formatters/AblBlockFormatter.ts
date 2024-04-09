@@ -21,8 +21,11 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
         }
 
         if (this.isCodeBlock(node)) {
-            if (node.type === SyntaxNodeType.CaseBody) {
-                //Add 1 to case
+            if (
+                //Stupid workaround
+                node.type === SyntaxNodeType.CaseBody ||
+                node.type === SyntaxNodeType.ClassBody
+            ) {
                 this.indentBlock(
                     node.startPosition.row + 1,
                     node.endPosition.row

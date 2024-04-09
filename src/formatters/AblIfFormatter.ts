@@ -154,6 +154,10 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
                 return resultElseString;
             case SyntaxNodeType.BooleanLiteral:
                 return node.text.trim();
+            case SyntaxNodeType.AvailableExpression:
+                return node.text.trim();
+            case SyntaxNodeType.ParenthesizedExpression:
+                return node.text.trim();
             case SyntaxNodeType.LogicalExpression:
                 let resultLogicalExString = "";
 
@@ -180,7 +184,7 @@ export class AblIfFormatter extends AAblFormatter implements IAblFormatter {
             case SyntaxNodeType.IfKeyword:
                 return node.text.trim() + " ";
             default:
-                return node.text;
+                return node.text.trim();
         }
     }
 

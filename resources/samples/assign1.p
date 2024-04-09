@@ -1,8 +1,9 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.assignFormatting": true,
-    "abl.completion.upperCase": true,
-    "AblFormatter.ifFormatting": true,
-    "AblFormatter.assignFormattingEndDotLocation": "New"}*/
+"abl.completion.upperCase": true,
+"AblFormatter.ifFormatting": true,
+"AblFormatter.blockFormatting": true,
+"AblFormatter.assignFormattingEndDotLocation": "New"}*/
 FUNCTION GET_STUFF RETURNS Progress.Json.ObjectModel.JsonObject (cParam1 AS CHARACTER):
     DEFINE VARIABLE jsonTableRow AS INT NO-UNDO.
     DEFINE VARIABLE jsonTableRow2 AS INT NO-UNDO.
@@ -10,24 +11,28 @@ FUNCTION GET_STUFF RETURNS Progress.Json.ObjectModel.JsonObject (cParam1 AS CHAR
         jsonTableRow     = IF TRUE THEN 1 ELSE 2
         jsonTableRow2222 = 2
     .
-
+    
     ASSIGN
-        jsonTableRow2222 = "1" + "2"
+    jsonTableRow2222 = "1" + "2"
     .
     IF TRUE THEN
         assign jsonTableRow2222 = "1" + STRING(10000).
-
+    
+    IF TRUE THEN
+        assign jsonTableRow2222 = "1" + STRING(10000)
+        jsonTableRow2222 = "1" + STRING(10000).
+    
     DEFINE buffer vacation for Vacation.
-
+    
     // Vacation
-
+    
     for each vacation no-lock where
-             vacation.id > 100:
-
+    vacation.id > 100:
+    
     end.
-
+    
     DEFINE buffer aaaa for a.
-
+    
     IF (FALSE) THEN DO:
         ASSIGN
             jsonTableRow     = IF TRUE THEN 1 ELSE 2
@@ -35,7 +40,7 @@ FUNCTION GET_STUFF RETURNS Progress.Json.ObjectModel.JsonObject (cParam1 AS CHAR
             jsonTableRow2223 = "adsasdasdsdsdas"
         .
     END.
-
+    
     RETURN jsonTableRow.
 
 END FUNCTION.

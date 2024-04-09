@@ -1,4 +1,5 @@
 export enum SyntaxNodeType {
+    AvailableExpression = "available_expression",
     CaseStatement = "case_statement",
     CaseBody = "case_body",
     CaseWhenBranch = "case_when_branch",
@@ -21,6 +22,7 @@ export enum SyntaxNodeType {
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
     ComparisonExpression = "comparison_expression",
+    ParenthesizedExpression = "parenthesized_expression",
     BooleanLiteral = "boolean_literal",
     // keywords
     ThenKeyword = "THEN",
