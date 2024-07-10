@@ -7,7 +7,6 @@ import { FormatterSettings } from "../model/FormatterSettings";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
-    private currentIndentation = 0;
     private indentationSize = FormatterSettings.tabSize();
     private codeLineIndentations: number[] = []; // Position is equal to line number (starts with 0), IndentationLevel
 
@@ -26,14 +25,14 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
                 node.type === SyntaxNodeType.CaseBody ||
                 node.type === SyntaxNodeType.ClassBody
             ) {
-                this.indentBlock(
-                    node.startPosition.row + 1,
-                    node.endPosition.row
-                );
+                //TODO
+                // this.indentBlock(
+                //     node.startPosition.row + 1,
+                //     node.endPosition.row
+                // );
             } else {
-                this.indentBlock(node.startPosition.row, node.endPosition.row);
+                this.indentBlock(node);
             }
-            return;
         }
     }
 
@@ -73,14 +72,31 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
         return true;
     }
 
-    private indentBlock(startColumn: number, endColumn: number) {
-        const lineArray: number[] = Array.from(
-            { length: endColumn - startColumn + 1 },
-            (_, index) => startColumn + index
-        );
+    private indentBlock(node: SyntaxNode) {
+        const childStatementNodes = node.children;
+        const targetIndentation =
+            node.parent !== null && node.parent.type !== "do_block"
+                ? node.parent.startPosition.column + this.indentationSize
+                : node.startPosition.column;
 
-        lineArray.forEach((line) => {
-            this.codeLineIndentations[line] += this.indentationSize;
+        // for each statements
+        childStatementNodes.forEach((childStatementNode) => {
+            const currentIndentation = childStatementNode.startPosition.column;
+            const indentationDiff = targetIndentation - currentIndentation;
+            console.log(targetIndentation, currentIndentation, indentationDiff);
+
+            const startRow = childStatementNode.startPosition.row;
+            const endRow = childStatementNode.endPosition.row;
+            const length = endRow - startRow + 1;
+
+            const statementRows = Array.from(
+                { length },
+                (_, index) => startRow + index
+            );
+
+            statementRows.forEach((row) => {
+                this.codeLineIndentations[row] = indentationDiff;
+            });
         });
     }
 
@@ -89,6 +105,7 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
 
         let textEdits: TextEdit[] = [];
         this.codeLineIndentations.forEach((indentationLevel, index) => {
+            console.log("indentationLevel", indentationLevel);
             const range = new Range(index, 0, index, 10000);
 
             textEdits.push(
@@ -112,7 +129,11 @@ export class AblBlockFormatter extends AAblFormatter implements IAblFormatter {
             return "";
         }
 
-        return " ".repeat(indentationLevel).concat(text.trim());
+        if (indentationLevel > 0) {
+            return " ".repeat(indentationLevel).concat(text);
+        } else {
+            return text.substring(-indentationLevel);
+        }
     }
 
     protected getSelf(): IAblFormatter {

@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { AblFormatterFactory } from "./AblFormatterFactory";
+import { ParseResult } from "../model/ParseResult";
 
 export class AblFormatterProvider
     implements
@@ -10,6 +11,7 @@ export class AblFormatterProvider
 {
     private parserHelper: IParserHelper;
     private formatterFactory: AblFormatterFactory;
+    public result: ParseResult | undefined;
 
     public constructor(parserHelper: IParserHelper) {
         this.parserHelper = parserHelper;
@@ -17,11 +19,11 @@ export class AblFormatterProvider
     }
 
     provideDocumentFormattingEdits(
-        document: vscode.TextDocument,
+        document: vscode.TextDocument
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
-        const result = this.parserHelper.parse(
+        this.result = this.parserHelper.parse(
             new FileIdentifier(document.fileName, document.version),
             document.getText()
         );
@@ -29,7 +31,7 @@ export class AblFormatterProvider
             const runner = this.formatterFactory
                 .getFormatterRunner()
                 .setDocument(document)
-                .setParserResult(result)
+                .setParserResult(this.result)
                 .setParserHelper(this.parserHelper)
                 .start();
 

@@ -1,9 +1,23 @@
-import * as fs from 'fs';
+import * as fs from "fs";
+import * as path from "path";
+import { extensions } from "vscode";
 import Parser, { Tree } from "web-tree-sitter";
 
 export class FormatterCache {
-    private static cacheFilePath = 'cache.json';
     private static cache = new Map<any, any>();
+
+    private static getCacheFilePath(): string {
+        const basePath = extensions.getExtension(
+            "BalticAmadeus.AblFormatter"
+        )?.extensionPath;
+
+        if (basePath === undefined) {
+            console.log("ERRRRRRRRRRRRRRRRRor. Cache file cannot be created!");
+            return "";
+        }
+
+        return path.join(basePath, "cache.json");
+    }
 
     public static getHash(filePath: string): string | undefined {
         const cache = this.loadCache();
@@ -18,7 +32,7 @@ export class FormatterCache {
 
     private static loadCache(): { [filePath: string]: string } {
         try {
-            const data = fs.readFileSync(this.cacheFilePath, 'utf-8');
+            const data = fs.readFileSync(this.getCacheFilePath(), "utf-8");
             return JSON.parse(data);
         } catch (error) {
             // If file doesn't exist or cannot be parsed, return an empty object
@@ -27,12 +41,23 @@ export class FormatterCache {
     }
 
     private static saveCache(cache: { [filePath: string]: string }): void {
-        fs.writeFileSync(this.cacheFilePath, JSON.stringify(cache, null, 2), 'utf-8');
+        try {
+            fs.writeFileSync(
+                this.getCacheFilePath(),
+                JSON.stringify(cache, null, 2),
+                "utf-8"
+            );
+        } catch (error) {
+            console.log(
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                error
+            );
+        }
     }
 
     private static clearCacheFile() {
         try {
-            fs.unlinkSync(this.cacheFilePath);
+            fs.unlinkSync(this.getCacheFilePath());
         } catch (error) {
             // Handle error if file deletion fails
             console.error("Error clearing cache file:", error);

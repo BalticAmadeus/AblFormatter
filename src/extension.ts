@@ -7,6 +7,7 @@ import { Constants } from "./model/Constants";
 import { AblParserHelper } from "./parser/AblParserHelper";
 import { register_memoryFileProvider } from "./model/MemoryFile";
 import { FormatterCache } from "./model/FormatterCache";
+import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -15,7 +16,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     await Parser.init().then(() => {});
 
-    const formatter = new AblFormatterProvider(new AblParserHelper(context));
+    const formatter = new AblFormatterProvider(
+        new AblParserHelper(context.extensionPath)
+    );
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
         Constants.ablId,
@@ -26,6 +29,9 @@ export async function activate(context: vscode.ExtensionContext) {
         Constants.ablId,
         formatter
     );
+
+    const hoverProvider = new AblDebugHoverProvider(formatter);
+    vscode.languages.registerHoverProvider(Constants.ablId, hoverProvider);
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
