@@ -123,7 +123,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             .concat(
                 FormatterSettings.casing!
                     ? SyntaxNodeType.AssignKeyword
-                    : "assign"
+                    : SyntaxNodeType.AssignKeyword.toLowerCase()
             )
             .concat(FormatterSettings.newLineAfterAssign() ? "\r\n" : " ")
             .concat(this.getAssigns(assignBlock))
@@ -134,7 +134,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                           assignBlock.intendationColumn +
                               (FormatterSettings.endDotAlignment()
                                   ? FormatterSettings.newLineAfterAssign()
-                                      ? 4
+                                      ? FormatterSettings.tabSize()
                                       : 7
                                   : 0)
                       )
@@ -151,7 +151,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                 " "
                     .repeat(
                         FormatterSettings.newLineAfterAssign()
-                            ? assignBlock.intendationColumn + 4
+                            ? assignBlock.intendationColumn + FormatterSettings.tabSize()
                             : assigns === ""
                             ? 0
                             : assignBlock.intendationColumn + 7
@@ -175,7 +175,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
     }
 
     private isAssignment(value: SyntaxNode): boolean {
-        return value.type === "assignment";
+        return value.type === SyntaxNodeType.Assignment;
     }
 
     private isAssign(value: SyntaxNode): boolean {
