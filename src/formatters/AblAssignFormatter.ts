@@ -13,7 +13,7 @@ type AssingLine = {
 
 type AssignBlock = {
     assignValues: AssingLine[];
-    intendationColumn: number;
+    indentationColumn: number;
     longestLeft: number;
 };
 
@@ -41,7 +41,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
 
         let assingValues: AssingLine[] = [];
         let longestLeft = 0;
-        const intendationColumn = node.children.filter(this.isAssign)[0]
+        const indentationColumn = node.children.filter(this.isAssign)[0]
             .startPosition.column;
 
         if (this.ablFormatterRunner === undefined) {
@@ -75,10 +75,21 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         const assignBlock: AssignBlock = {
             assignValues: assingValues,
             longestLeft: longestLeft,
-            intendationColumn: intendationColumn,
+            indentationColumn: indentationColumn,
         };
 
         const newBlock = this.getPrettyBlock(assignBlock);
+        // console.log(newBlock);
+        console.log(this.ablFormatterRunner
+            .getDocument()
+            .getText(
+                new Range(
+                    node.startPosition.row,
+                    0,
+                    node.endPosition.row,
+                    node.endPosition.column
+                )
+            ) );
 
         if (
             this.ablFormatterRunner
@@ -119,7 +130,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
 
     private getPrettyBlock(assignBlock: AssignBlock): string {
         const block = " "
-            .repeat(assignBlock.intendationColumn)
+            .repeat(assignBlock.indentationColumn)
             .concat(
                 FormatterSettings.casing!
                     ? SyntaxNodeType.AssignKeyword
@@ -131,7 +142,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
             .concat(
                 FormatterSettings.endDotLocationNew()
                     ? " ".repeat(
-                          assignBlock.intendationColumn +
+                          assignBlock.indentationColumn +
                               (FormatterSettings.endDotAlignment()
                                   ? FormatterSettings.newLineAfterAssign()
                                       ? FormatterSettings.tabSize()
@@ -151,10 +162,10 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                 " "
                     .repeat(
                         FormatterSettings.newLineAfterAssign()
-                            ? assignBlock.intendationColumn + FormatterSettings.tabSize()
+                            ? assignBlock.indentationColumn + FormatterSettings.tabSize()
                             : assigns === ""
                             ? 0
-                            : assignBlock.intendationColumn + 7
+                            : assignBlock.indentationColumn + 7
                     )
                     .concat(assignLine.leftValue)
                     .concat(
