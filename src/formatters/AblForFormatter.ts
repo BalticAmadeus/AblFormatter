@@ -5,12 +5,13 @@ import { IAblFormatter } from "./IAblFormatter";
 import { AblFormatterCommon } from "./AblFormatterCommon";
 import { Range, TextEdit } from "vscode";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
+import { FormatterSettings } from "../model/FormatterSettings";
 
 export class AblForFormatter extends AAblFormatter implements IAblFormatter {
     private startColumn = 0;
     private recordValueColumn = 0;
     private forBlockValueColumn = 0;
-    private tab = 4;
+    private tab = FormatterSettings.tabSize();
     private forKey = ""; // FOR
     private forTypeKey = ""; // EACH | FIRST | LAST
     private recordValue = "";
@@ -76,7 +77,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
             textEdits: this.textEdit,
         };
     }
-    
+
     clearSourceChanges(): void {
         this.textEdit.length = 0;
     }
@@ -228,7 +229,7 @@ export class AblForFormatter extends AAblFormatter implements IAblFormatter {
                 return "";
             }
 
-            resultString = resultString + 
+            resultString = resultString +
                 bodyNode.text
                 + separator;
         });

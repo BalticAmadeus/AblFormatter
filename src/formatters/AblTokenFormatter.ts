@@ -4,10 +4,11 @@ import { SourceChanges } from "../model/SourceChanges";
 import Parser from "web-tree-sitter";
 import { MyRange } from "../model/MyRange";
 import { AAblFormatter } from "./AAblFormatter";
+import { FormatterSettings } from "../model/FormatterSettings";
 
 export class AblTokenFormatter extends AAblFormatter implements IAblFormatter {
     private targetIsLong = true;
-    private useUppercase = true;
+    private useUppercase = FormatterSettings.casing();
     private longDefine = "DEFINE";
     private shortDefine = "DEF";
 
