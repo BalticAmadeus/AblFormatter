@@ -14,6 +14,7 @@ export enum SyntaxNodeType {
     TemptableDefinition = "temp_table_definition",
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
+    VariableDefinition = "variable_definition",
     FindStatement = "find_statement",
     WhereClause = "where_clause",
     AssignStatement = "assign_statement",

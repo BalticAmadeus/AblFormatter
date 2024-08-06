@@ -90,7 +90,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
             console.log('File has been formatted before.');
 
             this.parserResult = this.parserHelper!.parse(new FileIdentifier(this.document!.fileName, this.document!.version), this.getDocument().getText());
-            
+
             FormatterCache.getTree(this.filePath!);
 
             this.changedRanges = FormatterCache.getTree(this.filePath!)!.getChangedRanges(this.parserResult.tree);
@@ -101,7 +101,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
                 this.nodeByRanges = this.findNodeByRanges(this.parserResult!.tree.rootNode, range);
 
                 this.editableParent = this.getEditableParentForStatements(this.nodeByRanges!.parent!);
-                
+
                 if (this.editableParent === undefined) {
                     this.editableParent = this.getEditableParentForDoBlock(this.nodeByRanges!);
                 }
@@ -137,7 +137,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
         // Store the accumulated base edits (only block editing)
         this.accumulatedEdits = this.getBaseSourceChanges().textEdits;
-        
+
         this.applyEdits().then(() => {
             FormatterCache.updateHash(this.filePath!, currentHash);
         });
@@ -168,7 +168,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
             this.originalDocument = this.getDocument();
 
             this.setDocument(this.inMemoryDocument);
-            
+
             this.getText(false, this.editor!);
 
             // first adding changes by base formatters (currently block formatting)
@@ -206,14 +206,14 @@ export class AblFormatterRunner implements IAblFormatterRunner {
          *  and the whole file text
          **/
         if (this.selection && !this.selection.isEmpty) {
-            this.textRange = new Range(this.selection.start.line + this.getSourceChanges().textEdits[startNum].range.start.line, 
-                                       this.selection.start.character + this.getSourceChanges().textEdits[startNum].range.start.character, 
-                                       this.selection.start.line + this.getSourceChanges().textEdits[startNum].range.end.line, 
+            this.textRange = new Range(this.selection.start.line + this.getSourceChanges().textEdits[startNum].range.start.line,
+                                       this.selection.start.character + this.getSourceChanges().textEdits[startNum].range.start.character,
+                                       this.selection.start.line + this.getSourceChanges().textEdits[startNum].range.end.line,
                                        this.getSourceChanges().textEdits[startNum].range.end.character);
         } else if (this.formattedBefore) {
-            this.textRange = new Range(this.editableParent!.startPosition.row + this.getSourceChanges().textEdits[startNum].range.start.line, 
-                                       this.getSourceChanges().textEdits[startNum].range.start.character,  
-                                       this.editableParent!.startPosition.row + this.getSourceChanges().textEdits[startNum].range.end.line, 
+            this.textRange = new Range(this.editableParent!.startPosition.row + this.getSourceChanges().textEdits[startNum].range.start.line,
+                                       this.getSourceChanges().textEdits[startNum].range.start.character,
+                                       this.editableParent!.startPosition.row + this.getSourceChanges().textEdits[startNum].range.end.line,
                                        this.getSourceChanges().textEdits[startNum].range.end.character);
         } else {
             this.textRange = this.getSourceChanges().textEdits[startNum].range;
@@ -236,13 +236,13 @@ export class AblFormatterRunner implements IAblFormatterRunner {
 
             startNum = startNum + 1;
 
-            this.addFormattersChanges(editor, count, startNum); 
+            this.addFormattersChanges(editor, count, startNum);
 
             // saving the current tree to cache
             this.parserResultForSaving = this.parserHelper!.parse(new FileIdentifier(editor.document!.fileName, editor.document!.version), editor.document!.getText());
             FormatterCache.setTree(this.filePath!, this.parserResultForSaving!.tree);
 
-        }); 
+        });
     }
 
     /**
@@ -322,7 +322,7 @@ export class AblFormatterRunner implements IAblFormatterRunner {
         if (firstChildNode === null) {
             return undefined;
         }
-        
+
         if (!firstChildNode.text.includes("formatterSettingsOverride")) {
             return undefined;
         }
@@ -342,16 +342,16 @@ export class AblFormatterRunner implements IAblFormatterRunner {
         return new Promise((resolve, reject) => {
             const hash = crypto.createHash('md5');
             const stream = fs.createReadStream(filePath);
-    
+
             stream.on('data', (data) => {
                 hash.update(data);
             });
-    
+
             stream.on('end', () => {
                 const fileHash = hash.digest('hex');
                 resolve(fileHash);
             });
-    
+
             stream.on('error', (error) => {
                 reject(error);
             });

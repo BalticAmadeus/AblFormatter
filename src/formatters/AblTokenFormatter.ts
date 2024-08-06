@@ -23,7 +23,6 @@ export class AblTokenFormatter extends AAblFormatter implements IAblFormatter {
         ) {
             const range = new MyRange(node);
 
-            console.log(node);
             this.ranges.push(range);
         }
     }
