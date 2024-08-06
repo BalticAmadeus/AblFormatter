@@ -1,4 +1,4 @@
-import Parser from "web-tree-sitter";
+import Parser, { Tree } from "web-tree-sitter";
 import { IParserHelper } from "./IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { ParseResult } from "../model/ParseResult";
@@ -20,9 +20,12 @@ export class AblParserHelper implements IParserHelper {
         });
     }
 
-    public parse(fileIdentifier: FileIdentifier, text: string): ParseResult {
-        const previousTree = this.trees.get(fileIdentifier.name);
-        const newTree = this.parser.parse(text);
+    public parse(
+        fileIdentifier: FileIdentifier,
+        text: string,
+        previousTree?: Tree
+    ): ParseResult {
+        const newTree = this.parser.parse(text, previousTree);
         let ranges: Parser.Range[];
 
         if (previousTree !== undefined) {
@@ -31,7 +34,7 @@ export class AblParserHelper implements IParserHelper {
             ranges = []; // TODO
         }
 
-        this.trees.set(fileIdentifier.name, newTree);
+        //this.trees.set(fileIdentifier.name, newTree);
 
         const result: ParseResult = {
             tree: newTree,
