@@ -6,7 +6,7 @@ import { ParseResult } from "../model/ParseResult";
 import { Edit, Point, SyntaxNode, Tree } from "web-tree-sitter";
 import { FormattingEngine } from "../v2/FormattingEngine";
 import { IFormatter } from "../v2/IFormatter";
-import { BlockFormater } from "../v2/BlockFormatter";
+import { BlockFormater } from "../v2/formatters/BlockFormatter";
 
 export class AblFormatterProvider
     implements
@@ -60,22 +60,25 @@ export class AblFormatterProvider
         );
 
         try {
-            const runner = this.formatterFactory
-                .getFormatterRunner()
-                .setDocument(document)
-                .setParserResult(this.result)
-                .setParserHelper(this.parserHelper)
-                .start();
-
-            console.log(
-                "Changes to be applied: \n",
-                runner.getSourceChanges().textEdits
-            );
-
-            return runner.getSourceChanges().textEdits;
+            // const runner = this.formatterFactory
+            //     .getFormatterRunner()
+            //     .setDocument(document)
+            //     .setParserResult(this.result)
+            //     .setParserHelper(this.parserHelper)
+            //     .start();
+            // console.log(
+            //     "Changes to be applied: \n",
+            //     runner.getSourceChanges().textEdits
+            // );
+            // return runner.getSourceChanges().textEdits;
         } catch (e) {
             console.log(e);
             return;
+        } finally {
+            this.result = this.parserHelper.parse(
+                new FileIdentifier(document.fileName, document.version),
+                document.getText()
+            );
         }
     }
     provideDocumentRangeFormattingEdits(
@@ -96,34 +99,4 @@ export class AblFormatterProvider
         console.log("Hiiiii2");
         throw new Error("Method not implemented.");
     }
-}
-
-function generateCodeFromNode(node: SyntaxNode): string {
-    let code = "";
-
-    function traverse(node: SyntaxNode) {
-        code = replaceRange(
-            code,
-            node.startIndex,
-            node.endIndex,
-            node.hasChanges() ? " =" : node.text
-        );
-        node.children.forEach(traverse);
-    }
-
-    function replaceRange(
-        s: string,
-        start: number,
-        end: number,
-        substitute: string
-    ) {
-        return s.substring(0, start) + substitute + s.substring(end);
-    }
-
-    traverse(node);
-    return code;
-}
-
-function generateCodeFromTree(tree: Tree): string {
-    return generateCodeFromNode(tree.rootNode);
 }

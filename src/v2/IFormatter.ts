@@ -1,5 +1,6 @@
 import { SyntaxNode } from "web-tree-sitter";
-import { CodeEdit, FullText } from "./FormattingEngine";
+import { CodeEdit } from "./model/CodeEdit";
+import { FullText } from "./model/FullText";
 
 export interface IFormatter {
     match(node: Readonly<SyntaxNode>): boolean;

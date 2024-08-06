@@ -3,7 +3,9 @@ import { Edit, SyntaxNode, Tree } from "web-tree-sitter";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { IFormatter } from "./IFormatter";
-import { BlockFormater } from "./BlockFormatter";
+import { BlockFormater } from "./formatters/BlockFormatter";
+import { CodeEdit } from "./model/CodeEdit";
+import { FullText } from "./model/FullText";
 
 export class FormattingEngine {
     constructor(
@@ -119,13 +121,4 @@ export class FormattingEngine {
         console.log("BAD SCOPE - TODO");
         return false;
     }
-}
-
-export interface CodeEdit {
-    edit: Edit;
-    text: string;
-}
-
-export interface FullText {
-    text: string;
 }

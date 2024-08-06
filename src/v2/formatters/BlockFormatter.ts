@@ -1,22 +1,20 @@
 import { SyntaxNode } from "web-tree-sitter";
-import { AFormatter } from "./AFormatter";
-import { FullText, CodeEdit } from "./FormattingEngine";
-import { IFormatter } from "./IFormatter";
-import { SyntaxNodeType } from "../model/SyntaxNodeType";
+import { IFormatter } from "../IFormatter";
+import { SyntaxNodeType } from "../../model/SyntaxNodeType";
+import { CodeEdit } from "../model/CodeEdit";
+import { FullText } from "../model/FullText";
+import { FormatterHelper } from "../FormatterHelper";
 
-export class BlockFormater extends AFormatter implements IFormatter {
+export class BlockFormater implements IFormatter {
     match(node: Readonly<SyntaxNode>): boolean {
         let found: boolean = false;
 
         if (
             node.type === SyntaxNodeType.Body ||
-            node.type === SyntaxNodeType.CaseBody
+            node.type === SyntaxNodeType.CaseBody ||
+            node.type === SyntaxNodeType.ClassBody
         ) {
             found = true;
-        }
-
-        if (node.parent?.type === "method_definition") {
-            found = false;
         }
 
         return found;
@@ -27,19 +25,31 @@ export class BlockFormater extends AFormatter implements IFormatter {
     ): CodeEdit | CodeEdit[] | undefined {
         let indentationEdits: IndentationEdits[] = [];
 
-        const parent = node.parent;
+        let parent = this.getParent(node);
 
         if (parent === null) {
             return undefined;
         }
 
-        const parentIndentation = parent.startPosition.column;
-        const indentationStep = 4;
-        const blockStatementsStartRows = node.children.map(
-            (node) => node.startPosition.row
+        const parentIndentation = FormatterHelper.getActualStatementIndentation(
+            parent,
+            fullText
         );
 
-        const codeLines = this.getCurrentText(parent, fullText)
+        console.log("my parent indentation is", parentIndentation, parent.type);
+        // const parentIndentation = parent.startPosition.column;
+        const indentationStep = 4;
+        const blockStatementsStartRows = node.children.map(
+            (node) =>
+                node.startPosition.row +
+                FormatterHelper.getActualTextRow(
+                    FormatterHelper.getCurrentText(node, fullText)
+                )
+        );
+
+        console.log("blockStatementsStartRows: ", blockStatementsStartRows);
+
+        const codeLines = FormatterHelper.getCurrentText(parent, fullText)
             .split("\n")
             .slice(0, -1);
 
@@ -53,10 +63,20 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 lineChangeDelta =
                     parentIndentation +
                     indentationStep -
-                    this.countLeadingSpaces(codeLine);
+                    FormatterHelper.getActualTextIndentation(codeLine);
 
                 n++;
             }
+
+            // console.log(
+            //     "lineNumber: ",
+            //     lineNumber,
+            //     blockStatementsStartRows[n] === lineNumber,
+            //     parentIndentation,
+            //     indentationStep,
+            //     lineChangeDelta,
+            //     FormatterHelper.getActualTextIndentation(codeLine)
+            // );
 
             // add edits
             if (lineChangeDelta !== 0) {
@@ -67,7 +87,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
             }
         });
 
-        const lastLine = this.getCurrentText(parent, fullText)
+        const lastLine = FormatterHelper.getCurrentText(parent, fullText)
             .split("\n")
             .slice(-1)[0];
 
@@ -77,7 +97,8 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
         if (endNode !== undefined) {
             const endRowDelta =
-                parentIndentation - this.countLeadingSpaces(lastLine);
+                parentIndentation -
+                FormatterHelper.getActualTextIndentation(lastLine);
 
             if (endRowDelta !== 0) {
                 indentationEdits.push({
@@ -99,7 +120,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
         fullText: FullText,
         indentationEdits: IndentationEdits[]
     ): CodeEdit | CodeEdit[] | undefined {
-        const text = this.getCurrentText(node, fullText);
+        const text = FormatterHelper.getCurrentText(node, fullText);
         const newtext = this.applyIndentationEdits(text, indentationEdits);
         const diff = newtext.length - text.length;
 
@@ -154,8 +175,25 @@ export class BlockFormater extends AFormatter implements IFormatter {
         return lines.join("\n");
     }
 
-    private countLeadingSpaces(str: string): number {
-        return str.length - str.trimStart().length;
+    // private countLeadingSpaces(str: string): number {
+    //     return str.length - str.trimStart().length;
+    // }
+
+    private getParent(node: SyntaxNode): SyntaxNode | null {
+        let parent = node.parent;
+
+        if (parent === null) {
+            return null;
+        }
+
+        if (
+            parent.type === "do_block" &&
+            parent.parent?.type === "if_statement"
+        ) {
+            return parent.parent;
+        }
+
+        return parent;
     }
 }
 
