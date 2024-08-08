@@ -1,13 +1,12 @@
-import { TextDocument } from "vscode";
-import { Edit, SyntaxNode, Tree } from "web-tree-sitter";
-import { IParserHelper } from "../parser/IParserHelper";
-import { FileIdentifier } from "../model/FileIdentifier";
-import { IFormatter } from "./formatters/IFormatter";
-import { BlockFormater } from "./formatters/BlockFormatter";
-import { CodeEdit } from "./model/CodeEdit";
-import { FullText } from "./model/FullText";
-import { IConfigurationManager } from "../utils/IConfigurationManager";
-import { ParseResult } from "../model/ParseResult";
+import { SyntaxNode, Tree } from "web-tree-sitter";
+import { IParserHelper } from "../../parser/IParserHelper";
+import { FileIdentifier } from "../../model/FileIdentifier";
+import { IFormatter } from "./IFormatter";
+import { BlockFormater } from "../formatters/BlockFormatter";
+import { CodeEdit } from "../model/CodeEdit";
+import { FullText } from "../model/FullText";
+import { IConfigurationManager } from "../../utils/IConfigurationManager";
+import { ParseResult } from "../../model/ParseResult";
 
 export class FormattingEngine {
     constructor(

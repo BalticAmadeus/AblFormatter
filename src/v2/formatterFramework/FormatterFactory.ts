@@ -1,7 +1,7 @@
-import { IConfigurationManager } from "../utils/IConfigurationManager";
-import { IFormatter } from "./formatters/IFormatter";
+import { IConfigurationManager } from "../../utils/IConfigurationManager";
+import { IFormatter } from "./IFormatter";
 import { formatterRegistry } from "./formatterDecorator";
-import { FormatterSettings } from "./model/FormatterSettings";
+import { FormatterSettings } from "../model/FormatterSettings";
 
 export class FormatterFactory {
     public static getFormatterInstances(

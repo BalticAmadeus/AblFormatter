@@ -4,12 +4,13 @@ import { FileIdentifier } from "../model/FileIdentifier";
 import { AblFormatterFactory } from "./AblFormatterFactory";
 import { ParseResult } from "../model/ParseResult";
 import { Edit, Point, SyntaxNode, Tree } from "web-tree-sitter";
-import { FormattingEngine } from "../v2/FormattingEngine";
-import { IFormatter } from "../v2/formatters/IFormatter";
+import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
+import { IFormatter } from "../v2/formatterFramework/IFormatter";
 import { BlockFormater } from "../v2/formatters/BlockFormatter";
+import { AssignFormatter } from "../v2/formatters/AssignFormatter";
 import { FormatterSettings } from "../v2/model/FormatterSettings";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
-import { FormatterFactory } from "../v2/FormatterFactory";
+import { FormatterFactory } from "../v2/formatterFramework/FormatterFactory";
 
 export class AblFormatterProvider
     implements

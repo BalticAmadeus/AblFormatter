@@ -1,5 +1,5 @@
 import { SyntaxNode } from "web-tree-sitter";
-import { FullText } from "./model/FullText";
+import { FullText } from "../model/FullText";
 
 export class FormatterHelper {
     public static getActualTextIndentation(input: string): number {

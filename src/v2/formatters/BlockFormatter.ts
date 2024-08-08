@@ -1,14 +1,13 @@
 import { SyntaxNode } from "web-tree-sitter";
-import { IFormatter } from "./IFormatter";
+import { IFormatter } from "../formatterFramework/IFormatter";
 import { SyntaxNodeType } from "../../model/SyntaxNodeType";
 import { CodeEdit } from "../model/CodeEdit";
 import { FullText } from "../model/FullText";
-import { FormatterHelper } from "../FormatterHelper";
+import { FormatterHelper } from "../formatterFramework/FormatterHelper";
 import { AFormatter } from "./AFormatter";
-import { RegisterFormatter, RegisterFormatter2 } from "../formatterDecorator";
+import { RegisterFormatter } from "../formatterFramework/formatterDecorator";
 
 @RegisterFormatter
-@RegisterFormatter2
 export class BlockFormater extends AFormatter implements IFormatter {
     public static readonly formatterLabel = "blockFormatting";
 

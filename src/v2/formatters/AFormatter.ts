@@ -1,4 +1,4 @@
-import { formatterRegistry } from "../formatterDecorator";
+import { formatterRegistry } from "../formatterFramework/formatterDecorator";
 import { FormatterSettings } from "../model/FormatterSettings";
 
 export abstract class AFormatter {

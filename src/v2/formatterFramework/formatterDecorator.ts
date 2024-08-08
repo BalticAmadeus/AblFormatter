@@ -9,11 +9,3 @@ export function RegisterFormatter(target: any) {
 
     formatterId++;
 }
-
-export function RegisterFormatter2(target: any) {
-    console.log("aaa2");
-    formatterRegistry[formatterId] = target;
-    console.log("Formatter was found:", formatterId, target.formatterLabel);
-
-    formatterId++;
-}
