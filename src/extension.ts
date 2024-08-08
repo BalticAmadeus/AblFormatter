@@ -8,6 +8,7 @@ import { AblParserHelper } from "./parser/AblParserHelper";
 import { register_memoryFileProvider } from "./model/MemoryFile";
 import { FormatterCache } from "./model/FormatterCache";
 import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
+import { ConfigurationManager2 } from "./utils/ConfigurationManager2";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -15,6 +16,8 @@ export async function activate(context: vscode.ExtensionContext) {
     register_memoryFileProvider(context);
 
     await Parser.init().then(() => {});
+
+    ConfigurationManager2.getInstance();
 
     const formatter = new AblFormatterProvider(
         new AblParserHelper(context.extensionPath)

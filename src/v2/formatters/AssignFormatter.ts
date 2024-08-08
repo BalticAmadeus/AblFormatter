@@ -5,12 +5,11 @@ import { CodeEdit } from "../model/CodeEdit";
 import { FullText } from "../model/FullText";
 import { FormatterHelper } from "../FormatterHelper";
 import { AFormatter } from "./AFormatter";
-import { RegisterFormatter, RegisterFormatter2 } from "../formatterDecorator";
+import { RegisterFormatter2 } from "../formatterDecorator";
 
-@RegisterFormatter
 @RegisterFormatter2
-export class BlockFormater extends AFormatter implements IFormatter {
-    public static readonly formatterLabel = "blockFormatting";
+export class AssignFormatter extends AFormatter implements IFormatter {
+    public static readonly formatterLabel = "assignFormatting";
 
     public match(node: Readonly<SyntaxNode>): boolean {
         let found: boolean = false;

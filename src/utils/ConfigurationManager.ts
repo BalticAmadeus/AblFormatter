@@ -6,7 +6,7 @@ export class ConfigurationManager {
     private static configuration: WorkspaceConfiguration;
     private static externalConfiguration: WorkspaceConfiguration;
     private static overridingSettings: any | undefined;
-    public static _ = workspace.onDidChangeConfiguration((e) => {
+    public static readonly _ = workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration("AblFormatter")) {
             ConfigurationManager.reloadConfig = true;
             window.showInformationMessage("ABL Formatter was changed!");

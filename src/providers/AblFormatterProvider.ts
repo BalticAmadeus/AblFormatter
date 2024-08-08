@@ -5,8 +5,11 @@ import { AblFormatterFactory } from "./AblFormatterFactory";
 import { ParseResult } from "../model/ParseResult";
 import { Edit, Point, SyntaxNode, Tree } from "web-tree-sitter";
 import { FormattingEngine } from "../v2/FormattingEngine";
-import { IFormatter } from "../v2/IFormatter";
+import { IFormatter } from "../v2/formatters/IFormatter";
 import { BlockFormater } from "../v2/formatters/BlockFormatter";
+import { FormatterSettings } from "../v2/model/FormatterSettings";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { FormatterFactory } from "../v2/FormatterFactory";
 
 export class AblFormatterProvider
     implements
@@ -27,23 +30,25 @@ export class AblFormatterProvider
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
-        this.result = this.parserHelper.parse(
-            new FileIdentifier(document.fileName, document.version),
-            document.getText()
-        );
+        const configurationManager = ConfigurationManager2.getInstance();
+        const formatterSettings = new FormatterSettings(configurationManager);
 
-        const formatters: IFormatter[] = [new BlockFormater()];
+        const formatters = FormatterFactory.getFormatterInstances(
+            configurationManager,
+            formatterSettings
+        );
 
         const codeFormatter = new FormattingEngine(
             this.parserHelper,
             new FileIdentifier(document.fileName, document.version),
-            formatters
+            formatters,
+            configurationManager
         );
 
-        const str = codeFormatter.formatDocument(document);
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        const str = codeFormatter.formatText(document.getText());
+        console.log("result-start");
         console.log(str);
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        console.log("result-end");
 
         const editor = vscode.window.activeTextEditor;
         editor!.edit(
@@ -60,17 +65,6 @@ export class AblFormatterProvider
         );
 
         try {
-            // const runner = this.formatterFactory
-            //     .getFormatterRunner()
-            //     .setDocument(document)
-            //     .setParserResult(this.result)
-            //     .setParserHelper(this.parserHelper)
-            //     .start();
-            // console.log(
-            //     "Changes to be applied: \n",
-            //     runner.getSourceChanges().textEdits
-            // );
-            // return runner.getSourceChanges().textEdits;
         } catch (e) {
             console.log(e);
             return;

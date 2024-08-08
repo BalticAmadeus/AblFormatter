@@ -2,30 +2,32 @@ import { TextDocument } from "vscode";
 import { Edit, SyntaxNode, Tree } from "web-tree-sitter";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
-import { IFormatter } from "./IFormatter";
+import { IFormatter } from "./formatters/IFormatter";
 import { BlockFormater } from "./formatters/BlockFormatter";
 import { CodeEdit } from "./model/CodeEdit";
 import { FullText } from "./model/FullText";
+import { IConfigurationManager } from "../utils/IConfigurationManager";
+import { ParseResult } from "../model/ParseResult";
 
 export class FormattingEngine {
     constructor(
         private parserHelper: IParserHelper,
         private fileIdentifier: FileIdentifier,
-        private formatters: IFormatter[]
+        private formatters: IFormatter[],
+        private configurationManager: IConfigurationManager
     ) {}
 
-    public formatDocument(document: TextDocument): string {
-        const fullText = { text: document.getText() };
-
-        this.fileIdentifier = new FileIdentifier(
-            document.fileName,
-            document.version
-        );
+    public formatText(fulfullTextString: string): string {
+        const fullText: FullText = {
+            text: fulfullTextString,
+        };
 
         const parseResult = this.parserHelper.parse(
             this.fileIdentifier,
-            document.getText()
+            fulfullTextString
         );
+
+        this.settingsOverride(parseResult);
 
         this.formatCode(fullText, parseResult.tree);
 
@@ -120,5 +122,39 @@ export class FormattingEngine {
 
         console.log("BAD SCOPE - TODO");
         return false;
+    }
+
+    private settingsOverride(parseResult: ParseResult) {
+        const settingsString = this.getOverrideSettingsComment(
+            parseResult.tree.rootNode
+        );
+
+        if (settingsString !== undefined) {
+            this.configurationManager.setOverridingSettings(
+                JSON.parse(settingsString)
+            );
+        }
+    }
+
+    public getOverrideSettingsComment(node: SyntaxNode): string | undefined {
+        const firstChildNode = node.child(0);
+
+        if (firstChildNode === null) {
+            return undefined;
+        }
+
+        if (!firstChildNode.text.includes("formatterSettingsOverride")) {
+            return undefined;
+        }
+
+        const secondChildNode = node.child(1);
+        if (secondChildNode === null) {
+            return undefined;
+        }
+
+        return secondChildNode.text.substring(
+            2,
+            secondChildNode.text.length - 2
+        );
     }
 }

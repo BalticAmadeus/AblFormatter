@@ -21,8 +21,8 @@ export class FormatterHelper {
         let newLineCount = 0;
         let encounteredNonWhitespace = false;
 
-        for (let i = 0; i < input.length; i++) {
-            const char = input[i];
+        for (const element of input) {
+            const char = element;
             if (char === "\n") {
                 newLineCount++;
             } else if (!/\s/.test(char)) {
