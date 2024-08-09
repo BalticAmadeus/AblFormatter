@@ -2,7 +2,7 @@ import { SyntaxNode, Tree } from "web-tree-sitter";
 import { IParserHelper } from "../../parser/IParserHelper";
 import { FileIdentifier } from "../../model/FileIdentifier";
 import { IFormatter } from "./IFormatter";
-import { BlockFormater } from "../formatters/BlockFormatter";
+import { BlockFormater } from "../formatters/block/BlockFormatter";
 import { CodeEdit } from "../model/CodeEdit";
 import { FullText } from "../model/FullText";
 import { IConfigurationManager } from "../../utils/IConfigurationManager";
@@ -28,18 +28,14 @@ export class FormattingEngine {
 
         this.settingsOverride(parseResult);
 
-        this.formatCode(fullText, parseResult.tree);
+        //this.formatCode(fullText, parseResult.tree);
+        this.iterateTree(parseResult.tree, fullText);
 
         return fullText.text;
     }
 
-    private formatCode(fullText: FullText, tree?: Tree) {
-        const parseResult = this.parserHelper.parse(
-            this.fileIdentifier,
-            fullText.text
-        );
-
-        this.deepRun(parseResult.tree.rootNode, fullText);
+    private formatCode(fullText: FullText, tree: Tree) {
+        this.deepRun(tree.rootNode, fullText);
     }
 
     private deepRun(node: SyntaxNode, fullText: FullText) {
@@ -55,6 +51,54 @@ export class FormattingEngine {
         }
     }
 
+    private iterateTree(tree: Tree, fullText: FullText) {
+        let cursor = tree.walk(); // Initialize the cursor at the root node
+        let lastVisitedNode: SyntaxNode | null = null;
+
+        while (true) {
+            // Try to go as deep as possible
+            if (cursor.gotoFirstChild()) {
+                continue; // Move to the first child if possible
+            }
+
+            // Process the current node (this is a leaf node or a node with no unvisited children)
+            while (true) {
+                const node = cursor.currentNode();
+
+                // Skip the node if it was the last one visited
+                if (node === lastVisitedNode) {
+                    if (!cursor.gotoParent()) {
+                        cursor.delete(); // Clean up the cursor
+                        return; // Exit if there are no more nodes to visit
+                    }
+                    continue; // Continue with the parent node
+                }
+
+                // Parse and process the current node
+                const codeEdit = this.parse(node, fullText);
+
+                if (codeEdit !== undefined) {
+                    this.insertChangeIntoTree(tree, codeEdit);
+                    this.insertChangeIntoFullText(codeEdit, fullText);
+                }
+
+                // Mark the current node as the last visited node
+                lastVisitedNode = node;
+
+                // Try to move to the next sibling
+                if (cursor.gotoNextSibling()) {
+                    break; // Move to the next sibling if it exists
+                }
+
+                // If no more siblings, move up to the parent node
+                if (!cursor.gotoParent()) {
+                    cursor.delete(); // Clean up the cursor
+                    return; // Exit if there are no more nodes to visit
+                }
+            }
+        }
+    }
+
     private insertChangeIntoTree(
         tree: Tree,
         codeEdit: CodeEdit | CodeEdit[]
@@ -66,6 +110,16 @@ export class FormattingEngine {
         } else {
             tree.edit(codeEdit.edit);
         }
+    }
+
+    private logTree(node: SyntaxNode): string[] {
+        let arr: string[] = [];
+        arr.push(node.toString());
+        node.children.forEach((child) => {
+            arr = arr.concat(this.logTree(child));
+        });
+
+        return arr;
     }
 
     private insertChangeIntoFullText(
@@ -119,8 +173,8 @@ export class FormattingEngine {
             return true;
         }
 
-        console.log("BAD SCOPE - TODO");
-        return false;
+        // console.log("BAD SCOPE - TODO");
+        return true;
     }
 
     private settingsOverride(parseResult: ParseResult) {
@@ -132,6 +186,7 @@ export class FormattingEngine {
             this.configurationManager.setOverridingSettings(
                 JSON.parse(settingsString)
             );
+            console.log("Settings override");
         }
     }
 

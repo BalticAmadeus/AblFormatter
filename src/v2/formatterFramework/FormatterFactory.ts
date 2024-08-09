@@ -1,12 +1,10 @@
 import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { IFormatter } from "./IFormatter";
 import { formatterRegistry } from "./formatterDecorator";
-import { FormatterSettings } from "../model/FormatterSettings";
 
 export class FormatterFactory {
     public static getFormatterInstances(
-        configurationManager: IConfigurationManager,
-        formatterSettings: FormatterSettings
+        configurationManager: IConfigurationManager
     ): IFormatter[] {
         console.log("Getting formatters ... ");
         const instances: IFormatter[] = [];
@@ -22,7 +20,7 @@ export class FormatterFactory {
                     formatterRegistry[formatterClass].formatterLabel
                 );
                 instances.push(
-                    new formatterRegistry[formatterClass](formatterSettings)
+                    new formatterRegistry[formatterClass](configurationManager)
                 );
             } else {
                 console.log(

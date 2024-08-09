@@ -5,7 +5,7 @@ export class FormatterHelper {
     public static getActualTextIndentation(input: string): number {
         // Use a regular expression to match leading whitespace and new lines
         const match = input.match(/^\s*\n\s*/);
-        console.log(input, match);
+
         if (match) {
             // Get the last part of the match after the last new line
             const lastNewLineIndex = match[0].lastIndexOf("\n");
@@ -31,7 +31,6 @@ export class FormatterHelper {
             }
         }
 
-        console.log(input, encounteredNonWhitespace, newLineCount);
         return encounteredNonWhitespace ? newLineCount : 0;
     }
 

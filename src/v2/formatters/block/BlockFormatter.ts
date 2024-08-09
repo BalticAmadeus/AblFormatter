@@ -1,15 +1,23 @@
 import { SyntaxNode } from "web-tree-sitter";
-import { IFormatter } from "../formatterFramework/IFormatter";
-import { SyntaxNodeType } from "../../model/SyntaxNodeType";
-import { CodeEdit } from "../model/CodeEdit";
-import { FullText } from "../model/FullText";
-import { FormatterHelper } from "../formatterFramework/FormatterHelper";
-import { AFormatter } from "./AFormatter";
-import { RegisterFormatter } from "../formatterFramework/formatterDecorator";
+import { IFormatter } from "../../formatterFramework/IFormatter";
+import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import { CodeEdit } from "../../model/CodeEdit";
+import { FullText } from "../../model/FullText";
+import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
+import { AFormatter } from "../AFormatter";
+import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
+import { IConfigurationManager } from "../../../utils/IConfigurationManager";
+import { BlockSettings } from "./BlockSettings";
 
 @RegisterFormatter
 export class BlockFormater extends AFormatter implements IFormatter {
     public static readonly formatterLabel = "blockFormatting";
+    private readonly settings: BlockSettings;
+
+    public constructor(configurationManager: IConfigurationManager) {
+        super(configurationManager);
+        this.settings = new BlockSettings(configurationManager);
+    }
 
     public match(node: Readonly<SyntaxNode>): boolean {
         let found: boolean = false;
@@ -112,23 +120,9 @@ export class BlockFormater extends AFormatter implements IFormatter {
         indentationEdits: IndentationEdits[]
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        const newtext = this.applyIndentationEdits(text, indentationEdits);
-        const diff = newtext.length - text.length;
+        const newText = this.applyIndentationEdits(text, indentationEdits);
 
-        return {
-            text: newtext,
-            edit: {
-                startIndex: node.startIndex,
-                oldEndIndex: node.endIndex,
-                startPosition: node.startPosition,
-                oldEndPosition: node.endPosition,
-                newEndIndex: node.endIndex + diff,
-                newEndPosition: {
-                    column: node.endPosition.column + Math.max(diff, 0),
-                    row: node.endPosition.row,
-                },
-            },
-        };
+        return this.getCodeEdit(node, text, newText);
     }
 
     private applyIndentationEdits(

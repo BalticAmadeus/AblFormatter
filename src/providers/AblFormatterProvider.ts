@@ -3,12 +3,7 @@ import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { AblFormatterFactory } from "./AblFormatterFactory";
 import { ParseResult } from "../model/ParseResult";
-import { Edit, Point, SyntaxNode, Tree } from "web-tree-sitter";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
-import { IFormatter } from "../v2/formatterFramework/IFormatter";
-import { BlockFormater } from "../v2/formatters/BlockFormatter";
-import { AssignFormatter } from "../v2/formatters/AssignFormatter";
-import { FormatterSettings } from "../v2/model/FormatterSettings";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
 import { FormatterFactory } from "../v2/formatterFramework/FormatterFactory";
 
@@ -32,12 +27,9 @@ export class AblFormatterProvider
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
-        const formatterSettings = new FormatterSettings(configurationManager);
 
-        const formatters = FormatterFactory.getFormatterInstances(
-            configurationManager,
-            formatterSettings
-        );
+        const formatters =
+            FormatterFactory.getFormatterInstances(configurationManager);
 
         const codeFormatter = new FormattingEngine(
             this.parserHelper,
@@ -47,9 +39,6 @@ export class AblFormatterProvider
         );
 
         const str = codeFormatter.formatText(document.getText());
-        console.log("result-start");
-        console.log(str);
-        console.log("result-end");
 
         const editor = vscode.window.activeTextEditor;
         editor!.edit(
