@@ -7,12 +7,12 @@ import { CodeEdit } from "../model/CodeEdit";
 import { FullText } from "../model/FullText";
 import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { ParseResult } from "../../model/ParseResult";
+import { FormatterFactory } from "./FormatterFactory";
 
 export class FormattingEngine {
     constructor(
         private parserHelper: IParserHelper,
         private fileIdentifier: FileIdentifier,
-        private formatters: IFormatter[],
         private configurationManager: IConfigurationManager
     ) {}
 
@@ -28,30 +28,20 @@ export class FormattingEngine {
 
         this.settingsOverride(parseResult);
 
-        //this.formatCode(fullText, parseResult.tree);
-        this.iterateTree(parseResult.tree, fullText);
+        const formatters = FormatterFactory.getFormatterInstances(
+            this.configurationManager
+        );
+
+        this.iterateTree(parseResult.tree, fullText, formatters);
 
         return fullText.text;
     }
 
-    private formatCode(fullText: FullText, tree: Tree) {
-        this.deepRun(tree.rootNode, fullText);
-    }
-
-    private deepRun(node: SyntaxNode, fullText: FullText) {
-        node.children.forEach((child) => {
-            this.deepRun(child, fullText);
-        });
-
-        const codeEdit = this.parse(node, fullText);
-
-        if (codeEdit !== undefined) {
-            this.insertChangeIntoTree(node.tree, codeEdit);
-            this.insertChangeIntoFullText(codeEdit, fullText);
-        }
-    }
-
-    private iterateTree(tree: Tree, fullText: FullText) {
+    private iterateTree(
+        tree: Tree,
+        fullText: FullText,
+        formatters: IFormatter[]
+    ) {
         let cursor = tree.walk(); // Initialize the cursor at the root node
         let lastVisitedNode: SyntaxNode | null = null;
 
@@ -75,7 +65,7 @@ export class FormattingEngine {
                 }
 
                 // Parse and process the current node
-                const codeEdit = this.parse(node, fullText);
+                const codeEdit = this.parse(node, fullText, formatters);
 
                 if (codeEdit !== undefined) {
                     this.insertChangeIntoTree(tree, codeEdit);
@@ -143,11 +133,12 @@ export class FormattingEngine {
 
     private parse(
         node: SyntaxNode,
-        fullText: FullText
+        fullText: FullText,
+        formatters: IFormatter[]
     ): CodeEdit | CodeEdit[] | undefined {
         let result: CodeEdit | CodeEdit[] | undefined;
 
-        this.formatters.some((formatter) => {
+        formatters.some((formatter) => {
             if (formatter.match(node)) {
                 result = formatter.parse(node, fullText);
 

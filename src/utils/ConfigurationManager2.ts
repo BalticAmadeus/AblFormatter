@@ -88,6 +88,7 @@ export class ConfigurationManager2 implements IConfigurationManager {
 
     private getConfig(name: string): any {
         const config = this.configuration?.get(name);
+
         if (this.overridingSettings !== undefined) {
             const overridingConfig =
                 this.overridingSettings["AblFormatter." + name];

@@ -7,17 +7,20 @@ import path from "path";
 export class AblParserHelper implements IParserHelper {
     private parser = new Parser();
     private trees = new Map<string, Parser.Tree>();
+    private ablLanguagePromise: Promise<Parser.Language>;
 
     public constructor(extensionPath: string) {
-        console.log("Hello Parser!");
-
-        const ablPromise = Parser.Language.load(
+        this.ablLanguagePromise = Parser.Language.load(
             path.join(extensionPath, "resources/tree-sitter-abl.wasm")
         );
 
-        ablPromise.then((abl) => {
+        this.ablLanguagePromise.then((abl) => {
             this.parser.setLanguage(abl);
         });
+    }
+
+    public async awaitLanguage(): Promise<void> {
+        await this.ablLanguagePromise;
     }
 
     public parse(

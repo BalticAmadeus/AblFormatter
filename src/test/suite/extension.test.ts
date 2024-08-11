@@ -1,63 +1,96 @@
 import * as assert from "assert";
 import * as fs from "fs";
-import { IParserHelper } from "../../parser/IParserHelper";
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from "vscode";
 import { AblParserHelper } from "../../parser/AblParserHelper";
 import { FileIdentifier } from "../../model/FileIdentifier";
-import { AblFormatterFactory } from "../../providers/AblFormatterFactory";
-// import * as myExtension from '../../extension';
+import { FormattingEngine } from "../../v2/formatterFramework/FormattingEngine";
+import { ConfigurationManager2 } from "../../utils/ConfigurationManager2";
+import Parser from "web-tree-sitter";
+import { enableFormatterDecorators } from "../../v2/formatterFramework/enableFormatterDecorators";
+import path from "path";
+
+let parserHelper: AblParserHelper;
+
+const extensionDevelopmentPath = path.resolve(__dirname, "../../../");
+const testDir = "resources\\functionalTests";
+const testCases = getDirs(path.join(extensionDevelopmentPath, testDir));
 
 suite("Extension Test Suite", () => {
-    vscode.window.showInformationMessage("Start all tests.");
-
-    test("Sample test", () => {
-        console.log(vscode.extensions.all);
-        assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-        assert.strictEqual(-1, [1, 2, 3].indexOf(0));
+    suiteTeardown(() => {
+        vscode.window.showInformationMessage("All tests done!");
     });
 
-    test("hello.p", () => {
-        genericTest("hello.p");
+    suiteSetup(async () => {
+        await Parser.init().then(() => {
+            console.log("Parser initialized");
+        });
+
+        parserHelper = new AblParserHelper(extensionDevelopmentPath);
+        await parserHelper.awaitLanguage();
+
+        console.log("Tests: ", extensionDevelopmentPath, testCases.toString());
+    });
+
+    testCases.forEach((cases) => {
+        test(`Functional test: ${cases}`, () => {
+            functionalTest(cases);
+        });
     });
 });
 
-function genericTest(name: string): void {
-    const caseText = getCase(name);
-    const result = format(caseText);
-    const target = getTarget(name);
-    assert.strictEqual(result, target);
+function functionalTest(name: string): void {
+    ConfigurationManager2.getInstance();
+    enableFormatterDecorators();
+
+    const inputText = getInput(name);
+    const resultText = format(inputText, name);
+    const targetText = getTarget(name);
+
+    assert.strictEqual(resultText, targetText);
 }
 
-function getCase(fileName: string): string {
-    return readFile(
-        "C:\\Users\\pkuprevicius\\OneDrive - ba.lt\\code_projects\\formatter\\AblFormatter\\resources\\testCases\\cases\\hello.p"
+function getInput(fileName: string): string {
+    const filePath = path.join(
+        extensionDevelopmentPath,
+        testDir,
+        fileName,
+        "input.p"
     );
-}
-
-function format(text: string): string {
-    const parserHelper = new AblParserHelper(
-        "C:\\Users\\pkuprevicius\\OneDrive - ba.lt\\code_projects\\formatter\\AblFormatter"
-    );
-    const formatterFactory = new AblFormatterFactory();
-
-    const result = parserHelper.parse(new FileIdentifier("1", 1), text);
-
-    // try {
-    //     const runner = formatterFactory.getFormatterRunner().setDocument().setParserResult(result).setParserHelper(parserHelper);
-    // }
-
-    return "";
+    return readFile(filePath);
 }
 
 function getTarget(fileName: string): string {
-    return readFile(
-        "C:\\Users\\pkuprevicius\\OneDrive - ba.lt\\code_projects\\formatter\\AblFormatter\\resources\\testCases\\cases\\hello.p"
+    const filePath = path.join(
+        extensionDevelopmentPath,
+        testDir,
+        fileName,
+        "target.p"
     );
+
+    return readFile(filePath);
+}
+
+function format(text: string, name: string): string {
+    const configurationManager = ConfigurationManager2.getInstance();
+
+    const codeFormatter = new FormattingEngine(
+        parserHelper,
+        new FileIdentifier(name, 1),
+        configurationManager
+    );
+
+    const result = codeFormatter.formatText(text);
+
+    return result;
 }
 
 function readFile(fileUri: string): string {
     return fs.readFileSync(fileUri, "utf-8");
+}
+
+function getDirs(fileUri: string): string[] {
+    return fs.readdirSync(fileUri, "utf-8");
 }
