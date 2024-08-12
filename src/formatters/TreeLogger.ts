@@ -18,7 +18,12 @@ export class TreeLogger extends AAblFormatter implements IAblFormatter {
             " \t ",
             node.type,
             " \t ",
-            node.text
+            node.startIndex,
+            " \t ",
+            node.endIndex,
+            " \t ",
+            node.text,
+            " \t "
             // " \t ",
             // node.text
         );
@@ -30,8 +35,7 @@ export class TreeLogger extends AAblFormatter implements IAblFormatter {
         };
     }
 
-    clearSourceChanges(): void {
-    }
+    clearSourceChanges(): void {}
 
     protected getSelf(): IAblFormatter {
         return this;

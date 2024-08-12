@@ -3,6 +3,8 @@ import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { AblFormatterFactory } from "./AblFormatterFactory";
 import { ParseResult } from "../model/ParseResult";
+import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
 
 export class AblFormatterProvider
     implements
@@ -23,27 +25,38 @@ export class AblFormatterProvider
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
-        this.result = this.parserHelper.parse(
-            new FileIdentifier(document.fileName, document.version),
-            document.getText()
-        );
         try {
-            const runner = this.formatterFactory
-                .getFormatterRunner()
-                .setDocument(document)
-                .setParserResult(this.result)
-                .setParserHelper(this.parserHelper)
-                .start();
+            const configurationManager = ConfigurationManager2.getInstance();
 
-            console.log(
-                "Changes to be applied: \n",
-                runner.getSourceChanges().textEdits
+            const codeFormatter = new FormattingEngine(
+                this.parserHelper,
+                new FileIdentifier(document.fileName, document.version),
+                configurationManager
             );
 
-            return runner.getSourceChanges().textEdits;
+            const str = codeFormatter.formatText(document.getText());
+
+            const editor = vscode.window.activeTextEditor;
+            editor!.edit(
+                (edit: vscode.TextEditorEdit) => {
+                    edit.replace(
+                        new vscode.Range(
+                            new vscode.Position(0, 0),
+                            new vscode.Position(10000000, 10000000)
+                        ),
+                        str
+                    );
+                },
+                { undoStopBefore: false, undoStopAfter: false }
+            );
         } catch (e) {
             console.log(e);
             return;
+        } finally {
+            this.result = this.parserHelper.parse(
+                new FileIdentifier(document.fileName, document.version),
+                document.getText()
+            );
         }
     }
     provideDocumentRangeFormattingEdits(

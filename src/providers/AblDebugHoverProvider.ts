@@ -8,7 +8,7 @@ import {
     TextDocument,
 } from "vscode";
 import { AblFormatterProvider } from "./AblFormatterProvider";
-import { Point, SyntaxNode } from "web-tree-sitter";
+import { Point, SyntaxNode, Tree } from "web-tree-sitter";
 
 export class AblDebugHoverProvider implements HoverProvider {
     private ablFormatterProvider: AblFormatterProvider;
@@ -37,7 +37,7 @@ export class AblDebugHoverProvider implements HoverProvider {
             );
 
         return new Hover(
-            "| ID | TYPE | START POS | END POS |  \n | ---- | ---- | ---- | ---- |  \n" +
+            "| ID | TYPE | START POS | END POS | INDEX | \n | ---- | ---- | ---- | ---- | ---- |  \n" +
                 this.fillTreeWithAcendantsInfo(node)
         );
     }
@@ -56,6 +56,10 @@ export class AblDebugHoverProvider implements HoverProvider {
             node.endPosition.row +
             ":" +
             node.endPosition.column +
+            " | " +
+            node.startIndex +
+            ":" +
+            node.endIndex +
             " |  \n";
 
         if (node.parent === null) {
