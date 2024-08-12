@@ -18,6 +18,9 @@ const extensionDevelopmentPath = path.resolve(__dirname, "../../../");
 const testDir = "resources\\functionalTests";
 const testCases = getDirs(path.join(extensionDevelopmentPath, testDir));
 
+// example for running single test case;
+//const testCases = "if1";
+
 suite("Extension Test Suite", () => {
     suiteTeardown(() => {
         vscode.window.showInformationMessage("All tests done!");
