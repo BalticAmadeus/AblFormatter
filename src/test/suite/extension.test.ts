@@ -57,11 +57,11 @@ function functionalTest(name: string): void {
         resultText
             .replaceAll(" ", "_")
             .replaceAll("\r\n", "#CRLF\r\n")
-            .replaceAll("\n", "#LF\n"),
+            .replaceAll("(?<!\r)\n", "#LF\n"),
         targetText
             .replaceAll(" ", "_")
             .replaceAll("\r\n", "#CRLF\r\n")
-            .replaceAll("\n", "#LF\n")
+            .replaceAll("(?<!\r)\n", "#LF\n")
     );
 }
 
