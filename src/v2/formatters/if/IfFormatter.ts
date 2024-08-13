@@ -25,7 +25,10 @@ export class IfFormatter extends AFormatter implements IFormatter {
     }
 
     match(node: Readonly<SyntaxNode>): boolean {
-        if (node.type === SyntaxNodeType.IfStatement) {
+        if (
+            node.type === SyntaxNodeType.IfStatement ||
+            node.type === SyntaxNodeType.ElseIfStatement
+        ) {
             return true;
         }
 
@@ -47,7 +50,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
     }
 
     private collectIfStructure(node: SyntaxNode, fullText: Readonly<FullText>) {
-        this.startColumn = node.startPosition.column;
+        this.startColumn = this.getStartColumn(node);
         this.ifBlockValueColumn = this.startColumn + this.settings.tabSize();
         this.ifBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
@@ -69,7 +72,9 @@ export class IfFormatter extends AFormatter implements IFormatter {
             resultString = resultString.concat(
                 this.getIfExpressionString(
                     child,
-                    "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
+                    fullText.eolDelimiter.concat(
+                        " ".repeat(this.ifBlockValueColumn)
+                    ),
                     doBlock,
                     fullText
                 )
@@ -86,11 +91,12 @@ export class IfFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): string {
         console.log(
-            "if block stuff:      ",
             node.type,
             separator,
             doBlock,
-            this.settings.newLineBeforeDo()
+            node.startIndex,
+            node.endIndex,
+            FormatterHelper.getCurrentText(node, fullText).trim()
         );
 
         switch (node.type) {
@@ -102,11 +108,42 @@ export class IfFormatter extends AFormatter implements IFormatter {
                     : " " +
                           FormatterHelper.getCurrentText(node, fullText).trim();
             case SyntaxNodeType.DoBlock:
-                console.log(
-                    "qqqqqqqqqqqqq",
-                    FormatterHelper.getCurrentText(node, fullText),
-                    node.text
+                return this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                          " ".repeat(this.startColumn) +
+                          FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
+            case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.AblStatement:
+                return this.settings.newLineBeforeStatement()
+                    ? fullText.eolDelimiter +
+                          " ".repeat(this.startColumn) +
+                          " ".repeat(this.settings.tabSize()) +
+                          FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
+            case SyntaxNodeType.ElseIfStatement:
+            case SyntaxNodeType.ElseStatement:
+                return node.children
+                    .map((child) => this.getElseStatementPart(child, fullText))
+                    .join("");
+            default:
+                return (
+                    " " + FormatterHelper.getCurrentText(node, fullText).trim()
                 );
+        }
+    }
+
+    private getElseStatementPart(node: SyntaxNode, fullText: FullText): string {
+        switch (node.type) {
+            case SyntaxNodeType.ElseKeyword:
+                return (
+                    fullText.eolDelimiter +
+                    " ".repeat(this.startColumn) +
+                    FormatterHelper.getCurrentText(node, fullText).trim()
+                );
+            case SyntaxNodeType.DoBlock:
                 return this.settings.newLineBeforeDo()
                     ? fullText.eolDelimiter +
                           " ".repeat(this.startColumn) +
@@ -118,83 +155,24 @@ export class IfFormatter extends AFormatter implements IFormatter {
                     " " + FormatterHelper.getCurrentText(node, fullText).trim()
                 );
         }
+    }
 
-        return "";
-        // switch (node.type.trim()) {
-        //     case SyntaxNodeType.ThenKeyword:
-        //         if (doBlock) {
-        //             return node.text;
-        //         } else {
-        //             return ` ${node.text.trim()}${separator}`;
-        //         }
-        //     case SyntaxNodeType.ElseKeyword:
-        //         if (doBlock) {
-        //             return node.text;
-        //         } else {
-        //             return `${node.text.trim()}${separator}`;
-        //         }
-        //     case SyntaxNodeType.DoBlock:
-        //         return this.ablFormatterCommon.getDoBlock(
-        //             node,
-        //             this.ifBlockValueColumn,
-        //             this.startColumn
-        //         );
-        //     case SyntaxNodeType.AblStatement:
-        //         return node.text + "\r\n".concat(" ".repeat(this.startColumn));
-        //     case SyntaxNodeType.ElseStatement:
-        //         let resultElseString = "";
-        //         let doElseBlock = false;
+    private getStartColumn(node: SyntaxNode): number {
+        if (node.type === SyntaxNodeType.IfStatement) {
+            console.log("st:  ", node.startPosition.column);
+            return node.startPosition.column;
+        } else {
+            return this.findParentIfStatementStartColumn(node);
+        }
+    }
 
-        //         node.children.forEach((child) => {
-        //             if (child.type === SyntaxNodeType.DoBlock) {
-        //                 doElseBlock = true;
-        //             }
-        //         });
-
-        //         node.children.forEach((child) => {
-        //             resultElseString = resultElseString.concat(
-        //                 this.getIfExpressionString(
-        //                     child,
-        //                     "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
-        //                     doElseBlock
-        //                 )
-        //             );
-        //         });
-
-        //         return resultElseString;
-        //     case SyntaxNodeType.BooleanLiteral:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.AvailableExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.ParenthesizedExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.LogicalExpression:
-        //         let resultLogicalExString = "";
-
-        //         node.children.forEach((child) => {
-        //             resultLogicalExString = resultLogicalExString.concat(
-        //                 this.getIfExpressionString(
-        //                     child,
-        //                     "\r\n".concat(
-        //                         " ".repeat(
-        //                             this.startColumn + this.nextLineOfComparison
-        //                         )
-        //                     ),
-        //                     false
-        //                 )
-        //             );
-        //         });
-
-        //         return resultLogicalExString;
-        //     case SyntaxNodeType.AndKeyword:
-        //     case SyntaxNodeType.OrKeyword:
-        //         return " " + node.text.trim() + separator;
-        //     case SyntaxNodeType.ComparisonExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.IfKeyword:
-        //         return node.text.trim() + " ";
-        //     default:
-        //         return node.text.trim();
-        // }
+    private findParentIfStatementStartColumn(node: SyntaxNode): number {
+        if (node.parent === null) {
+            return 0;
+        }
+        console.log("st11:  ", node.startPosition.column, node.type);
+        return node.type === SyntaxNodeType.IfStatement
+            ? node.startPosition.column
+            : this.findParentIfStatementStartColumn(node.parent);
     }
 }

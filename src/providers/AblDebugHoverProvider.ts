@@ -37,12 +37,15 @@ export class AblDebugHoverProvider implements HoverProvider {
             );
 
         return new Hover(
-            "| ID | TYPE | START POS | END POS | INDEX | \n | ---- | ---- | ---- | ---- | ---- |  \n" +
-                this.fillTreeWithAcendantsInfo(node)
+            "| ID | TYPE | START POS | END POS | INDEX | TEXT | \n | ---- | ---- | ---- | ---- | ---- | ---- | \n" +
+                this.fillTreeWithAcendantsInfo(node, true)
         );
     }
 
-    private fillTreeWithAcendantsInfo(node: SyntaxNode): string {
+    private fillTreeWithAcendantsInfo(
+        node: SyntaxNode,
+        isHead: boolean
+    ): string {
         const str =
             "| " +
             node.id +
@@ -60,12 +63,18 @@ export class AblDebugHoverProvider implements HoverProvider {
             node.startIndex +
             ":" +
             node.endIndex +
-            " |  \n";
+            " | " +
+            node.text
+                .replaceAll("\r\n", " ")
+                .replaceAll("\n", " ")
+                .substring(0, 200) +
+            " | " +
+            " \n";
 
         if (node.parent === null) {
             return "";
         }
 
-        return str + this.fillTreeWithAcendantsInfo(node.parent);
+        return str + this.fillTreeWithAcendantsInfo(node.parent, false);
     }
 }

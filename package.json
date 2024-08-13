@@ -115,7 +115,7 @@
           "description": "Enable IF formatting"
         },
         "AblFormatter.ifFormattingThenLocation": {
-          "order": 101,
+          "order": 701,
           "type": "string",
           "default": "Same",
           "enum": [
@@ -125,7 +125,17 @@
           "description": "TODO"
         },
         "AblFormatter.ifFormattingDoLocation": {
-          "order": 101,
+          "order": 702,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "TODO"
+        },
+        "AblFormatter.ifFormattingStatementLocation": {
+          "order": 703,
           "type": "string",
           "default": "Same",
           "enum": [

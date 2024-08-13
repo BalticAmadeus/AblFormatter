@@ -17,4 +17,11 @@ export class IfSettings extends ASettings {
             this.configurationManager.get("ifFormattingDoLocation") === "New"
         );
     }
+
+    public newLineBeforeStatement() {
+        return (
+            this.configurationManager.get("ifFormattingStatementLocation") ===
+            "New"
+        );
+    }
 }
