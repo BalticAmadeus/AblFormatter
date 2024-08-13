@@ -1,6 +1,7 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.defineFormatting": true,
-    "abl.completion.upperCase": true}*/
+/*  { "AblFormatter.blockFormatting": true,
+"AblFormatter.defineFormatting": true,
+"abl.completion.upperCase": true}*/
 
 DEFINE VARIABLE i AS INTEGER NO-UNDO.    
 
