@@ -5,6 +5,7 @@ import { AblFormatterFactory } from "./AblFormatterFactory";
 import { ParseResult } from "../model/ParseResult";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { EOL } from "../v2/model/EOL";
 
 export class AblFormatterProvider
     implements
@@ -34,7 +35,10 @@ export class AblFormatterProvider
                 configurationManager
             );
 
-            const str = codeFormatter.formatText(document.getText());
+            const str = codeFormatter.formatText(
+                document.getText(),
+                new EOL(document.eol)
+            );
 
             const editor = vscode.window.activeTextEditor;
             editor!.edit(
