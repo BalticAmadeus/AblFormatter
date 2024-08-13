@@ -11,6 +11,7 @@ import { ConfigurationManager2 } from "../../utils/ConfigurationManager2";
 import Parser from "web-tree-sitter";
 import { enableFormatterDecorators } from "../../v2/formatterFramework/enableFormatterDecorators";
 import path from "path";
+import { EOL } from "../../v2/model/EOL";
 
 let parserHelper: AblParserHelper;
 
@@ -52,7 +53,16 @@ function functionalTest(name: string): void {
     const resultText = format(inputText, name);
     const targetText = getTarget(name);
 
-    assert.strictEqual(resultText, targetText);
+    assert.strictEqual(
+        resultText
+            .replaceAll(" ", "_")
+            .replaceAll("\r\n", "#CRLF\r\n")
+            .replaceAll("\n", "#LF\n"),
+        targetText
+            .replaceAll(" ", "_")
+            .replaceAll("\r\n", "#CRLF\r\n")
+            .replaceAll("\n", "#LF\n")
+    );
 }
 
 function getInput(fileName: string): string {
@@ -85,7 +95,7 @@ function format(text: string, name: string): string {
         configurationManager
     );
 
-    const result = codeFormatter.formatText(text);
+    const result = codeFormatter.formatText(text, new EOL(getFileEOL(text)));
 
     return result;
 }
@@ -96,4 +106,14 @@ function readFile(fileUri: string): string {
 
 function getDirs(fileUri: string): string[] {
     return fs.readdirSync(fileUri, "utf-8");
+}
+
+function getFileEOL(fileText: string): string {
+    if (fileText.includes("\r\n")) {
+        return "\r\n"; // Windows EOL
+    } else if (fileText.includes("\n")) {
+        return "\n"; // Unix/Linux/Mac EO
+    } else {
+        return ""; // No EOL found
+    }
 }
