@@ -5,13 +5,13 @@ import { FullText } from "../../model/FullText";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 import { AFormatter } from "../AFormatter";
 import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
-import { TokenSettings } from "./TokenSettings";
+import { DefineSettings } from "./DefineSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 
 @RegisterFormatter
-export class TokenFormatter extends AFormatter implements IFormatter {
+export class DefineFormatter extends AFormatter implements IFormatter {
     public static readonly formatterLabel = "defineFormatting";
-    private readonly settings: TokenSettings;
+    private readonly settings: DefineSettings;
 
     private targetIsLong = true;
     private longDefine = "DEFINE";
@@ -19,7 +19,7 @@ export class TokenFormatter extends AFormatter implements IFormatter {
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);
-        this.settings = new TokenSettings(configurationManager);
+        this.settings = new DefineSettings(configurationManager);
     }
 
     match(node: Readonly<SyntaxNode>): boolean {

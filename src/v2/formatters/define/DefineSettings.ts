@@ -1,8 +1,8 @@
 import { ASettings } from "../ASettings";
 
-export class TokenSettings extends ASettings {
+export class DefineSettings extends ASettings {
     // token settings
-    public tokenFormatting() {
+    public defineFormatting() {
         return this.configurationManager.get("defineFormatting") ? true : false;
     }
 }
