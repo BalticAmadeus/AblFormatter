@@ -42,7 +42,7 @@ export class DefineFormatter extends AFormatter implements IFormatter {
         const text = FormatterHelper.getCurrentText(node, fullText);
         console.log(text);
         const newText = this.getPrettyToken(text);
-        return this.getCodeEdit(node, text, newText);
+        return this.getCodeEdit(node, text, newText, fullText);
     }
 
     private getPrettyToken(text: string): string {

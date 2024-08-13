@@ -87,11 +87,14 @@ export class AssignFormatter extends AFormatter implements IFormatter {
         };
 
         const text = FormatterHelper.getCurrentText(node, fullText);
-        const newText = this.getPrettyBlock(assignBlock);
-        return this.getCodeEdit(node, text, newText);
+        const newText = this.getPrettyBlock(assignBlock, fullText);
+        return this.getCodeEdit(node, text, newText, fullText);
     }
 
-    private getPrettyBlock(assignBlock: AssignBlock): string {
+    private getPrettyBlock(
+        assignBlock: AssignBlock,
+        fullText: FullText
+    ): string {
         const block = ""
             // .repeat(assignBlock.intendationColumn)
             .concat(
@@ -99,9 +102,13 @@ export class AssignFormatter extends AFormatter implements IFormatter {
                     ? SyntaxNodeType.AssignKeyword
                     : SyntaxNodeType.AssignKeyword.toLowerCase()
             )
-            .concat(this.settings.newLineAfterAssign() ? "\r\n" : " ")
-            .concat(this.getAssigns(assignBlock))
-            .concat(this.settings.endDotLocationNew() ? "\r\n" : "")
+            .concat(
+                this.settings.newLineAfterAssign() ? fullText.eolDelimiter : " "
+            )
+            .concat(this.getAssigns(assignBlock, fullText))
+            .concat(
+                this.settings.endDotLocationNew() ? fullText.eolDelimiter : ""
+            )
             .concat(
                 this.settings.endDotLocationNew()
                     ? " ".repeat(
@@ -118,7 +125,7 @@ export class AssignFormatter extends AFormatter implements IFormatter {
         return block;
     }
 
-    private getAssigns(assignBlock: AssignBlock): string {
+    private getAssigns(assignBlock: AssignBlock, fullText: FullText): string {
         let assigns: string = "";
         assignBlock.assignValues.forEach((assignLine) => {
             assigns = assigns.concat(
@@ -142,7 +149,7 @@ export class AssignFormatter extends AFormatter implements IFormatter {
                     )
                     .concat(" = ")
                     .concat(assignLine.rightValue)
-                    .concat("\r\n")
+                    .concat(fullText.eolDelimiter)
             );
         });
 

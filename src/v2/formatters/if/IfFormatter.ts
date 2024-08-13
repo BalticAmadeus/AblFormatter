@@ -34,18 +34,18 @@ export class IfFormatter extends AFormatter implements IFormatter {
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        this.collectIfStructure(node);
+        this.collectIfStructure(node, fullText);
 
         return undefined;
     }
 
-    private collectIfStructure(node: SyntaxNode) {
+    private collectIfStructure(node: SyntaxNode, fullText: FullText) {
         this.startColumn = node.startPosition.column;
         this.ifBlockValueColumn = this.startColumn + this.settings.tabSize();
-        this.ifBodyValue = this.getCaseBodyBranchBlock(node);
+        this.ifBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
 
-    private getCaseBodyBranchBlock(node: SyntaxNode): string {
+    private getCaseBodyBranchBlock(node: SyntaxNode, fullText: FullText): string {
         let resultString = "";
         let doBlock = false;
 
@@ -59,8 +59,9 @@ export class IfFormatter extends AFormatter implements IFormatter {
             resultString = resultString.concat(
                 this.getIfExpressionString(
                     child,
-                    "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
-                    doBlock
+                    fullText.eolDelimiter.concat(" ".repeat(this.ifBlockValueColumn)),
+                    doBlock,
+                    fullText
                 )
             );
         });
@@ -71,7 +72,8 @@ export class IfFormatter extends AFormatter implements IFormatter {
     private getIfExpressionString(
         node: SyntaxNode,
         separator: string,
-        doBlock: boolean
+        doBlock: boolean,
+        fullText: FullText
     ): string {
         console.log("if block stuff:      ", node.type, separator, doBlock);
         return "";
@@ -95,7 +97,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
         //             this.startColumn
         //         );
         //     case SyntaxNodeType.AblStatement:
-        //         return node.text + "\r\n".concat(" ".repeat(this.startColumn));
+        //         return node.text + fullText.eolDelimiter.concat(" ".repeat(this.startColumn));
         //     case SyntaxNodeType.ElseStatement:
         //         let resultElseString = "";
         //         let doElseBlock = false;
@@ -110,7 +112,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
         //             resultElseString = resultElseString.concat(
         //                 this.getIfExpressionString(
         //                     child,
-        //                     "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
+        //                     fullText.eolDelimiter.concat(" ".repeat(this.ifBlockValueColumn)),
         //                     doElseBlock
         //                 )
         //             );
@@ -130,7 +132,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
         //             resultLogicalExString = resultLogicalExString.concat(
         //                 this.getIfExpressionString(
         //                     child,
-        //                     "\r\n".concat(
+        //                     fullText.eolDelimiter.concat(
         //                         " ".repeat(
         //                             this.startColumn + this.nextLineOfComparison
         //                         )
