@@ -7,6 +7,7 @@ import { IfSettings } from "./IfSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
 import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
 export class IfFormatter extends AFormatter implements IFormatter {
@@ -34,18 +35,27 @@ export class IfFormatter extends AFormatter implements IFormatter {
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        this.collectIfStructure(node);
+        this.collectIfStructure(node, fullText);
 
-        return undefined;
+        console.log("aaa", this.ifBodyValue);
+
+        return this.getCodeEdit(
+            node,
+            FormatterHelper.getCurrentText(node, fullText),
+            this.ifBodyValue
+        );
     }
 
-    private collectIfStructure(node: SyntaxNode) {
+    private collectIfStructure(node: SyntaxNode, fullText: Readonly<FullText>) {
         this.startColumn = node.startPosition.column;
         this.ifBlockValueColumn = this.startColumn + this.settings.tabSize();
-        this.ifBodyValue = this.getCaseBodyBranchBlock(node);
+        this.ifBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
 
-    private getCaseBodyBranchBlock(node: SyntaxNode): string {
+    private getCaseBodyBranchBlock(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
         let resultString = "";
         let doBlock = false;
 
@@ -60,7 +70,8 @@ export class IfFormatter extends AFormatter implements IFormatter {
                 this.getIfExpressionString(
                     child,
                     "\r\n".concat(" ".repeat(this.ifBlockValueColumn)),
-                    doBlock
+                    doBlock,
+                    fullText
                 )
             );
         });
@@ -71,9 +82,43 @@ export class IfFormatter extends AFormatter implements IFormatter {
     private getIfExpressionString(
         node: SyntaxNode,
         separator: string,
-        doBlock: boolean
+        doBlock: boolean,
+        fullText: Readonly<FullText>
     ): string {
-        console.log("if block stuff:      ", node.type, separator, doBlock);
+        console.log(
+            "if block stuff:      ",
+            node.type,
+            separator,
+            doBlock,
+            this.settings.newLineBeforeDo()
+        );
+
+        switch (node.type) {
+            case SyntaxNodeType.ThenKeyword:
+                return this.settings.newLineBeforeThen()
+                    ? fullText.eolDelimiter +
+                          " ".repeat(this.startColumn) +
+                          FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
+            case SyntaxNodeType.DoBlock:
+                console.log(
+                    "qqqqqqqqqqqqq",
+                    FormatterHelper.getCurrentText(node, fullText),
+                    node.text
+                );
+                return this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                          " ".repeat(this.startColumn) +
+                          FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
+            default:
+                return (
+                    " " + FormatterHelper.getCurrentText(node, fullText).trim()
+                );
+        }
+
         return "";
         // switch (node.type.trim()) {
         //     case SyntaxNodeType.ThenKeyword:
