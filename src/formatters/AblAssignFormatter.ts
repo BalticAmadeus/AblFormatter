@@ -80,8 +80,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
 
         const newBlock = this.getPrettyBlock(assignBlock);
         // console.log(newBlock);
-        console.log(
-            this.ablFormatterRunner
+        console.log(this.ablFormatterRunner
                 .getDocument()
                 .getText(
                     new Range(
@@ -164,8 +163,7 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
                 " "
                     .repeat(
                         FormatterSettings.newLineAfterAssign()
-                            ? assignBlock.indentationColumn +
-                                  FormatterSettings.tabSize()
+                            ? assignBlock.indentationColumn + FormatterSettings.tabSize()
                             : assigns === ""
                             ? 0
                             : assignBlock.indentationColumn + 7
