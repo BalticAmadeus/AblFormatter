@@ -164,13 +164,13 @@ export class BlockFormater extends AFormatter implements IFormatter {
     private getParentIndentationSourceNode(node: SyntaxNode): SyntaxNode {
         if (
             node.type === SyntaxNodeType.DoBlock &&
-            (node.parent?.type === SyntaxNodeType.IfStatement ||
-                node.parent?.type === SyntaxNodeType.ElseStatement)
+            node.parent?.type === SyntaxNodeType.IfStatement
         ) {
             return node.parent;
         } else if (
             node.type === SyntaxNodeType.DoBlock &&
-            node.parent?.type === SyntaxNodeType.ElseIfStatement
+            (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
+                node.parent?.type === SyntaxNodeType.ElseStatement)
         ) {
             if (node.parent.parent === null) {
                 return node.parent;

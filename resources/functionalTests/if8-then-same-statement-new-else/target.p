@@ -1,10 +1,9 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.ifFormatting": true,
-"AblFormatter.blockFormatting": true,
 "AblFormatter.ifFormattingThenLocation": "Same",
-"AblFormatter.ifFormattingDoLocation": "New"}*/
+"AblFormatter.ifFormattingStatementLocation": "New"}*/
 
 if a = b then
-do:
-    return a.
-end.
+    message a.
+else
+    return b.

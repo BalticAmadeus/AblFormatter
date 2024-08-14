@@ -150,6 +150,15 @@ export class IfFormatter extends AFormatter implements IFormatter {
                           FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
                           FormatterHelper.getCurrentText(node, fullText).trim();
+            case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.AblStatement:
+                return this.settings.newLineBeforeStatement()
+                    ? fullText.eolDelimiter +
+                          " ".repeat(this.startColumn) +
+                          " ".repeat(this.settings.tabSize()) +
+                          FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
             default:
                 return (
                     " " + FormatterHelper.getCurrentText(node, fullText).trim()
