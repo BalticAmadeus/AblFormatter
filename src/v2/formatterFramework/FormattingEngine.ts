@@ -8,6 +8,7 @@ import { FullText } from "../model/FullText";
 import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { ParseResult } from "../../model/ParseResult";
 import { FormatterFactory } from "./FormatterFactory";
+import { EOL } from "../model/EOL";
 
 export class FormattingEngine {
     constructor(
@@ -16,9 +17,10 @@ export class FormattingEngine {
         private configurationManager: IConfigurationManager
     ) {}
 
-    public formatText(fulfullTextString: string): string {
+    public formatText(fulfullTextString: string, eol: EOL): string {
         const fullText: FullText = {
             text: fulfullTextString,
+            eolDelimiter: eol.eolDel,
         };
 
         const parseResult = this.parserHelper.parse(
