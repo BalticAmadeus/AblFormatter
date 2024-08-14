@@ -14,8 +14,8 @@ export class DefineFormatter extends AFormatter implements IFormatter {
     private readonly settings: DefineSettings;
 
     private targetIsLong = true;
-    private longDefine = "DEFINE";
-    private shortDefine = "DEF";
+    private readonly longDefine = "DEFINE";
+    private readonly shortDefine = "DEF";
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);
