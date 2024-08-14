@@ -12,8 +12,6 @@ import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 @RegisterFormatter
 export class IfFormatter extends AFormatter implements IFormatter {
     private startColumn = 0;
-    private nextLineOfComparison = 3; // "IF "
-    private ifBlockValueColumn = 0;
     private ifBodyValue = "";
 
     public static readonly formatterLabel = "ifFormatting";
@@ -40,8 +38,6 @@ export class IfFormatter extends AFormatter implements IFormatter {
     ): CodeEdit | CodeEdit[] | undefined {
         this.collectIfStructure(node, fullText);
 
-        console.log("aaa", this.ifBodyValue);
-
         return this.getCodeEdit(
             node,
             FormatterHelper.getCurrentText(node, fullText),
@@ -51,7 +47,6 @@ export class IfFormatter extends AFormatter implements IFormatter {
 
     private collectIfStructure(node: SyntaxNode, fullText: Readonly<FullText>) {
         this.startColumn = this.getStartColumn(node);
-        this.ifBlockValueColumn = this.startColumn + this.settings.tabSize();
         this.ifBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
 
@@ -60,24 +55,10 @@ export class IfFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): string {
         let resultString = "";
-        let doBlock = false;
-
-        node.children.forEach((child) => {
-            if (child.type === SyntaxNodeType.DoBlock) {
-                doBlock = true;
-            }
-        });
 
         node.children.forEach((child) => {
             resultString = resultString.concat(
-                this.getIfExpressionString(
-                    child,
-                    fullText.eolDelimiter.concat(
-                        " ".repeat(this.ifBlockValueColumn)
-                    ),
-                    doBlock,
-                    fullText
-                )
+                this.getIfExpressionString(child, fullText)
             );
         });
 
@@ -86,89 +67,136 @@ export class IfFormatter extends AFormatter implements IFormatter {
 
     private getIfExpressionString(
         node: SyntaxNode,
-        separator: string,
-        doBlock: boolean,
         fullText: Readonly<FullText>
     ): string {
-        console.log(
-            node.type,
-            separator,
-            doBlock,
-            node.startIndex,
-            node.endIndex,
-            FormatterHelper.getCurrentText(node, fullText).trim()
-        );
+        let newString = "";
 
         switch (node.type) {
             case SyntaxNodeType.ThenKeyword:
-                return this.settings.newLineBeforeThen()
+                newString = this.settings.newLineBeforeThen()
                     ? fullText.eolDelimiter +
-                          " ".repeat(this.startColumn) +
-                          FormatterHelper.getCurrentText(node, fullText).trim()
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
-                          FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.DoBlock:
-                return this.settings.newLineBeforeDo()
+                newString = this.settings.newLineBeforeDo()
                     ? fullText.eolDelimiter +
-                          " ".repeat(this.startColumn) +
-                          FormatterHelper.getCurrentText(node, fullText).trim()
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
-                          FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.ReturnStatement:
             case SyntaxNodeType.AblStatement:
-                return this.settings.newLineBeforeStatement()
+                newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
-                          " ".repeat(this.startColumn) +
-                          " ".repeat(this.settings.tabSize()) +
-                          FormatterHelper.getCurrentText(node, fullText).trim()
+                      " ".repeat(this.startColumn) +
+                      " ".repeat(this.settings.tabSize()) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
-                          FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.ElseIfStatement:
+                newString = node.children
+                    .map((child) =>
+                        this.getElseIfStatementPart(child, fullText)
+                    )
+                    .join("");
+                break;
             case SyntaxNodeType.ElseStatement:
-                return node.children
+                newString = node.children
                     .map((child) => this.getElseStatementPart(child, fullText))
                     .join("");
+                break;
             default:
-                return (
-                    " " + FormatterHelper.getCurrentText(node, fullText).trim()
-                );
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
         }
+
+        return newString;
     }
 
     private getElseStatementPart(node: SyntaxNode, fullText: FullText): string {
+        let newString = "";
+
         switch (node.type) {
             case SyntaxNodeType.ElseKeyword:
-                return (
+                newString =
                     fullText.eolDelimiter +
                     " ".repeat(this.startColumn) +
-                    FormatterHelper.getCurrentText(node, fullText).trim()
-                );
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.DoBlock:
-                return this.settings.newLineBeforeDo()
+                newString = this.settings.newLineBeforeDo()
                     ? fullText.eolDelimiter +
-                          " ".repeat(this.startColumn) +
-                          FormatterHelper.getCurrentText(node, fullText).trim()
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
-                          FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.ReturnStatement:
             case SyntaxNodeType.AblStatement:
-                return this.settings.newLineBeforeStatement()
+                newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
-                          " ".repeat(this.startColumn) +
-                          " ".repeat(this.settings.tabSize()) +
-                          FormatterHelper.getCurrentText(node, fullText).trim()
+                      " ".repeat(this.startColumn) +
+                      " ".repeat(this.settings.tabSize()) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
-                          FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             default:
-                return (
-                    " " + FormatterHelper.getCurrentText(node, fullText).trim()
-                );
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
         }
+
+        return newString;
+    }
+
+    private getElseIfStatementPart(
+        node: SyntaxNode,
+        fullText: FullText
+    ): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.ElseKeyword:
+                newString =
+                    fullText.eolDelimiter +
+                    " ".repeat(this.startColumn) +
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.DoBlock:
+                newString = this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        return newString;
     }
 
     private getStartColumn(node: SyntaxNode): number {
         if (node.type === SyntaxNodeType.IfStatement) {
-            console.log("st:  ", node.startPosition.column);
             return node.startPosition.column;
         } else {
             return this.findParentIfStatementStartColumn(node);
@@ -179,7 +207,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
         if (node.parent === null) {
             return 0;
         }
-        console.log("st11:  ", node.startPosition.column, node.type);
+
         return node.type === SyntaxNodeType.IfStatement
             ? node.startPosition.column
             : this.findParentIfStatementStartColumn(node.parent);
