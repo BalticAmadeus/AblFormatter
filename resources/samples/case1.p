@@ -1,15 +1,11 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.caseFormatting": true,
-    "abl.completion.upperCase": true}*/
-VAR CHAR qtr.
-VAR INT iQuarter.
+/*  { "AblFormatter.blockFormatting": true}*/
 
-CASE iQuarter: 
-  WHEN 1 THEN qtr = "Q1". 
-  WHEN 2 THEN qtr = "Q2". 
-  WHEN 3 THEN qtr = "Q3". 
-  OTHERWISE qtr = "Q4".
-END CASE.
+class Class final:
+    constructor private Class( ):
 
-MESSAGE "Today’s date is" TODAY SKIP 
-        "The current quarter is" qtr.
+    m_NumCusts = 0.
+  
+ end.
+
+end class.
