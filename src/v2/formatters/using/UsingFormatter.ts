@@ -63,7 +63,7 @@ export class UsingFormatter extends AFormatter implements IFormatter {
                 fullText
             );
 
-            this.usingStatements.push(keyword.concat(identifier, "."));
+            this.usingStatements.push(keyword.concat(identifier).concat("."));
         }
 
         if (node.nextSibling !== null) {
