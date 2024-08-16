@@ -4,5 +4,5 @@
 "abl.completion.upperCase": true}*/
 
 PROCEDURE testProcedure:
-                        DEFINE BUFFER bufCustomer FOR Customer.
+                         def BUFFER bufCustomer FOR Customer.
 END PROCEDURE.

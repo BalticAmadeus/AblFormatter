@@ -4,5 +4,5 @@
 "abl.completion.upperCase": true}*/
 
 PROCEDURE testProcedure:
-        DEFINE BUTTON btnTestButton LABEL "Click Me".
+            def BUTTON btnTestButton LABEL "Click Me".
 END PROCEDURE.

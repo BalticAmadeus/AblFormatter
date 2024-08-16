@@ -4,5 +4,5 @@
 "abl.completion.upperCase": true}*/
 
 PROCEDURE testProcedure:
-         DEFINE QUERY qTestQuery FOR Customer.
+                 def QUERY qTestQuery FOR Customer.
 END PROCEDURE.

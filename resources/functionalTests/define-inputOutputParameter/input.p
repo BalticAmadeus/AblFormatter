@@ -4,6 +4,6 @@
 "abl.completion.upperCase": true}*/
 
 PROCEDURE testProcedure:
-                        DEFINE INPUT-OUTPUT PARAMETER x AS INTEGER NO-UNDO.
-                    DEFINE INPUT-OUTPUT PARAMETER y AS INTEGER NO-UNDO.
+            def INPUT-OUTPUT PARAMETER x AS INTEGER NO-UNDO.
+                    def INPUT-OUTPUT PARAMETER y AS INTEGER NO-UNDO.
 END PROCEDURE.
