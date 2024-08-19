@@ -23,7 +23,10 @@ export class CaseFormatter extends AFormatter implements IFormatter {
     }
 
     match(node: Readonly<SyntaxNode>): boolean {
-        return node.type === SyntaxNodeType.CaseStatement;
+        return (
+            node.type === SyntaxNodeType.CaseWhenBranch ||
+            node.type === SyntaxNodeType.CaseOtherwiseBranch
+        );
     }
 
     parse(
@@ -71,95 +74,6 @@ export class CaseFormatter extends AFormatter implements IFormatter {
         console.log(`Processing node of type: ${node.type}`);
 
         switch (node.type) {
-            case SyntaxNodeType.CaseBody:
-                console.log(`Case: CaseBody`);
-                if (this.settings.newLineBeforeWhen()) {
-                    newString = newString.concat(
-                        fullText.eolDelimiter +
-                            " ".repeat(
-                                this.startColumn + this.settings.tabSize()
-                            )
-                    );
-                }
-                newString = newString.concat(
-                    this.getWhenBranchBlock(node, fullText)
-                );
-                break;
-
-            case SyntaxNodeType.AblStatement:
-                console.log(`Case: AblStatement`);
-                newString = this.settings.newLineBeforeStatement()
-                    ? fullText.eolDelimiter +
-                      " ".repeat(this.startColumn + this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
-                    : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
-                console.log(`Formatted string: ${newString}`);
-                break;
-
-            case SyntaxNodeType.EndKeyword:
-                console.log(`Case: EndKeyword`);
-                newString =
-                    fullText.eolDelimiter +
-                    " ".repeat(this.startColumn) +
-                    FormatterHelper.getCurrentText(node, fullText).trim();
-                console.log(`Formatted string: ${newString}`);
-                break;
-
-            default:
-                console.log(`Case: Default`);
-                const text = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
-                newString = text.length === 0 ? "" : " " + text;
-                console.log(`Formatted string: ${newString}`);
-                break;
-        }
-
-        return newString;
-    }
-
-    private getWhenBranchBlock(
-        node: SyntaxNode,
-        fullText: Readonly<FullText>
-    ): string {
-        let resultString = "";
-
-        node.children.forEach((child) => {
-            console.log(`//////////////////////////////////////////`);
-            console.log(`getWhenBranchBlock: ${node.type}`);
-            child.children.forEach((grandchild) => {
-                resultString = resultString.concat(
-                    this.getCaseBodyExpressionString(grandchild, fullText)
-                );
-            });
-        });
-
-        return resultString.trim();
-    }
-
-    private getCaseBodyExpressionString(
-        node: SyntaxNode,
-        fullText: Readonly<FullText>
-    ): string {
-        let newString = "";
-
-        console.log(`//////////////////////////////////////////`);
-        console.log(`getCaseBodyExpressionString: ${node.type}`);
-
-        switch (node.type) {
-            case SyntaxNodeType.WhenKeyword:
-                console.log(`Case: WhenKeyword`);
-                newString = this.settings.newLineBeforeWhen()
-                    ? fullText.eolDelimiter +
-                      " ".repeat(this.startColumn + this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
-                    : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
-                console.log(`Formatted string: ${newString}`);
-                break;
-
             case SyntaxNodeType.ThenKeyword:
                 console.log(`Case: ThenKeyword`);
                 newString = this.settings.newLineBeforeThen()
@@ -170,18 +84,6 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 console.log(`Formatted string: ${newString}`);
                 break;
-
-            case SyntaxNodeType.OtherwiseKeyword:
-                console.log(`Case: OtherwiseKeyword`);
-                newString = this.settings.newLineBeforeWhen()
-                    ? fullText.eolDelimiter +
-                      " ".repeat(this.startColumn + this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
-                    : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
-                console.log(`Formatted string: ${newString}`);
-                break;
-
             case SyntaxNodeType.DoBlock:
                 console.log(`Case: DoBlock`);
                 newString = this.settings.newLineBeforeDo()
@@ -192,16 +94,18 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 console.log(`Formatted string: ${newString}`);
                 break;
-
+            case SyntaxNodeType.WhenKeyword:
+                console.log(`Case: WhenKeyword`);
+                newString =
+                    fullText.eolDelimiter +
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.ReturnStatement:
             case SyntaxNodeType.AblStatement:
                 console.log(`Case: AblStatement`);
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
-                      " ".repeat(
-                          this.startColumn +
-                              this.settings.tabSize() +
-                              this.settings.tabSize()
-                      ) +
+                      " ".repeat(this.startColumn + this.settings.tabSize()) +
                       FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
