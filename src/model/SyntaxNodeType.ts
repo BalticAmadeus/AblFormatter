@@ -28,6 +28,7 @@ export enum SyntaxNodeType {
     BooleanLiteral = "boolean_literal",
     // keywords
     ThenKeyword = "THEN",
+    WhenKeyword = "WHEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
     OrKeyword = "OR",
@@ -50,4 +51,5 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    CaseKeyword = "CASE",
 }
