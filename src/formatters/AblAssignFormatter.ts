@@ -81,15 +81,16 @@ export class AblAssignFormatter extends AAblFormatter implements IAblFormatter {
         const newBlock = this.getPrettyBlock(assignBlock);
         // console.log(newBlock);
         console.log(this.ablFormatterRunner
-            .getDocument()
-            .getText(
-                new Range(
-                    node.startPosition.row,
-                    0,
-                    node.endPosition.row,
-                    node.endPosition.column
+                .getDocument()
+                .getText(
+                    new Range(
+                        node.startPosition.row,
+                        0,
+                        node.endPosition.row,
+                        node.endPosition.column
+                    )
                 )
-            ) );
+        );
 
         if (
             this.ablFormatterRunner
