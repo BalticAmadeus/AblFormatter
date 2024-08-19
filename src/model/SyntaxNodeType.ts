@@ -26,6 +26,7 @@ export enum SyntaxNodeType {
     ComparisonExpression = "comparison_expression",
     ParenthesizedExpression = "parenthesized_expression",
     BooleanLiteral = "boolean_literal",
+    UsingStatement = "using_statement",
     // keywords
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",

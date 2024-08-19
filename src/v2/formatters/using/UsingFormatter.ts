@@ -7,6 +7,7 @@ import { AFormatter } from "../AFormatter";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 import { UsingSettings } from "./UsingSettings";
+import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
 
 @RegisterFormatter
 export class UsingFormatter extends AFormatter implements IFormatter {
@@ -23,7 +24,7 @@ export class UsingFormatter extends AFormatter implements IFormatter {
     private usingStatements: string[] = [];
 
     match(node: Readonly<SyntaxNode>): boolean {
-        if (node.type === "using_statement") {
+        if (node.type === SyntaxNodeType.UsingStatement) {
             return true;
         }
         return false;
@@ -38,15 +39,22 @@ export class UsingFormatter extends AFormatter implements IFormatter {
             this.usingStatements.sort();
         }
         const text = FormatterHelper.getCurrentText(node, fullText);
+        if (this.usingStatementsFound > this.usingStatements.length) {
+            return this.getCodeEdit(node, text, text);
+        }
         const newText = this.usingStatements[this.usingStatementsFound - 1];
         return this.getCodeEdit(node, text, newText);
     }
 
     private collectAllUsingStatements(
-        node: SyntaxNode,
+        node: SyntaxNode | null,
         fullText: FullText
     ): void {
-        if (this.match(node)) {
+        for (node; node !== null; node = node.nextSibling) {
+            if (!this.match(node)) {
+                continue;
+            }
+
             const keywordChild = node.child(0);
             const identifierChild = node.child(1);
 
@@ -89,10 +97,6 @@ export class UsingFormatter extends AFormatter implements IFormatter {
                     .concat(optionalDefinitions)
                     .concat(".")
             );
-        }
-
-        if (node.nextSibling !== null) {
-            this.collectAllUsingStatements(node.nextSibling, fullText);
         }
     }
 }
