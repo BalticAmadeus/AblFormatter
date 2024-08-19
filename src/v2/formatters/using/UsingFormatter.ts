@@ -47,23 +47,48 @@ export class UsingFormatter extends AFormatter implements IFormatter {
         fullText: FullText
     ): void {
         if (this.match(node)) {
-            const leftChild = node.child(0);
-            const rightChild = node.child(1);
+            const keywordChild = node.child(0);
+            const identifierChild = node.child(1);
 
-            if (leftChild === null || rightChild === null) {
+            if (keywordChild === null || identifierChild === null) {
                 return;
             }
 
-            let keyword = FormatterHelper.getCurrentText(leftChild, fullText);
+            let keyword = FormatterHelper.getCurrentText(
+                keywordChild,
+                fullText
+            );
             keyword = this.settings.casing()
                 ? keyword.toUpperCase()
                 : keyword.toLowerCase();
             const identifier = FormatterHelper.getCurrentText(
-                rightChild,
+                identifierChild,
                 fullText
             );
 
-            this.usingStatements.push(keyword.concat(identifier).concat("."));
+            let optionalDefinitions = "";
+            if (node.childCount > 2) {
+                for (let i = 2; i < node.childCount; ++i) {
+                    const currentChild = node.child(i);
+                    if (currentChild === null) {
+                        continue;
+                    }
+                    optionalDefinitions += FormatterHelper.getCurrentText(
+                        currentChild,
+                        fullText
+                    );
+                }
+                optionalDefinitions = this.settings.casing()
+                    ? optionalDefinitions.toUpperCase()
+                    : optionalDefinitions.toLowerCase();
+            }
+
+            this.usingStatements.push(
+                keyword
+                    .concat(identifier)
+                    .concat(optionalDefinitions)
+                    .concat(".")
+            );
         }
 
         if (node.nextSibling !== null) {
