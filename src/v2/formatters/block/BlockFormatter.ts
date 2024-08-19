@@ -38,14 +38,14 @@ export class BlockFormater extends AFormatter implements IFormatter {
     ): CodeEdit | CodeEdit[] | undefined {
         let indentationEdits: IndentationEdits[] = [];
 
-        let parent = this.getParent(node);
+        let parent = node.parent;
 
         if (parent === null) {
             return undefined;
         }
 
         const parentIndentation = FormatterHelper.getActualStatementIndentation(
-            parent,
+            this.getParentIndentationSourceNode(parent),
             fullText
         );
 
@@ -160,25 +160,25 @@ export class BlockFormater extends AFormatter implements IFormatter {
         return lines.join("\n");
     }
 
-    // private countLeadingSpaces(str: string): number {
-    //     return str.length - str.trimStart().length;
-    // }
-
-    private getParent(node: SyntaxNode): SyntaxNode | null {
-        let parent = node.parent;
-
-        if (parent === null) {
-            return null;
-        }
-
+    //refactor
+    private getParentIndentationSourceNode(node: SyntaxNode): SyntaxNode {
         if (
-            parent.type === "do_block" &&
-            parent.parent?.type === "if_statement"
+            node.type === SyntaxNodeType.DoBlock &&
+            node.parent?.type === SyntaxNodeType.IfStatement
         ) {
-            return parent.parent;
-        }
+            return node.parent;
+        } else if (
+            node.type === SyntaxNodeType.DoBlock &&
+            (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
+                node.parent?.type === SyntaxNodeType.ElseStatement)
+        ) {
+            if (node.parent.parent === null) {
+                return node.parent;
+            }
 
-        return parent;
+            return node.parent.parent;
+        }
+        return node;
     }
 }
 
