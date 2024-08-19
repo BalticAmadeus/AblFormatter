@@ -6,16 +6,20 @@ export class FormatterHelper {
         input: string,
         fullText: FullText
     ): number {
+        // Use a regular expression to match leading whitespace and new lines
         const regex = new RegExp(`^\\s*${fullText.eolDelimiter}\\s*`);
         const match = input.match(regex);
 
         if (match) {
+            // Get the last part of the match after the last new line
             const lastNewLineIndex = match[0].lastIndexOf(
                 fullText.eolDelimiter
             );
             const leadingSpaces = match[0].slice(lastNewLineIndex + 1);
+            // Return the number of spaces after the last new line
             return leadingSpaces.length;
         }
+        // Return 0 if there are no leading spaces and new lines before text starts
         return input.length - input.trimStart().length;
     }
 
@@ -47,17 +51,21 @@ export class FormatterHelper {
             return node.startPosition.column;
         }
 
+        // Use a regular expression to match leading whitespace and new lines
         const regex = new RegExp(`^\\s*${fullText.eolDelimiter}\\s*`);
         const match = nodeText.match(regex);
         if (match) {
+            // Get the last part of the match after the last new line
             const lastNewLineIndex = match[0].lastIndexOf(
                 fullText.eolDelimiter
             );
             const leadingSpaces = match[0].slice(
                 lastNewLineIndex + fullText.eolDelimiter.length
             );
+            // Return the number of spaces after the last new line
             return leadingSpaces.length;
         }
+        // Return 0 if there are no leading spaces and new lines before text starts
         return nodeText.length - nodeText.trimStart().length;
     }
 
