@@ -54,8 +54,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
             (node) =>
                 node.startPosition.row +
                 FormatterHelper.getActualTextRow(
-                    FormatterHelper.getCurrentText(node, fullText),
-                    fullText
+                    FormatterHelper.getCurrentText(node, fullText), fullText
                 )
         );
 
@@ -73,7 +72,10 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 lineChangeDelta =
                     parentIndentation +
                     indentationStep -
-                    FormatterHelper.getActualTextIndentation(codeLine, fullText);
+                    FormatterHelper.getActualTextIndentation(
+                        codeLine,
+                        fullText
+                    );
 
                 n++;
             }
