@@ -16,7 +16,7 @@ export class AblFormatterProvider
         this.parserHelper = parserHelper;
     }
 
-    provideDocumentFormattingEdits(
+    public provideDocumentFormattingEdits(
         document: vscode.TextDocument
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
@@ -53,22 +53,77 @@ export class AblFormatterProvider
             return;
         }
     }
-    provideDocumentRangeFormattingEdits(
+
+    public provideDocumentRangeFormattingEdits(
         document: vscode.TextDocument,
         range: vscode.Range,
         options: vscode.FormattingOptions,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.TextEdit[]> {
-        console.log("Hiiiii1");
-        throw new Error("Method not implemented.");
+        console.log("AblFormatterProvider.provideDocumentFormattingEdits");
+
+        const configurationManager = ConfigurationManager2.getInstance();
+
+        try {
+            const codeFormatter = new FormattingEngine(
+                this.parserHelper,
+                new FileIdentifier(document.fileName, document.version),
+                configurationManager
+            );
+
+            const str = codeFormatter.formatText(
+                document.getText(range),
+                new EOL(document.eol)
+            );
+
+            const editor = vscode.window.activeTextEditor;
+            editor!.edit(
+                (edit: vscode.TextEditorEdit) => {
+                    edit.replace(range, str);
+                },
+                { undoStopBefore: false, undoStopAfter: false }
+            );
+        } catch (e) {
+            console.log(e);
+            return;
+        }
     }
+
     provideDocumentRangesFormattingEdits?(
         document: vscode.TextDocument,
         ranges: vscode.Range[],
         options: vscode.FormattingOptions,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.TextEdit[]> {
-        console.log("Hiiiii2");
-        throw new Error("Method not implemented.");
+        console.log(
+            "AblFormatterProvider.provideDocumentFormattingEdits2",
+            ranges
+        );
+
+        const configurationManager = ConfigurationManager2.getInstance();
+
+        try {
+            const codeFormatter = new FormattingEngine(
+                this.parserHelper,
+                new FileIdentifier(document.fileName, document.version),
+                configurationManager
+            );
+
+            const str = codeFormatter.formatText(
+                document.getText(ranges[0]),
+                new EOL(document.eol)
+            );
+
+            const editor = vscode.window.activeTextEditor;
+            editor!.edit(
+                (edit: vscode.TextEditorEdit) => {
+                    edit.replace(ranges[0], str);
+                },
+                { undoStopBefore: false, undoStopAfter: false }
+            );
+        } catch (e) {
+            console.log(e);
+            return;
+        }
     }
 }
