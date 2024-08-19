@@ -1,11 +1,21 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.caseFormatting": true,
-    "abl.completion.upperCase": true,
-    "AblFormatter.blockFormatting": false}*/
-DEFINE VARIABLE pay-stat AS INTEGER NO-UNDO INITIAL 1.
+/*  { "abl.completion.upperCase": true, 
+"AblFormatter.caseFormatting": true,
+"AblFormatter.caseFormattingThenLocation": "New",
+"AblFormatter.caseFormattingDoLocation": "Same",
+"AblFormatter.caseFormattingStatementLocation": "New",
+"AblFormatter.blockFormatting": true}*/
 
-CASE pay-stat :WHEN 1 THEN
-    MESSAGE "HELLO".
-END CASE.
+PROCEDURE testCase:
+    DEFINE VARIABLE i AS INTEGER NO-UNDO.
+    i = 2.
 
-    
+    CASE i:
+        WHEN 1
+        THEN DO:
+                MESSAGE "Case 1".
+            END.
+        OTHERWISE
+        MESSAGE "No match found".
+    END CASE.
+END PROCEDURE.

@@ -1,6 +1,7 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { CodeEdit } from "../model/CodeEdit";
+import { FullText } from "../model/FullText";
 
 export abstract class AFormatter {
     protected readonly configurationManager: IConfigurationManager;
@@ -12,12 +13,16 @@ export abstract class AFormatter {
     protected getCodeEdit(
         node: SyntaxNode,
         oldText: string,
-        newText: string
+        newText: string,
+        fullText: FullText
     ): CodeEdit {
         const diff = newText.length - oldText.length;
-        const rowDiff = newText.split("\n").length - oldText.split("\n").length;
-        const lastRowColumn =
-            newText.split("\n")[newText.split("\n").length - 1].length;
+        const rowDiff =
+            newText.split(fullText.eolDelimiter).length -
+            oldText.split(fullText.eolDelimiter).length;
+        const lastRowColumn = newText.split(fullText.eolDelimiter)[
+            newText.split(fullText.eolDelimiter).length - 1
+        ].length;
 
         return {
             text: newText,
