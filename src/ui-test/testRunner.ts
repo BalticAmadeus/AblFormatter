@@ -193,7 +193,10 @@ describe("My Test Suite", () => {
                         await workbench.executeCommand("Format Document");
                     */
                     await driver
-                        .actions()
+                        .actions({
+                            async: undefined,
+                            bridge: undefined,
+                        })
                         .keyUp(Key.CONTROL)
                         .keyUp(Key.SHIFT)
                         .sendKeys(newFileName.toString())
