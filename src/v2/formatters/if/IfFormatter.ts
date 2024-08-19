@@ -41,7 +41,8 @@ export class IfFormatter extends AFormatter implements IFormatter {
         return this.getCodeEdit(
             node,
             FormatterHelper.getCurrentText(node, fullText),
-            this.ifBodyValue
+            this.ifBodyValue,
+            fullText
         );
     }
 
