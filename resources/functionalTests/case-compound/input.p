@@ -1,7 +1,7 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.blockFormatting": true,
-"abl.completion.upperCase": true, 
-"AblFormatter.caseFormatting": true}*/
+/*  { "abl.completion.upperCase": true, 
+"AblFormatter.caseFormatting": true,
+"AblFormatter.blockFormatting": true}*/
 
 PROCEDURE testCase:
     DEFINE VARIABLE i AS INTEGER NO-UNDO.
@@ -12,10 +12,10 @@ PROCEDURE testCase:
 
     CASE TRUE:
         WHEN i = 5 AND j = 10 THEN
-            MESSAGE "i=5 and j=10".
+                    MESSAGE "i=5 and j=10".
                 WHEN i = 6 AND j = 15 THEN
                 MESSAGE "i=6 and j=15".
-        OTHERWISE
+            OTHERWISE
             MESSAGE "Other condition".
     END CASE.
 END PROCEDURE.

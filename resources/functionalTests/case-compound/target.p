@@ -1,7 +1,7 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.blockFormatting": true,
-"abl.completion.upperCase": true, 
-"AblFormatter.caseFormatting": true}*/
+/*  { "abl.completion.upperCase": true, 
+"AblFormatter.caseFormatting": true,
+"AblFormatter.blockFormatting": true}*/
 
 PROCEDURE testCase:
     DEFINE VARIABLE i AS INTEGER NO-UNDO.

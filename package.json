@@ -102,16 +102,6 @@
           "default": "true",
           "description": "Enable CASE formatting"
         },
-        "AblFormatter.caseFormattingWhenLocation": {
-          "order": 500,
-          "type": "string",
-          "default": "New",
-          "enum": [
-            "New",
-            "Same"
-          ],
-          "description": "Should WHEN clause be on a new line or the same line as the CASE keyword?"
-        },
         "AblFormatter.caseFormattingThenLocation": {
           "order": 501,
           "type": "string",

@@ -6,13 +6,6 @@ export class CaseSettings extends ASettings {
         return !!this.configurationManager.get("caseFormatting");
     }
 
-    public newLineBeforeWhen() {
-        return (
-            this.configurationManager.get("caseFormattingWhenLocation") ===
-            "New"
-        );
-    }
-
     public newLineBeforeThen() {
         return (
             this.configurationManager.get("caseFormattingThenLocation") ===
