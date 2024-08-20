@@ -100,7 +100,6 @@ export class FormattingEngine {
                 tree.edit(oneCodeEdit.edit);
             });
         } else {
-            console.log("edit: ", codeEdit.edit);
             tree.edit(codeEdit.edit);
         }
     }
