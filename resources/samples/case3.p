@@ -6,7 +6,7 @@ define variable test as character no-undo.
 do while true:
 
     update test.
-
+    
     case test:
         when "a" then message "a".
         when "b" then
@@ -18,5 +18,5 @@ do while true:
         otherwise
           message "something else".
     end case.
-
+    
 end.
