@@ -45,7 +45,7 @@ export class AblDebugHoverProvider implements HoverProvider {
 
         return new Hover(
             "| ID | TYPE | START POS | END POS | INDEX | TEXT | \n | ---- | ---- | ---- | ---- | ---- | ---- | \n" +
-                this.fillTreeWithAcendantsInfo(node, true)
+                this.fillTreeWithAcendantsInfo(node)
         );
     }
 
