@@ -1,21 +1,14 @@
 /* formatterSettingsOverride */
-/*  { "abl.completion.upperCase": true, 
-"AblFormatter.caseFormatting": true,
-"AblFormatter.caseFormattingThenLocation": "New",
-"AblFormatter.caseFormattingDoLocation": "Same",
-"AblFormatter.caseFormattingStatementLocation": "New",
-"AblFormatter.blockFormatting": true}*/
+/*  { "AblFormatter.caseFormatting": true,
+    "abl.completion.upperCase": true}*/
+    DEFINE VARIABLE pay-stat AS INTEGER NO-UNDO INITIAL 1.
 
-PROCEDURE testCase:
-    DEFINE VARIABLE i AS INTEGER NO-UNDO.
-    i = 2.
-
-    CASE i:
-        WHEN 1
-        THEN DO:
-                MESSAGE "Case 1".
-            END.
-        OTHERWISE
-        MESSAGE "No match found".
+    CASE pay-stat:
+      WHEN 1 THEN DO:
+        MESSAGE "This account is unpaid.".
+      END.
+      WHEN 2 THEN DO: MESSAGE "This account is partially paid.".
+      END.
+      WHEN 3 THEN  
+        MESSAGE "This account is paid in full.".
     END CASE.
-END PROCEDURE.

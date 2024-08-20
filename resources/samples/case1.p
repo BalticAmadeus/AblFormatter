@@ -1,10 +1,11 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.blockFormatting": true}*/
-DEFINE VARIABLE pay-stat AS INTEGER NO-UNDO INITIAL 1.
 
-if pay-stat = 1 THEN
-        DO: 
-    MESSAGE "This account is unpaid.".
-    MESSAGE "This account is partially paid.". 
-END.
+class Class final:
+    constructor private Class( ):
 
+    m_NumCusts = 0.
+  
+ end.
+
+end class.

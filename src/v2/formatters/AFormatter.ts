@@ -17,12 +17,9 @@ export abstract class AFormatter {
         fullText: FullText
     ): CodeEdit {
         const diff = newText.length - oldText.length;
-        const rowDiff =
-            newText.split(fullText.eolDelimiter).length -
-            oldText.split(fullText.eolDelimiter).length;
-        const lastRowColumn = newText.split(fullText.eolDelimiter)[
-            newText.split(fullText.eolDelimiter).length - 1
-        ].length;
+        const rowDiff = newText.split(fullText.eolDelimiter).length - oldText.split(fullText.eolDelimiter).length;
+        const lastRowColumn =
+            newText.split(fullText.eolDelimiter)[newText.split(fullText.eolDelimiter).length - 1].length;
 
         return {
             text: newText,
