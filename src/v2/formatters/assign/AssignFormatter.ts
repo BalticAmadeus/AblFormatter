@@ -22,6 +22,9 @@ type AssignBlock = {
 
 @RegisterFormatter
 export class AssignFormatter extends AFormatter implements IFormatter {
+    private startColumn = 0;
+    private assignBodyValue = "";
+
     public static readonly formatterLabel = "assignFormatting";
     private readonly settings: AssignSettings;
 
@@ -40,127 +43,128 @@ export class AssignFormatter extends AFormatter implements IFormatter {
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        const assignments = node.children.filter(this.isAssignment);
-
-        // for now, don't format assign statements with one assignment.
-        if (assignments.length === 1) {
-            return undefined;
-        }
-
-        let assingValues: AssingLine[] = [];
-        let longestLeft = 0;
-        const intendationColumn = FormatterHelper.getActualStatementIndentation(
-            node.children.filter(this.isAssignKeyword)[0],
+        this.collectAssignStructure(node, fullText);
+        return this.getCodeEdit(
+            node,
+            FormatterHelper.getCurrentText(node, fullText),
+            this.assignBodyValue,
             fullText
         );
+    }
+
+    private collectAssignStructure(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ) {
+        this.startColumn = this.getStartColumn(node);
+        this.assignBodyValue = this.getAssignBlock(node, fullText);
+    }
+
+    private getAssignBlock(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+
+        console.log(this.getLongestLeft(node.children, fullText));
+
+        node.children.forEach((child) => {
+            console.log("-----------------");
+            console.log(node.type);
+            const childCount = this.getAssignmentChildCount(child);
+            console.log("NUMBER OF CHILDS:");
+            console.log(childCount);
+            // resultString = resultString.concat(
+            //     this.getAssignmentString(child, fullText)
+            // );
+        });
+
+        return resultString;
+    }
+
+    private getAssignmentString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.AblStatement:
+                newString =
+                    " " + FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        return newString;
+    }
+
+    private getAssignmentChildCount(assignment: SyntaxNode): number {
+        for (let i = 0; i < assignment.childCount; i++) {
+            const childNode = assignment.child(i);
+            console.log(`Child ${i} type: ${childNode?.type}`);
+        }
+        return assignment.childCount;
+    }
+
+    private getLongestLeft(
+        assignments: SyntaxNode[],
+        fullText: FullText
+    ): number {
+        let longestLeft = 0;
 
         assignments.forEach((assignment) => {
-            const leftChild = assignment.child(0);
-            const rightChild = assignment.child(2);
+            const childCount = this.getAssignmentChildCount(assignment);
 
-            if (leftChild === null || rightChild === null) {
+            if (childCount > 3) {
                 return;
             }
 
-            const assignLine: AssingLine = {
-                leftValue: FormatterHelper.getCurrentText(
-                    leftChild,
-                    fullText
-                ).trim(),
-                rightValue: FormatterHelper.getCurrentText(
-                    rightChild,
-                    fullText
-                ).trim(),
-            };
+            const leftChild = assignment.child(0);
 
-            assingValues.push(assignLine);
+            const leftLength = leftChild
+                ? FormatterHelper.getCurrentText(leftChild, fullText).trim()
+                      .length
+                : 0;
 
-            if (assignLine.leftValue.length > longestLeft) {
-                longestLeft = assignLine.leftValue.length;
+            if (leftLength > longestLeft) {
+                longestLeft = leftLength;
             }
         });
 
-        const assignBlock: AssignBlock = {
-            assignValues: assingValues,
-            longestLeft: longestLeft,
-            intendationColumn: intendationColumn,
-        };
-
-        const text = FormatterHelper.getCurrentText(node, fullText);
-        const newText = this.getPrettyBlock(assignBlock, fullText);
-        return this.getCodeEdit(node, text, newText, fullText);
+        return longestLeft;
     }
 
-    private getPrettyBlock(
-        assignBlock: AssignBlock,
-        fullText: FullText
-    ): string {
-        const block = ""
-            // .repeat(assignBlock.intendationColumn)
-            .concat(
-                this.settings.casing!
-                    ? SyntaxNodeType.AssignKeyword
-                    : SyntaxNodeType.AssignKeyword.toLowerCase()
-            )
-            .concat(
-                this.settings.newLineAfterAssign() ? fullText.eolDelimiter : " "
-            )
-            .concat(this.getAssigns(assignBlock, fullText))
-            .concat(
-                this.settings.endDotLocationNew() ? fullText.eolDelimiter : ""
-            )
-            .concat(
-                this.settings.endDotLocationNew()
-                    ? " ".repeat(
-                          assignBlock.intendationColumn +
-                              (this.settings.endDotAlignment()
-                                  ? this.settings.newLineAfterAssign()
-                                      ? this.settings.tabSize()
-                                      : 7
-                                  : 0)
-                      )
-                    : ""
-            )
-            .concat(".");
-        return block;
+    // private isAssignment(value: SyntaxNode): boolean {
+    //     return value.type === SyntaxNodeType.Assignment;
+    // }
+
+    // private isAssignKeyword(value: SyntaxNode): boolean {
+    //     return value.type === SyntaxNodeType.AssignKeyword;
+    // }
+
+    private getStartColumn(node: SyntaxNode): number {
+        if (node.type === SyntaxNodeType.AssignStatement) {
+            return node.startPosition.column;
+        } else {
+            return this.findParentAssignStatementStartColumn(node);
+        }
     }
 
-    private getAssigns(assignBlock: AssignBlock, fullText: FullText): string {
-        let assigns: string = "";
-        assignBlock.assignValues.forEach((assignLine) => {
-            assigns = assigns.concat(
-                " "
-                    .repeat(
-                        this.settings.newLineAfterAssign()
-                            ? assignBlock.intendationColumn +
-                                  this.settings.tabSize()
-                            : assigns === ""
-                            ? 0
-                            : assignBlock.intendationColumn + 7
-                    )
-                    .concat(assignLine.leftValue)
-                    .concat(
-                        this.settings.alignRightExpression()
-                            ? " ".repeat(
-                                  assignBlock.longestLeft -
-                                      assignLine.leftValue.length
-                              )
-                            : ""
-                    )
-                    .concat(" = ")
-                    .concat(assignLine.rightValue)
-                    .concat(fullText.eolDelimiter)
-            );
-        });
+    private findParentAssignStatementStartColumn(node: SyntaxNode): number {
+        if (node.parent === null) {
+            return 0;
+        }
 
-        return assigns.trimEnd();
-    }
-
-    private isAssignment(value: SyntaxNode): boolean {
-        return value.type === SyntaxNodeType.Assignment;
-    }
-
-    private isAssignKeyword(value: SyntaxNode): boolean {
-        return value.type === SyntaxNodeType.AssignKeyword;
+        return node.type === SyntaxNodeType.CaseStatement
+            ? node.startPosition.column
+            : this.findParentAssignStatementStartColumn(node.parent);
     }
 }
