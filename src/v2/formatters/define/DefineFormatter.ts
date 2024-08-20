@@ -39,22 +39,31 @@ export class DefineFormatter extends AFormatter implements IFormatter {
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
+        const actualIndentation = FormatterHelper.getActualStatementIndentation(
+            node,
+            fullText
+        );
+        console.log(actualIndentation);
         const text = FormatterHelper.getCurrentText(node, fullText);
         console.log(text);
-        const newText = this.getPrettyToken(text);
+        const newText = this.getPrettyToken(text, actualIndentation);
         return this.getCodeEdit(node, text, newText, fullText);
     }
 
-    private getPrettyToken(text: string): string {
-        const token = this.settings.casing()
-            ? (this.targetIsLong
-                  ? this.longDefine
-                  : this.shortDefine
-              ).toUpperCase()
-            : (this.targetIsLong
-                  ? this.longDefine
-                  : this.shortDefine
-              ).toLowerCase();
+    private getPrettyToken(text: string, actualIndentation: number): string {
+        const token = " "
+            .repeat(actualIndentation)
+            .concat(
+                this.settings.casing()
+                    ? (this.targetIsLong
+                          ? this.longDefine
+                          : this.shortDefine
+                      ).toUpperCase()
+                    : (this.targetIsLong
+                          ? this.longDefine
+                          : this.shortDefine
+                      ).toLowerCase()
+            );
 
         return token;
     }
