@@ -126,6 +126,12 @@
           "default": "true",
           "description": "Enable USING formatting"
         },
+        "AblFormatter.emptyBlockFormatting": {
+          "order": 10,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable EMPTY BLOCK formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",

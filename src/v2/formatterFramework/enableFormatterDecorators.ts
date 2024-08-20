@@ -3,6 +3,7 @@ import { BlockFormater } from "../formatters/block/BlockFormatter";
 import { IfFormatter } from "../formatters/if/IfFormatter";
 import { DefineFormatter } from "../formatters/define/DefineFormatter";
 import { UsingFormatter } from "../formatters/using/UsingFormatter";
+import { EmptyBlockFormatter } from "../formatters/emptyblock/EmptyBlockFormatter";
 
 // needed just for enabling decorators. Decorators does not work if there is no usage of a class in the reachable code
 export function enableFormatterDecorators(): void {
@@ -11,4 +12,5 @@ export function enableFormatterDecorators(): void {
     IfFormatter;
     DefineFormatter;
     UsingFormatter;
+    EmptyBlockFormatter;
 }

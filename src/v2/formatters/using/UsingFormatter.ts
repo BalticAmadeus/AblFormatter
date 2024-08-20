@@ -43,7 +43,7 @@ export class UsingFormatter extends AFormatter implements IFormatter {
             return undefined;
         }
         const newText = this.usingStatements[this.usingStatementsFound - 1];
-        return this.getCodeEdit(node, text, newText);
+        return this.getCodeEdit(node, text, newText, fullText);
     }
 
     private collectAllUsingStatements(
