@@ -40,8 +40,10 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        const statementIndentation =
-            FormatterHelper.getActualStatementIndentation(node, fullText);
+
+        const firstLine = FormatterHelper.getCurrentText(node, fullText).split(
+            fullText.eolDelimiter
+        )[0];
 
         const lastLine = FormatterHelper.getCurrentText(node, fullText)
             .split(fullText.eolDelimiter)
@@ -53,18 +55,21 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
 
         if (endNode !== undefined) {
             const endRowDelta =
-                statementIndentation -
+                FormatterHelper.getActualTextIndentation(firstLine, fullText) -
                 FormatterHelper.getActualTextIndentation(lastLine, fullText);
-            console.log("ind: " + statementIndentation);
+            console.log(
+                "ind: " +
+                    FormatterHelper.getActualTextIndentation(
+                        firstLine,
+                        fullText
+                    )
+            );
             console.log(
                 "endInd: " +
                     FormatterHelper.getActualTextIndentation(lastLine, fullText)
             );
-            console.log("indLastLine: " + lastLine);
-            console.log(
-                "indFirstLine: " +
-                    FormatterHelper.getCurrentText(node, fullText)
-            );
+            console.log("indLastLine:" + lastLine);
+            console.log("indFirstLine:" + firstLine);
             console.log("indchildren: " + node.childCount);
             node.children.forEach((child) => {
                 console.log(

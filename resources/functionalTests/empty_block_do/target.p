@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.emptyBlockFormatting": true}*/
 
-do:
-end.
+ do:
+ end.
