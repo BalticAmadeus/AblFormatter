@@ -11,7 +11,7 @@ DEFINE VARIABLE number3  AS INTEGER NO-UNDO INITIAL 3.
 
 ASSIGN
     number2  = 2
-    when 
-    number3 = 2
+    when
+    number3  = 2
     number11 = 2 NO-ERROR
     .
