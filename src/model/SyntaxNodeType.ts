@@ -31,6 +31,7 @@ export enum SyntaxNodeType {
     UsingStatement = "using_statement",
     // keywords
     ThenKeyword = "THEN",
+    WhenKeyword = "WHEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
     OrKeyword = "OR",
