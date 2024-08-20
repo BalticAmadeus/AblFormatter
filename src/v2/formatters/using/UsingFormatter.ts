@@ -40,7 +40,7 @@ export class UsingFormatter extends AFormatter implements IFormatter {
         }
         const text = FormatterHelper.getCurrentText(node, fullText);
         if (this.usingStatementsFound > this.usingStatements.length) {
-            return this.getCodeEdit(node, text, text);
+            return undefined;
         }
         const newText = this.usingStatements[this.usingStatementsFound - 1];
         return this.getCodeEdit(node, text, newText);
