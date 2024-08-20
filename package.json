@@ -150,6 +150,12 @@
           "default": "true",
           "description": "Enable TEMP-TABLE formatting"
         },
+        "AblFormatter.usingFormatting": {
+          "order": 9,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable USING formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",

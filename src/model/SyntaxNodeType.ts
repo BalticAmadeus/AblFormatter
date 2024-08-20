@@ -28,6 +28,7 @@ export enum SyntaxNodeType {
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
     ReturnStatement = "return_statement",
+    UsingStatement = "using_statement",
     // keywords
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
