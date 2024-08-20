@@ -7,12 +7,11 @@ import { IfSettings } from "./IfSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
 import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
 export class IfFormatter extends AFormatter implements IFormatter {
     private startColumn = 0;
-    private nextLineOfComparison = 3; // "IF "
-    private ifBlockValueColumn = 0;
     private ifBodyValue = "";
 
     public static readonly formatterLabel = "ifFormatting";
@@ -24,7 +23,10 @@ export class IfFormatter extends AFormatter implements IFormatter {
     }
 
     match(node: Readonly<SyntaxNode>): boolean {
-        if (node.type === SyntaxNodeType.IfStatement) {
+        if (
+            node.type === SyntaxNodeType.IfStatement ||
+            node.type === SyntaxNodeType.ElseIfStatement
+        ) {
             return true;
         }
 
@@ -36,33 +38,28 @@ export class IfFormatter extends AFormatter implements IFormatter {
     ): CodeEdit | CodeEdit[] | undefined {
         this.collectIfStructure(node, fullText);
 
-        return undefined;
+        return this.getCodeEdit(
+            node,
+            FormatterHelper.getCurrentText(node, fullText),
+            this.ifBodyValue,
+            fullText
+        );
     }
 
-    private collectIfStructure(node: SyntaxNode, fullText: FullText) {
-        this.startColumn = node.startPosition.column;
-        this.ifBlockValueColumn = this.startColumn + this.settings.tabSize();
+    private collectIfStructure(node: SyntaxNode, fullText: Readonly<FullText>) {
+        this.startColumn = this.getStartColumn(node);
         this.ifBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
 
-    private getCaseBodyBranchBlock(node: SyntaxNode, fullText: FullText): string {
+    private getCaseBodyBranchBlock(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
         let resultString = "";
-        let doBlock = false;
-
-        node.children.forEach((child) => {
-            if (child.type === SyntaxNodeType.DoBlock) {
-                doBlock = true;
-            }
-        });
 
         node.children.forEach((child) => {
             resultString = resultString.concat(
-                this.getIfExpressionString(
-                    child,
-                    fullText.eolDelimiter.concat(" ".repeat(this.ifBlockValueColumn)),
-                    doBlock,
-                    fullText
-                )
+                this.getIfExpressionString(child, fullText)
             );
         });
 
@@ -71,87 +68,149 @@ export class IfFormatter extends AFormatter implements IFormatter {
 
     private getIfExpressionString(
         node: SyntaxNode,
-        separator: string,
-        doBlock: boolean,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.ThenKeyword:
+                newString = this.settings.newLineBeforeThen()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.DoBlock:
+                newString = this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.AblStatement:
+                newString = this.settings.newLineBeforeStatement()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      " ".repeat(this.settings.tabSize()) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.ElseIfStatement:
+                newString = node.children
+                    .map((child) =>
+                        this.getElseIfStatementPart(child, fullText)
+                    )
+                    .join("");
+                break;
+            case SyntaxNodeType.ElseStatement:
+                newString = node.children
+                    .map((child) => this.getElseStatementPart(child, fullText))
+                    .join("");
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        return newString;
+    }
+
+    private getElseStatementPart(node: SyntaxNode, fullText: FullText): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.ElseKeyword:
+                newString =
+                    fullText.eolDelimiter +
+                    " ".repeat(this.startColumn) +
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.DoBlock:
+                newString = this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.AblStatement:
+                newString = this.settings.newLineBeforeStatement()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      " ".repeat(this.settings.tabSize()) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        return newString;
+    }
+
+    private getElseIfStatementPart(
+        node: SyntaxNode,
         fullText: FullText
     ): string {
-        console.log("if block stuff:      ", node.type, separator, doBlock);
-        return "";
-        // switch (node.type.trim()) {
-        //     case SyntaxNodeType.ThenKeyword:
-        //         if (doBlock) {
-        //             return node.text;
-        //         } else {
-        //             return ` ${node.text.trim()}${separator}`;
-        //         }
-        //     case SyntaxNodeType.ElseKeyword:
-        //         if (doBlock) {
-        //             return node.text;
-        //         } else {
-        //             return `${node.text.trim()}${separator}`;
-        //         }
-        //     case SyntaxNodeType.DoBlock:
-        //         return this.ablFormatterCommon.getDoBlock(
-        //             node,
-        //             this.ifBlockValueColumn,
-        //             this.startColumn
-        //         );
-        //     case SyntaxNodeType.AblStatement:
-        //         return node.text + fullText.eolDelimiter.concat(" ".repeat(this.startColumn));
-        //     case SyntaxNodeType.ElseStatement:
-        //         let resultElseString = "";
-        //         let doElseBlock = false;
+        let newString = "";
 
-        //         node.children.forEach((child) => {
-        //             if (child.type === SyntaxNodeType.DoBlock) {
-        //                 doElseBlock = true;
-        //             }
-        //         });
+        switch (node.type) {
+            case SyntaxNodeType.ElseKeyword:
+                newString =
+                    fullText.eolDelimiter +
+                    " ".repeat(this.startColumn) +
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.DoBlock:
+                newString = this.settings.newLineBeforeDo()
+                    ? fullText.eolDelimiter +
+                      " ".repeat(this.startColumn) +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
 
-        //         node.children.forEach((child) => {
-        //             resultElseString = resultElseString.concat(
-        //                 this.getIfExpressionString(
-        //                     child,
-        //                     fullText.eolDelimiter.concat(" ".repeat(this.ifBlockValueColumn)),
-        //                     doElseBlock
-        //                 )
-        //             );
-        //         });
+        return newString;
+    }
 
-        //         return resultElseString;
-        //     case SyntaxNodeType.BooleanLiteral:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.AvailableExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.ParenthesizedExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.LogicalExpression:
-        //         let resultLogicalExString = "";
+    private getStartColumn(node: SyntaxNode): number {
+        if (node.type === SyntaxNodeType.IfStatement) {
+            return node.startPosition.column;
+        } else {
+            return this.findParentIfStatementStartColumn(node);
+        }
+    }
 
-        //         node.children.forEach((child) => {
-        //             resultLogicalExString = resultLogicalExString.concat(
-        //                 this.getIfExpressionString(
-        //                     child,
-        //                     fullText.eolDelimiter.concat(
-        //                         " ".repeat(
-        //                             this.startColumn + this.nextLineOfComparison
-        //                         )
-        //                     ),
-        //                     false
-        //                 )
-        //             );
-        //         });
+    private findParentIfStatementStartColumn(node: SyntaxNode): number {
+        if (node.parent === null) {
+            return 0;
+        }
 
-        //         return resultLogicalExString;
-        //     case SyntaxNodeType.AndKeyword:
-        //     case SyntaxNodeType.OrKeyword:
-        //         return " " + node.text.trim() + separator;
-        //     case SyntaxNodeType.ComparisonExpression:
-        //         return node.text.trim();
-        //     case SyntaxNodeType.IfKeyword:
-        //         return node.text.trim() + " ";
-        //     default:
-        //         return node.text.trim();
-        // }
+        return node.type === SyntaxNodeType.IfStatement
+            ? node.startPosition.column
+            : this.findParentIfStatementStartColumn(node.parent);
     }
 }

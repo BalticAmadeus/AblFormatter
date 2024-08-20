@@ -44,7 +44,7 @@ export class AblDebugHoverProvider implements HoverProvider {
         const node = this.getNodeForPoint(document, point);
 
         return new Hover(
-            "| ID | TYPE | START POS | END POS | INDEX | \n | ---- | ---- | ---- | ---- | ---- |  \n" +
+            "| ID | TYPE | START POS | END POS | INDEX | TEXT | \n | ---- | ---- | ---- | ---- | ---- | ---- | \n" +
                 this.fillTreeWithAcendantsInfo(node)
         );
     }
@@ -111,7 +111,13 @@ export class AblDebugHoverProvider implements HoverProvider {
             node.startIndex +
             ":" +
             node.endIndex +
-            " |  \n";
+            " | " +
+            node.text
+                .replaceAll("\r\n", " ")
+                .replaceAll("\n", " ")
+                .substring(0, 200) +
+            " | " +
+            " \n";
 
         if (node.parent === null) {
             return "";
