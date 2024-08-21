@@ -102,6 +102,36 @@
           "default": "true",
           "description": "Enable CASE formatting"
         },
+        "AblFormatter.caseFormattingThenLocation": {
+          "order": 501,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should THEN clause be on a new line or the same line as the WHEN keyword?"
+        },
+        "AblFormatter.caseFormattingDoLocation": {
+          "order": 502,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should DO block be on a new line or the same line as the THEN keyword?"
+        },
+        "AblFormatter.caseFormattingStatementLocation": {
+          "order": 503,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should the first statement in a WHEN block be on a new line or the same line?"
+        },
         "AblFormatter.blockFormatting": {
           "order": 600,
           "type": "boolean",
@@ -160,7 +190,13 @@
           "order": 10000,
           "type": "boolean",
           "default": "true",
-          "description": "Enable tree printing to console"
+          "description": "TODO: REMOVE THIS SETTING. Enable tree printing to console"
+        },
+        "AblFormatter.showTreeInfoOnHover": {
+          "order": 10100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable table view with tree info on hover"
         }
       }
     },
