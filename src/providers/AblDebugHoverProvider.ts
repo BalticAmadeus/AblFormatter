@@ -2,19 +2,27 @@ import {
     CancellationToken,
     Hover,
     HoverProvider,
-    MarkdownString,
     Position,
     ProviderResult,
     TextDocument,
 } from "vscode";
-import { AblFormatterProvider } from "./AblFormatterProvider";
-import { Point, SyntaxNode, Tree } from "web-tree-sitter";
+import { Point, SyntaxNode } from "web-tree-sitter";
+import { AblParserHelper } from "../parser/AblParserHelper";
+import { FileIdentifier } from "../model/FileIdentifier";
+import { ParseResult } from "../model/ParseResult";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+
+interface DocumentParseInstance {
+    fileIdentifier: FileIdentifier;
+    parseResult: ParseResult;
+}
 
 export class AblDebugHoverProvider implements HoverProvider {
-    private ablFormatterProvider: AblFormatterProvider;
+    private parserHelper: AblParserHelper;
+    private documentParseInstances: DocumentParseInstance[] = [];
 
-    public constructor(ablFormatterProvider: AblFormatterProvider) {
-        this.ablFormatterProvider = ablFormatterProvider;
+    public constructor(parserHelper: AblParserHelper) {
+        this.parserHelper = parserHelper;
     }
 
     provideHover(
@@ -22,8 +30,10 @@ export class AblDebugHoverProvider implements HoverProvider {
         position: Position,
         token: CancellationToken
     ): ProviderResult<Hover> {
-        if (this.ablFormatterProvider.result === undefined) {
-            return new Hover("NO TREE YET!");
+        const configurationManager = ConfigurationManager2.getInstance();
+
+        if (!configurationManager.get("showTreeInfoOnHover") === true) {
+            return;
         }
 
         const point: Point = {
@@ -31,21 +41,59 @@ export class AblDebugHoverProvider implements HoverProvider {
             column: position.character,
         };
 
-        const node =
-            this.ablFormatterProvider.result.tree.rootNode.descendantForPosition(
-                point
-            );
+        const node = this.getNodeForPoint(document, point);
 
         return new Hover(
             "| ID | TYPE | START POS | END POS | INDEX | TEXT | \n | ---- | ---- | ---- | ---- | ---- | ---- | \n" +
-                this.fillTreeWithAcendantsInfo(node, true)
+                this.fillTreeWithAcendantsInfo(node)
         );
     }
 
-    private fillTreeWithAcendantsInfo(
-        node: SyntaxNode,
-        isHead: boolean
-    ): string {
+    private getNodeForPoint(document: TextDocument, point: Point): SyntaxNode {
+        let result = this.getResultIfDocumentWasAlreadyParsed(document);
+
+        if (result === undefined) {
+            result = this.parseDocumentAndAddToInstances(document);
+        }
+
+        return result.tree.rootNode.descendantForPosition(point);
+    }
+
+    private getResultIfDocumentWasAlreadyParsed(
+        document: TextDocument
+    ): ParseResult | undefined {
+        const instance = this.documentParseInstances.find((instance) => {
+            if (
+                instance.fileIdentifier.name === document.fileName &&
+                instance.fileIdentifier.version === document.version
+            ) {
+                return true;
+            }
+        });
+
+        return instance?.parseResult;
+    }
+
+    private parseDocumentAndAddToInstances(
+        document: TextDocument
+    ): ParseResult {
+        const parseResult = this.parserHelper.parse(
+            new FileIdentifier(document.fileName, document.version),
+            document.getText()
+        );
+
+        this.documentParseInstances.push({
+            fileIdentifier: new FileIdentifier(
+                document.fileName,
+                document.version
+            ),
+            parseResult: parseResult,
+        });
+
+        return parseResult;
+    }
+
+    private fillTreeWithAcendantsInfo(node: SyntaxNode): string {
         const str =
             "| " +
             node.id +
@@ -75,6 +123,6 @@ export class AblDebugHoverProvider implements HoverProvider {
             return "";
         }
 
-        return str + this.fillTreeWithAcendantsInfo(node.parent, false);
+        return str + this.fillTreeWithAcendantsInfo(node.parent);
     }
 }

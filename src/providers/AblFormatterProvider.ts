@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
-import { AblFormatterFactory } from "./AblFormatterFactory";
-import { ParseResult } from "../model/ParseResult";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
 import { EOL } from "../v2/model/EOL";
@@ -13,12 +11,9 @@ export class AblFormatterProvider
         vscode.DocumentFormattingEditProvider
 {
     private parserHelper: IParserHelper;
-    private formatterFactory: AblFormatterFactory;
-    public result: ParseResult | undefined;
 
     public constructor(parserHelper: IParserHelper) {
         this.parserHelper = parserHelper;
-        this.formatterFactory = new AblFormatterFactory();
     }
 
     provideDocumentFormattingEdits(
@@ -26,9 +21,9 @@ export class AblFormatterProvider
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
-        try {
-            const configurationManager = ConfigurationManager2.getInstance();
+        const configurationManager = ConfigurationManager2.getInstance();
 
+        try {
             const codeFormatter = new FormattingEngine(
                 this.parserHelper,
                 new FileIdentifier(document.fileName, document.version),
@@ -56,11 +51,6 @@ export class AblFormatterProvider
         } catch (e) {
             console.log(e);
             return;
-        } finally {
-            this.result = this.parserHelper.parse(
-                new FileIdentifier(document.fileName, document.version),
-                document.getText()
-            );
         }
     }
     provideDocumentRangeFormattingEdits(
