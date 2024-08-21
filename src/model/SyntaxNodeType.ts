@@ -54,4 +54,5 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    FindKeyword = "FIND",
 }
