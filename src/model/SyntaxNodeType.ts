@@ -29,6 +29,7 @@ export enum SyntaxNodeType {
     ElseIfStatement = "else_if_statement",
     ReturnStatement = "return_statement",
     UsingStatement = "using_statement",
+    OnStatement = "on_statement",
     // keywords
     ThenKeyword = "THEN",
     WhenKeyword = "WHEN",

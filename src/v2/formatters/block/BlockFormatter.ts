@@ -47,7 +47,10 @@ export class BlockFormater extends AFormatter implements IFormatter {
         let formattingOnStatement = false;
         if (parent.type === SyntaxNodeType.DoBlock) {
             const grandParent = parent.parent;
-            if (grandParent !== null && grandParent.type === "on_statement") {
+            if (
+                grandParent !== null &&
+                grandParent.type === SyntaxNodeType.OnStatement
+            ) {
                 parent = grandParent;
                 formattingOnStatement = true;
             }
