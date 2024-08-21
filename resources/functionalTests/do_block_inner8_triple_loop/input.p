@@ -1,8 +1,10 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.blockFormatting": true}*/
 
-do transaction:
+do while true:
  do while true:
-message "a".
+  do while true:
+    message "a".
   end.
+end.
 end.

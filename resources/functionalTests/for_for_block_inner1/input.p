@@ -1,4 +1,4 @@
-/* formattersettingsoverride */
+/* formatterSettingsOverride */
 /*  { "AblFormatter.blockFormatting": true}*/
 
 for each A no-lock:

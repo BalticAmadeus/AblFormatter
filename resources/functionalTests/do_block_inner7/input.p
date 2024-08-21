@@ -3,6 +3,6 @@
 
 do transaction:
     do while true:
-            get next SomeQuery.
+ get next SomeQuery.
     end.
 end.
