@@ -44,6 +44,15 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return undefined;
         }
 
+        let formattingOnStatement = false;
+        if (parent.type === SyntaxNodeType.DoBlock) {
+            const grandParent = parent.parent;
+            if (grandParent !== null && grandParent.type === "on_statement") {
+                parent = grandParent;
+                formattingOnStatement = true;
+            }
+        }
+
         const parentIndentation = FormatterHelper.getActualStatementIndentation(
             this.getParentIndentationSourceNode(parent),
             fullText
@@ -54,7 +63,8 @@ export class BlockFormater extends AFormatter implements IFormatter {
             (node) =>
                 node.startPosition.row +
                 FormatterHelper.getActualTextRow(
-                    FormatterHelper.getCurrentText(node, fullText), fullText
+                    FormatterHelper.getCurrentText(node, fullText),
+                    fullText
                 )
         );
 
@@ -93,20 +103,26 @@ export class BlockFormater extends AFormatter implements IFormatter {
             .split(fullText.eolDelimiter)
             .slice(-1)[0];
 
-        const endNode = parent.children.find(
-            (node) => node.type === SyntaxNodeType.EndKeyword
-        );
+        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
+        if (parentOfEndNode !== null) {
+            const endNode = parentOfEndNode.children.find(
+                (node) => node.type === SyntaxNodeType.EndKeyword
+            );
 
-        if (endNode !== undefined) {
-            const endRowDelta =
-                parentIndentation -
-                FormatterHelper.getActualTextIndentation(lastLine, fullText);
+            if (endNode !== undefined) {
+                const endRowDelta =
+                    parentIndentation -
+                    FormatterHelper.getActualTextIndentation(
+                        lastLine,
+                        fullText
+                    );
 
-            if (endRowDelta !== 0) {
-                indentationEdits.push({
-                    line: parent.endPosition.row - parent.startPosition.row,
-                    lineChangeDelta: endRowDelta,
-                });
+                if (endRowDelta !== 0) {
+                    indentationEdits.push({
+                        line: parent.endPosition.row - parent.startPosition.row,
+                        lineChangeDelta: endRowDelta,
+                    });
+                }
             }
         }
 
