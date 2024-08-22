@@ -186,6 +186,12 @@
           "default": "true",
           "description": "Enable USING formatting"
         },
+        "AblFormatter.ifFunctionFormatting": {
+          "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable IF FUNCTION formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
