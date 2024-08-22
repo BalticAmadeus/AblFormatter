@@ -202,6 +202,16 @@
           ],
           "description": "Add parentheses around the expression?"
         },
+        "AblFormatter.ifFunctionFormattingElseLocation": {
+          "order": 1102,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Add a new line before the ELSE?"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",

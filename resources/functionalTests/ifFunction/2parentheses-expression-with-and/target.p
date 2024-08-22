@@ -2,4 +2,6 @@
 /*  { "AblFormatter.ifFunctionFormatting": true,
       "AblFormatter.ifFunctionFormattingAddParentheses": "Yes"}*/
 
-c = (IF i < 5 THEN "low" ELSE "high").
+assign
+    a = (if Customer.Balance > 10000 and Customer.Country = "USA" then 1 else 2)
+    .

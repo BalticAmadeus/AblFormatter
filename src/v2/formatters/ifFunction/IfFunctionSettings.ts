@@ -13,4 +13,12 @@ export class IfFunctionSettings extends ASettings {
             ) === "Yes"
         );
     }
+
+    public newLineBeforeElse() {
+        return (
+            this.configurationManager.get(
+                "ifFunctionFormattingElseLocation"
+            ) === "New"
+        );
+    }
 }
