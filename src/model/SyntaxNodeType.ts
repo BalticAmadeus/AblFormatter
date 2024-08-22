@@ -24,6 +24,7 @@ export enum SyntaxNodeType {
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
     ComparisonExpression = "comparison_expression",
+    TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",

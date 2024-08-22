@@ -5,4 +5,12 @@ export class IfFunctionSettings extends ASettings {
     public ifFunctionFormatting() {
         return !!this.configurationManager.get("ifFunctionFormatting");
     }
+
+    public addParentheses() {
+        return (
+            this.configurationManager.get(
+                "ifFunctionFormattingAddParentheses"
+            ) === "Yes"
+        );
+    }
 }
