@@ -17,10 +17,19 @@ let parserHelper: AblParserHelper;
 
 const extensionDevelopmentPath = path.resolve(__dirname, "../../../");
 const testDir = "resources\\functionalTests";
-const testCases = getDirs(path.join(extensionDevelopmentPath, testDir));
+const testDirs = getDirs(path.join(extensionDevelopmentPath, testDir));
+let testCases: string[] = [];
+testDirs.forEach((dir) => {
+    const testsInsideDir = getDirs(
+        path.join(extensionDevelopmentPath, testDir + "\\" + dir)
+    );
+    testsInsideDir.forEach((test) => {
+        testCases.push(dir + "\\" + test);
+    });
+});
 
 // example for running single test case;
-//const testCases = "if1";
+// testCases = ["assign/1formattingFalse"];
 
 suite("Extension Test Suite", () => {
     suiteTeardown(() => {
