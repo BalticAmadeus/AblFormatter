@@ -19,6 +19,7 @@ export enum SyntaxNodeType {
     WhereClause = "where_clause",
     AssignStatement = "assign_statement",
     Assignment = "assignment",
+    Identifier = "identifier",
     SourceCode = "source_code",
     ForStatement = "for_statement",
     QueryTuning = "query_tuning",
