@@ -52,7 +52,6 @@ export enum SyntaxNodeType {
     NoWaitKeyword = "NO-WAIT",
     NoPrefetchKeyword = "NO-PREFETCH",
     NoErrorKeyword = "NO-ERROR",
-    ErrorKeyword = "ERROR",
     AssignKeyword = "ASSIGN",
     EachKeyword = "EACH",
     EndKeyword = "END",

@@ -1,16 +1,13 @@
-/* formatterSettingsOverride */
-/*  { "AblFormatter.assignFormatting": true,
-"abl.completion.upperCase": true,
-"AblFormatter.assignFormattingAssignLocation": "New",
-"AblFormatter.assignFormattingAlignRightExpression": "Yes",
-"AblFormatter.assignFormattingEndDotLocation": "New aligned"}*/
+/*  { "AblFormatter.caseFormatting": true,
+    "abl.completion.upperCase": true}*/
+DEFINE VARIABLE pay-stat AS INTEGER NO-UNDO INITIAL 1.
 
-DEFINE VARIABLE number11 AS INTEGER NO-UNDO.
-DEFINE VARIABLE number2  AS INTEGER NO-UNDO INITIAL 3.
-DEFINE VARIABLE number3  AS INTEGER NO-UNDO INITIAL 3.
-
-    ASSIGN
-        number2  = number3
-        when number3  = 2
-        number11 = 2
-        .
+CASE pay-stat:
+  WHEN 1 THEN DO:
+    MESSAGE "This account is unpaid.".
+  END.
+  WHEN 2 THEN DO: MESSAGE "This account is partially paid.".
+  END.
+  WHEN 3 THEN  
+    MESSAGE "This account is paid in full.".
+END CASE.
