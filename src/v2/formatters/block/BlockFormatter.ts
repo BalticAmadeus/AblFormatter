@@ -38,14 +38,26 @@ export class BlockFormater extends AFormatter implements IFormatter {
     ): CodeEdit | CodeEdit[] | undefined {
         let indentationEdits: IndentationEdits[] = [];
 
-        let parent = this.getParent(node);
+        let parent = node.parent;
 
         if (parent === null) {
             return undefined;
         }
 
+        let formattingOnStatement = false;
+        if (parent.type === SyntaxNodeType.DoBlock) {
+            const grandParent = parent.parent;
+            if (
+                grandParent !== null &&
+                grandParent.type === SyntaxNodeType.OnStatement
+            ) {
+                parent = grandParent;
+                formattingOnStatement = true;
+            }
+        }
+
         const parentIndentation = FormatterHelper.getActualStatementIndentation(
-            parent,
+            this.getParentIndentationSourceNode(parent),
             fullText
         );
 
@@ -54,12 +66,13 @@ export class BlockFormater extends AFormatter implements IFormatter {
             (node) =>
                 node.startPosition.row +
                 FormatterHelper.getActualTextRow(
-                    FormatterHelper.getCurrentText(node, fullText)
+                    FormatterHelper.getCurrentText(node, fullText),
+                    fullText
                 )
         );
 
         const codeLines = FormatterHelper.getCurrentText(parent, fullText)
-            .split("\n")
+            .split(fullText.eolDelimiter)
             .slice(0, -1);
 
         let n = 0;
@@ -72,7 +85,10 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 lineChangeDelta =
                     parentIndentation +
                     indentationStep -
-                    FormatterHelper.getActualTextIndentation(codeLine);
+                    FormatterHelper.getActualTextIndentation(
+                        codeLine,
+                        fullText
+                    );
 
                 n++;
             }
@@ -87,23 +103,29 @@ export class BlockFormater extends AFormatter implements IFormatter {
         });
 
         const lastLine = FormatterHelper.getCurrentText(parent, fullText)
-            .split("\n")
+            .split(fullText.eolDelimiter)
             .slice(-1)[0];
 
-        const endNode = parent.children.find(
-            (node) => node.type === SyntaxNodeType.EndKeyword
-        );
+        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
+        if (parentOfEndNode !== null) {
+            const endNode = parentOfEndNode.children.find(
+                (node) => node.type === SyntaxNodeType.EndKeyword
+            );
 
-        if (endNode !== undefined) {
-            const endRowDelta =
-                parentIndentation -
-                FormatterHelper.getActualTextIndentation(lastLine);
+            if (endNode !== undefined) {
+                const endRowDelta =
+                    parentIndentation -
+                    FormatterHelper.getActualTextIndentation(
+                        lastLine,
+                        fullText
+                    );
 
-            if (endRowDelta !== 0) {
-                indentationEdits.push({
-                    line: parent.endPosition.row - parent.startPosition.row,
-                    lineChangeDelta: endRowDelta,
-                });
+                if (endRowDelta !== 0) {
+                    indentationEdits.push({
+                        line: parent.endPosition.row - parent.startPosition.row,
+                        lineChangeDelta: endRowDelta,
+                    });
+                }
             }
         }
 
@@ -120,17 +142,22 @@ export class BlockFormater extends AFormatter implements IFormatter {
         indentationEdits: IndentationEdits[]
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        const newText = this.applyIndentationEdits(text, indentationEdits);
+        const newText = this.applyIndentationEdits(
+            text,
+            indentationEdits,
+            fullText
+        );
 
-        return this.getCodeEdit(node, text, newText);
+        return this.getCodeEdit(node, text, newText, fullText);
     }
 
     private applyIndentationEdits(
         code: string,
-        edits: IndentationEdits[]
+        edits: IndentationEdits[],
+        fullText: FullText
     ): string {
         // Split the code into lines
-        const lines = code.split("\n");
+        const lines = code.split(fullText.eolDelimiter);
 
         // Apply each edit
         edits.forEach((edit) => {
@@ -157,28 +184,28 @@ export class BlockFormater extends AFormatter implements IFormatter {
         });
 
         // Join the lines back into a single string
-        return lines.join("\n");
+        return lines.join(fullText.eolDelimiter);
     }
 
-    // private countLeadingSpaces(str: string): number {
-    //     return str.length - str.trimStart().length;
-    // }
-
-    private getParent(node: SyntaxNode): SyntaxNode | null {
-        let parent = node.parent;
-
-        if (parent === null) {
-            return null;
-        }
-
+    //refactor
+    private getParentIndentationSourceNode(node: SyntaxNode): SyntaxNode {
         if (
-            parent.type === "do_block" &&
-            parent.parent?.type === "if_statement"
+            node.type === SyntaxNodeType.DoBlock &&
+            node.parent?.type === SyntaxNodeType.IfStatement
         ) {
-            return parent.parent;
-        }
+            return node.parent;
+        } else if (
+            node.type === SyntaxNodeType.DoBlock &&
+            (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
+                node.parent?.type === SyntaxNodeType.ElseStatement)
+        ) {
+            if (node.parent.parent === null) {
+                return node.parent;
+            }
 
-        return parent;
+            return node.parent.parent;
+        }
+        return node;
     }
 }
 

@@ -42,13 +42,13 @@
           "markdownDescription": "The number of spaces a tab is equal to."
         },
         "AblFormatter.assignFormatting": {
-          "order": 1,
+          "order": 100,
           "type": "boolean",
           "default": "true",
           "markdownDescription": "Enable/disable ASSIGN statement formatting."
         },
         "AblFormatter.assignFormattingAssignLocation": {
-          "order": 100,
+          "order": 101,
           "type": "string",
           "default": "New",
           "enum": [
@@ -58,7 +58,7 @@
           "description": "Should assigns be located on same or new line after ASSIGN keyword?"
         },
         "AblFormatter.assignFormattingAlignRightExpression": {
-          "order": 101,
+          "order": 102,
           "type": "string",
           "default": "Yes",
           "enum": [
@@ -68,7 +68,7 @@
           "description": "Should right expression be aligned by longest one?"
         },
         "AblFormatter.assignFormattingEndDotLocation": {
-          "order": 102,
+          "order": 103,
           "type": "string",
           "default": "New aligned",
           "enum": [
@@ -79,52 +79,124 @@
           "description": "Should end dot be located on same or new line after ASSIGN statement?"
         },
         "AblFormatter.defineFormatting": {
-          "order": 2,
+          "order": 200,
           "type": "boolean",
           "default": "true",
           "description": "Enable DEFINE formatting"
         },
         "AblFormatter.findFormatting": {
-          "order": 3,
+          "order": 300,
           "type": "boolean",
           "default": "true",
           "description": "Enable FIND formatting"
         },
         "AblFormatter.forFormatting": {
-          "order": 4,
+          "order": 400,
           "type": "boolean",
           "default": "true",
           "description": "Enable FOR formatting"
         },
         "AblFormatter.caseFormatting": {
-          "order": 5,
+          "order": 500,
           "type": "boolean",
           "default": "true",
           "description": "Enable CASE formatting"
         },
+        "AblFormatter.caseFormattingThenLocation": {
+          "order": 501,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should THEN clause be on a new line or the same line as the WHEN keyword?"
+        },
+        "AblFormatter.caseFormattingDoLocation": {
+          "order": 502,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should DO block be on a new line or the same line as the THEN keyword?"
+        },
+        "AblFormatter.caseFormattingStatementLocation": {
+          "order": 503,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should the first statement in a WHEN block be on a new line or the same line?"
+        },
         "AblFormatter.blockFormatting": {
-          "order": 6,
+          "order": 600,
           "type": "boolean",
           "default": "true",
           "description": "Enable block formatting"
         },
         "AblFormatter.ifFormatting": {
-          "order": 7,
+          "order": 700,
           "type": "boolean",
           "default": "true",
           "description": "Enable IF formatting"
         },
+        "AblFormatter.ifFormattingThenLocation": {
+          "order": 701,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "TODO"
+        },
+        "AblFormatter.ifFormattingDoLocation": {
+          "order": 702,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "TODO"
+        },
+        "AblFormatter.ifFormattingStatementLocation": {
+          "order": 703,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "TODO"
+        },
         "AblFormatter.temptableFormatting": {
-          "order": 8,
+          "order": 800,
           "type": "boolean",
           "default": "true",
           "description": "Enable TEMP-TABLE formatting"
+        },
+        "AblFormatter.usingFormatting": {
+          "order": 9,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable USING formatting"
         },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
           "default": "true",
-          "description": "Enable tree printing to console"
+          "description": "TODO: REMOVE THIS SETTING. Enable tree printing to console"
+        },
+        "AblFormatter.showTreeInfoOnHover": {
+          "order": 10100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable table view with tree info on hover"
         }
       }
     },

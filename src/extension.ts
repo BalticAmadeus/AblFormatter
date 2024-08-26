@@ -21,9 +21,8 @@ export async function activate(context: vscode.ExtensionContext) {
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
-    const formatter = new AblFormatterProvider(
-        new AblParserHelper(context.extensionPath)
-    );
+    const parserHelper = new AblParserHelper(context.extensionPath);
+    const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
         Constants.ablId,
@@ -35,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
         formatter
     );
 
-    const hoverProvider = new AblDebugHoverProvider(formatter);
+    const hoverProvider = new AblDebugHoverProvider(parserHelper);
     vscode.languages.registerHoverProvider(Constants.ablId, hoverProvider);
 
     // The command has been defined in the package.json file
