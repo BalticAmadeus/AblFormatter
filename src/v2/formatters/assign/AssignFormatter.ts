@@ -25,6 +25,7 @@ export class AssignFormatter extends AFormatter implements IFormatter {
     match(node: Readonly<SyntaxNode>): boolean {
         return node.type === SyntaxNodeType.AssignStatement;
     }
+
     parse(
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
@@ -55,20 +56,58 @@ export class AssignFormatter extends AFormatter implements IFormatter {
 
         node.children.forEach((child) => {
             resultString = resultString.concat(
-                this.getAssignmentString(child, fullText, longestLeft)
+                this.getAssigStatementString(child, fullText, longestLeft)
             );
         });
 
-        if (this.settings.endDotAlignment()) {
-            resultString +=
-                fullText.eolDelimiter +
-                " ".repeat(this.startColumn + this.settings.tabSize()) +
-                ".";
-        } else if (this.settings.endDotLocationNew()) {
-            resultString += fullText.eolDelimiter + ".";
-        } else resultString += ".";
+        resultString += this.getFormattedEndDot(fullText);
 
         return resultString;
+    }
+
+    private getFormattedEndDot(fullText: Readonly<FullText>): string {
+        if (this.settings.endDotAlignment()) {
+            return (
+                fullText.eolDelimiter +
+                " ".repeat(this.startColumn + this.settings.tabSize()) +
+                "."
+            );
+        } else if (this.settings.endDotLocationNew()) {
+            return fullText.eolDelimiter + ".";
+        } else {
+            return ".";
+        }
+    }
+
+    private getAssigStatementString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>,
+        longestLeft: number
+    ): string {
+        let assignString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.AssignKeyword:
+                assignString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+            case SyntaxNodeType.Assignment:
+                assignString += this.getAssignmentString(
+                    node,
+                    fullText,
+                    longestLeft
+                );
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                assignString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return assignString;
     }
 
     private getAssignmentString(
@@ -76,46 +115,10 @@ export class AssignFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>,
         longestLeft: number
     ): string {
-        switch (node.childCount) {
-            case 4:
-                return this.handleFourChildren(node, fullText);
-            case 3:
-                return this.handleThreeChildren(node, fullText, longestLeft);
-            case 1:
-                return this.handleOneChild(node, fullText);
-            case 0:
-                return this.handleZeroChildren(node, fullText);
-            default:
-                return "";
-        }
-    }
-
-    private handleFourChildren(
-        node: SyntaxNode,
-        fullText: Readonly<FullText>
-    ): string {
         let newString = "";
 
-        if (this.settings.newLineAfterAssign()) {
-            newString =
-                fullText.eolDelimiter +
-                " ".repeat(this.startColumn + this.settings.tabSize() - 1);
-        }
-
-        node.children.forEach((child) => {
-            newString +=
-                " " + FormatterHelper.getCurrentText(child, fullText).trim();
-        });
-        return newString;
-    }
-
-    private handleThreeChildren(
-        node: SyntaxNode,
-        fullText: Readonly<FullText>,
-        longestLeft: number
-    ): string {
-        let newString = "";
-        const [leftNode, middleNode, rightNode] = node.children;
+        const [leftNode, middleNode, rightNode, whenExpressionNode] =
+            node.children;
         if (leftNode && middleNode && rightNode) {
             const leftText = FormatterHelper.getCurrentText(
                 leftNode,
@@ -144,49 +147,33 @@ export class AssignFormatter extends AFormatter implements IFormatter {
                   rightText
                 : " " + paddedLeftText + " " + middleText + " " + rightText;
         }
-        return newString;
-    }
-
-    private handleOneChild(
-        node: SyntaxNode,
-        fullText: Readonly<FullText>
-    ): string {
-        let newString = "";
-
-        switch (node.type) {
-            case SyntaxNodeType.ErrorKeyword:
-                newString = this.settings.newLineAfterAssign()
-                    ? fullText.eolDelimiter +
-                      " ".repeat(this.startColumn + this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
-                    : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
-                break;
+        if (whenExpressionNode) {
+            newString += this.formatWhenExpression(
+                whenExpressionNode,
+                fullText
+            );
         }
         return newString;
     }
 
-    private handleZeroChildren(
-        node: SyntaxNode,
+    private formatWhenExpression(
+        whenExpressionNode: SyntaxNode,
         fullText: Readonly<FullText>
     ): string {
-        let newString = "";
-        switch (node.type) {
-            case SyntaxNodeType.AssignKeyword:
-                newString = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
-                break;
-            case SyntaxNodeType.NoErrorKeyword:
-                const text = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
-                newString = text.length === 0 ? "" : " " + text;
-                break;
+        let formattedString = "";
+
+        if (this.settings.newLineAfterAssign()) {
+            formattedString +=
+                fullText.eolDelimiter +
+                " ".repeat(this.startColumn + this.settings.tabSize() - 1);
         }
-        return newString;
+
+        whenExpressionNode.children.forEach((child) => {
+            formattedString +=
+                " " + FormatterHelper.getCurrentText(child, fullText).trim();
+        });
+
+        return formattedString;
     }
 
     private getLongestLeft(
@@ -196,10 +183,6 @@ export class AssignFormatter extends AFormatter implements IFormatter {
         let longestLeft = 0;
 
         assignments.forEach((assignment) => {
-            if (assignment.childCount > 3 || assignment.childCount == 1) {
-                return;
-            }
-
             const leftChild = assignment.child(0);
 
             const leftLength = leftChild
@@ -211,7 +194,6 @@ export class AssignFormatter extends AFormatter implements IFormatter {
                 longestLeft = leftLength;
             }
         });
-
         return longestLeft;
     }
 
@@ -228,8 +210,11 @@ export class AssignFormatter extends AFormatter implements IFormatter {
             return 0;
         }
 
-        return node.type === SyntaxNodeType.CaseStatement
-            ? node.startPosition.column
-            : this.findParentAssignStatementStartColumn(node.parent);
+        const result =
+            node.type === SyntaxNodeType.CaseStatement
+                ? node.startPosition.column
+                : this.findParentAssignStatementStartColumn(node.parent);
+
+        return result;
     }
 }

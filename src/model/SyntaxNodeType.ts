@@ -11,6 +11,7 @@ export enum SyntaxNodeType {
     ElseStatement = "else_statement",
     AblStatement = "abl_statement",
     LogicalExpression = "logical_expression",
+    WhenExpression = "when_expression",
     TemptableDefinition = "temp_table_definition",
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
