@@ -190,7 +190,13 @@
           "order": 10000,
           "type": "boolean",
           "default": "true",
-          "description": "Enable tree printing to console"
+          "description": "TODO: REMOVE THIS SETTING. Enable tree printing to console"
+        },
+        "AblFormatter.showTreeInfoOnHover": {
+          "order": 10100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable table view with tree info on hover"
         }
       }
     },
