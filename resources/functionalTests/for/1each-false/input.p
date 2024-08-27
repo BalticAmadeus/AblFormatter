@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.blockFormatting": true,
+/*  { "AblFormatter.blockFormatting": false,
 "AblFormatter.forFormatting": false
 }*/
 

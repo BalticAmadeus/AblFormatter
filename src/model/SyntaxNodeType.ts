@@ -24,6 +24,7 @@ export enum SyntaxNodeType {
     Assignment = "assignment",
     Identifier = "identifier",
     SourceCode = "source_code",
+    ForPhrase = "for_phrase",
     ForStatement = "for_statement",
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
@@ -69,4 +70,7 @@ export enum SyntaxNodeType {
     EndKeyword = "END",
     IfKeyword = "IF",
     ForKeyword = "FOR",
+    DotKeyword = ".",
+    ColonKeyword = ":",
+    CommaKeyword = ",",
 }
