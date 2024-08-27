@@ -23,14 +23,19 @@ export class ForFormatter extends AFormatter implements IFormatter {
     }
 
     match(node: Readonly<SyntaxNode>): boolean {
-        return node.type === SyntaxNodeType.ForStatement;
+        if (node.type === SyntaxNodeType.ForStatement) {
+            return true;
+        }
+
+        return false;
     }
 
     parse(
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        this.collectCaseStructure(node, fullText);
+        this.collectForStructure(node, fullText);
+
         return this.getCodeEdit(
             node,
             FormatterHelper.getCurrentText(node, fullText),
@@ -39,7 +44,7 @@ export class ForFormatter extends AFormatter implements IFormatter {
         );
     }
 
-    private collectCaseStructure(
+    private collectForStructure(
         node: SyntaxNode,
         fullText: Readonly<FullText>
     ) {
@@ -56,21 +61,17 @@ export class ForFormatter extends AFormatter implements IFormatter {
         let resultString = "";
         let alignColumn = 0;
 
-        node.children.forEach((child) => {
-            console.log("BEFOREE:::::");
-            console.log("child.type:", child.type);
-            console.log("resultString:", resultString);
+        console.log("Node Type:", node.type);
+        console.log("Node Start Position:", node.startIndex);
+        console.log("Node End Position:", node.endIndex);
 
+        node.children.forEach((child) => {
             if (child.type === SyntaxNodeType.Identifier) {
                 alignColumn = this.startColumn + resultString.length;
             }
             resultString = resultString.concat(
                 this.getForExpressionString(child, fullText, alignColumn)
             );
-
-            console.log("AFFTERRR:::::");
-            console.log("child.type:", child.type);
-            console.log("resultString:", resultString);
         });
 
         return resultString;
@@ -83,22 +84,20 @@ export class ForFormatter extends AFormatter implements IFormatter {
     ): string {
         let newString = "";
 
+        console.log("Node Type:", node.type);
+        console.log("Node Start Position:", node.startIndex);
+        console.log("Node End Position:", node.endIndex);
+
         switch (node.type) {
             case SyntaxNodeType.ForKeyword:
-                console.log("Node Type:", node.type);
-                console.log("Node Start Position:", node.startIndex);
-                console.log("Node End Position:", node.endIndex);
-
+                console.log("ForKeyword");
                 newString = FormatterHelper.getCurrentText(
                     node,
                     fullText
                 ).trim();
-                console.log("Extracted newString for ForKeyword:", newString);
                 break;
             case SyntaxNodeType.WhereClause:
-                console.log("Node Type:", node.type);
-                console.log("Node Start Position:", node.startIndex);
-                console.log("Node End Position:", node.endIndex);
+                console.log("WhereClause");
                 newString = this.getWhereClauseBlock(
                     node,
                     fullText,
@@ -106,9 +105,7 @@ export class ForFormatter extends AFormatter implements IFormatter {
                 );
                 break;
             default:
-                console.log("Node Type:", node.type);
-                console.log("Node Start Position:", node.startIndex);
-                console.log("Node End Position:", node.endIndex);
+                console.log("default");
                 const text = FormatterHelper.getCurrentText(
                     node,
                     fullText
