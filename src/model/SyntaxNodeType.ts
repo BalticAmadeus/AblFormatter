@@ -41,9 +41,11 @@ export enum SyntaxNodeType {
     OnStatement = "on_statement",
     Getter = "getter",
     Setter = "setter",
+    LeftParenthesis = "(",
+    RightParenthesis = ")",
 
-    WhenKeyword = "WHEN",
     // keywords
+    WhenKeyword = "WHEN",
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
