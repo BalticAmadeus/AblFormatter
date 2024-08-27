@@ -192,6 +192,12 @@
           "default": "true",
           "description": "Enable EMPTY BLOCK formatting"
         },
+        "AblFormatter.expressionFormatting": {
+          "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable EXPRESSION formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
