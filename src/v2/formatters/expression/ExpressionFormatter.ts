@@ -13,6 +13,7 @@ import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 export class ExpressionFormatter extends AFormatter implements IFormatter {
     public static readonly formatterLabel = "expressionFormatting";
     private readonly settings: ExpressionSettings;
+    private lastComparisonExpressionColumn = 0;
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);
@@ -49,6 +50,17 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
 
         if (node.type === SyntaxNodeType.ParenthesizedExpression) {
             node.children.forEach((child) => {
+                if (
+                    this.settings.newLineAfterLogical() &&
+                    child.type === SyntaxNodeType.ComparisonExpression
+                ) {
+                    this.lastComparisonExpressionColumn =
+                        child.startPosition.column;
+                    console.log("lastLine:\n" + resultString);
+                    console.log(
+                        "lastLineLength: " + this.lastComparisonExpressionColumn
+                    );
+                }
                 resultString = resultString.concat(
                     this.getParenthesizedExpressionString(child, fullText)
                 );
@@ -56,11 +68,16 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
             return resultString.trimEnd();
         } else {
             node.children.forEach((child) => {
-                if (node.type === SyntaxNodeType.Assignment) {
-                    console.log("child: " + child.type);
+                console.log("child: " + child.type);
+                if (
+                    this.settings.newLineAfterLogical() &&
+                    child.type === SyntaxNodeType.ComparisonExpression
+                ) {
+                    this.lastComparisonExpressionColumn =
+                        child.startPosition.column;
+                    console.log("lastLine:\n" + resultString);
                     console.log(
-                        "childText:\n" +
-                            FormatterHelper.getCurrentText(child, fullText)
+                        "lastLineLength: " + this.lastComparisonExpressionColumn
                     );
                 }
                 resultString = resultString.concat(
@@ -69,6 +86,7 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
             });
             console.log("allText:\n" + resultString);
             if (node.type === SyntaxNodeType.Assignment) {
+                // In this case, we need to trim the spaces at the start of the string as well
                 return resultString.trim();
             }
             return resultString.trimEnd();
@@ -81,6 +99,18 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
     ): string {
         let newString = "";
         switch (node.type) {
+            case SyntaxNodeType.AndKeyword || SyntaxNodeType.OrKeyword:
+                console.log(
+                    "lastComparison: " + this.lastComparisonExpressionColumn
+                );
+                newString = this.settings.newLineAfterLogical()
+                    ? " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim() +
+                      fullText.eolDelimiter +
+                      " ".repeat(this.lastComparisonExpressionColumn)
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -110,5 +140,10 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
                 break;
         }
         return newString;
+    }
+
+    private getLengthOfLastLine(text: string): number {
+        const lines = text.split("\n");
+        return lines[lines.length - 1].length;
     }
 }
