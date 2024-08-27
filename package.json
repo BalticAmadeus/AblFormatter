@@ -198,6 +198,16 @@
           "default": "true",
           "description": "Enable EXPRESSION formatting"
         },
+        "AblFormatter.expressionFormattingLogicalLocation": {
+          "order": 1101,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should expressions with logical AND, OR values be on multiple lines?"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",

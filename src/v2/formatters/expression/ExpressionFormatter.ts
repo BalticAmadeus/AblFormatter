@@ -22,7 +22,11 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
         if (
             node.type === SyntaxNodeType.LogicalExpression ||
             node.type === SyntaxNodeType.ComparisonExpression ||
-            node.type === SyntaxNodeType.ParenthesizedExpression
+            node.type === SyntaxNodeType.ParenthesizedExpression ||
+            node.type === SyntaxNodeType.AdditiveExpression ||
+            node.type === SyntaxNodeType.MultiplicativeExpression ||
+            node.type === SyntaxNodeType.Assignment ||
+            node.type === SyntaxNodeType.UnaryExpression
         ) {
             return true;
         }
@@ -49,14 +53,24 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
                     this.getParenthesizedExpressionString(child, fullText)
                 );
             });
-            return resultString;
+            return resultString.trimEnd();
         } else {
             node.children.forEach((child) => {
+                if (node.type === SyntaxNodeType.Assignment) {
+                    console.log("child: " + child.type);
+                    console.log(
+                        "childText:\n" +
+                            FormatterHelper.getCurrentText(child, fullText)
+                    );
+                }
                 resultString = resultString.concat(
                     this.getExpressionString(child, fullText)
                 );
             });
             console.log("allText:\n" + resultString);
+            if (node.type === SyntaxNodeType.Assignment) {
+                return resultString.trim();
+            }
             return resultString.trimEnd();
         }
     }

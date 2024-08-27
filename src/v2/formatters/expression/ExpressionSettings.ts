@@ -5,4 +5,12 @@ export class ExpressionSettings extends ASettings {
     public expressionSettings() {
         return !!this.configurationManager.get("expressionFormatting");
     }
+
+    public newLineAfterLogical() {
+        return (
+            this.configurationManager.get(
+                "expressionFormattingLogicalLocation"
+            ) === "New"
+        );
+    }
 }
