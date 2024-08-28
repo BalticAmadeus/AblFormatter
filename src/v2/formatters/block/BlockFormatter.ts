@@ -196,6 +196,12 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return node.parent;
         } else if (
             node.type === SyntaxNodeType.DoBlock &&
+            (node.parent?.type === SyntaxNodeType.CaseWhenBranch ||
+                node.parent?.type === SyntaxNodeType.CaseOtherwiseBranch)
+        ) {
+            return node.parent;
+        }else if (
+            node.type === SyntaxNodeType.DoBlock &&
             (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
                 node.parent?.type === SyntaxNodeType.ElseStatement)
         ) {
