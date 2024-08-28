@@ -56,9 +56,7 @@ export class AblFormatterProvider
 
     public provideDocumentRangeFormattingEdits(
         document: vscode.TextDocument,
-        range: vscode.Range,
-        options: vscode.FormattingOptions,
-        token: vscode.CancellationToken
+        range: vscode.Range
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
@@ -91,39 +89,24 @@ export class AblFormatterProvider
 
     provideDocumentRangesFormattingEdits?(
         document: vscode.TextDocument,
-        ranges: vscode.Range[],
-        options: vscode.FormattingOptions,
-        token: vscode.CancellationToken
+        ranges: vscode.Range[]
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log(
             "AblFormatterProvider.provideDocumentFormattingEdits2",
             ranges
         );
 
-        const configurationManager = ConfigurationManager2.getInstance();
-
-        try {
-            const codeFormatter = new FormattingEngine(
-                this.parserHelper,
-                new FileIdentifier(document.fileName, document.version),
-                configurationManager
-            );
-
-            const str = codeFormatter.formatText(
-                document.getText(ranges[0]),
-                new EOL(document.eol)
-            );
-
-            const editor = vscode.window.activeTextEditor;
-            editor!.edit(
-                (edit: vscode.TextEditorEdit) => {
-                    edit.replace(ranges[0], str);
-                },
-                { undoStopBefore: false, undoStopAfter: false }
-            );
-        } catch (e) {
-            console.log(e);
-            return;
+        switch (ranges.length) {
+            case 0:
+                return [];
+            case 1:
+                return this.provideDocumentRangeFormattingEdits(
+                    document,
+                    ranges[0]
+                );
+            default:
+                // for now, just format whole document, if there is more than one range
+                return this.provideDocumentFormattingEdits(document);
         }
     }
 }
