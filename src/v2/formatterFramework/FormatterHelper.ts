@@ -1,5 +1,6 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { FullText } from "../model/FullText";
+import { SyntaxNodeType } from "../../model/SyntaxNodeType";
 
 export class FormatterHelper {
     public static getActualTextIndentation(
@@ -77,5 +78,69 @@ export class FormatterHelper {
             return fullText.text.substring(node.startIndex, node.endIndex);
         }
         return "";
+    }
+
+    public static collectExpression(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+
+        if (node.type === SyntaxNodeType.ParenthesizedExpression) {
+            node.children.forEach((child) => {
+                resultString = resultString.concat(
+                    this.getParenthesizedExpressionString(child, fullText)
+                );
+            });
+            return resultString;
+        } else {
+            node.children.forEach((child) => {
+                resultString = resultString.concat(
+                    this.getExpressionString(child, fullText)
+                );
+            });
+            if (node.type === SyntaxNodeType.Assignment) {
+                // In this case, we need to trim the spaces at the start of the string as well
+                return resultString.trimStart();
+            }
+            return resultString;
+        }
+    }
+
+    public static getExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        switch (node.type) {
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    public static getParenthesizedExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ) {
+        let newString = "";
+        switch (node.type) {
+            case SyntaxNodeType.LeftParenthesis:
+                newString =
+                    " " + FormatterHelper.getCurrentText(node, fullText);
+                break;
+            default:
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                break;
+        }
+        return newString;
     }
 }
