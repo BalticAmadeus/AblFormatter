@@ -40,21 +40,26 @@ export class DefineFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        console.log(text);
-        const newText = this.getPrettyToken(text);
+        const newText = this.getPrettyToken(text, fullText);
         return this.getCodeEdit(node, text, newText, fullText);
     }
 
-    private getPrettyToken(text: string): string {
-        const token = this.settings.casing()
-            ? (this.targetIsLong
-                  ? this.longDefine
-                  : this.shortDefine
-              ).toUpperCase()
-            : (this.targetIsLong
-                  ? this.longDefine
-                  : this.shortDefine
-              ).toLowerCase();
+    private getPrettyToken(text: string, fullText: Readonly<FullText>): string {
+        const actualRow = FormatterHelper.getActualTextRow(text, fullText);
+
+        const token = fullText.eolDelimiter
+            .repeat(actualRow)
+            .concat(
+                this.settings.casing()
+                    ? (this.targetIsLong
+                          ? this.longDefine
+                          : this.shortDefine
+                      ).toUpperCase()
+                    : (this.targetIsLong
+                          ? this.longDefine
+                          : this.shortDefine
+                      ).toLowerCase()
+            );
 
         return token;
     }

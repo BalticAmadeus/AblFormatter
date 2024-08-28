@@ -11,3 +11,5 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 node_modules/**
+resources/functionalTests/**
+resources/samples/**
