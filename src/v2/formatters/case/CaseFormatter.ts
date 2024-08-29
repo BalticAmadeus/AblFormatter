@@ -107,9 +107,21 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
                       " ".repeat(this.startColumn + this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
+                      FormatterHelper.getCurrentTextMultilineAdjust(
+                          node,
+                          fullText,
+                          this.startColumn +
+                              this.settings.tabSize() -
+                              node.startPosition.column
+                      ).trim()
                     : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentTextMultilineAdjust(
+                          node,
+                          fullText,
+                          this.startColumn +
+                              this.settings.tabSize() -
+                              node.startPosition.column
+                      ).trim();
                 break;
             default:
                 const text = FormatterHelper.getCurrentText(
