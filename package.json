@@ -192,6 +192,12 @@
           "default": "true",
           "description": "Enable EMPTY BLOCK formatting"
         },
+        "AblFormatter.propertyFormatting": {
+          "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable property formatting"
+        },
         "AblFormatter.treeLogging": {
           "order": 10000,
           "type": "boolean",
@@ -203,12 +209,6 @@
           "type": "boolean",
           "default": "true",
           "description": "Enable table view with tree info on hover"
-        },
-        "AblFormatter.propertyFormatting": {
-          "order": 10200,
-          "type": "boolean",
-          "default": "true",
-          "description": "Enable property formatting"
         }
       }
     },
