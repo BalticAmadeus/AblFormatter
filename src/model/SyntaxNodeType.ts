@@ -32,6 +32,7 @@ export enum SyntaxNodeType {
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
     ReturnStatement = "return_statement",
+    FunctionCallStatement = "function_call_statement",
     UsingStatement = "using_statement",
     ClassStatement = "class_statement",
     FinallyStatement = "finally_statement",
@@ -69,3 +70,20 @@ export enum SyntaxNodeType {
     EndKeyword = "END",
     IfKeyword = "IF",
 }
+
+export class MyFancySet<T> extends Set {
+    public hasFancy(value: T, inCaseOfNotHave: T): T {
+        if (this.has(value)) {
+            return value;
+        } else {
+            return inCaseOfNotHave;
+        }
+    }
+}
+
+export const afterThenStatements = new MyFancySet<string>([
+    SyntaxNodeType.ReturnStatement,
+    SyntaxNodeType.AblStatement,
+    SyntaxNodeType.FunctionCallStatement,
+    SyntaxNodeType.AssignStatement,
+]);
