@@ -73,7 +73,7 @@ export class CaseFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): string {
         let newString = "";
-        
+
         switch (node.type) {
             case SyntaxNodeType.WhenKeyword:
             case SyntaxNodeType.OtherwiseKeyword:
@@ -99,6 +99,7 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
             case SyntaxNodeType.ReturnStatement:
+            case SyntaxNodeType.VariableAssignment:
             case SyntaxNodeType.AblStatement:
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
