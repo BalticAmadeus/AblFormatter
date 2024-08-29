@@ -43,6 +43,7 @@ export enum SyntaxNodeType {
     OnStatement = "on_statement",
     Getter = "getter",
     Setter = "setter",
+    VariableAssignment = "variable_assignment",
 
     WhenKeyword = "WHEN",
     // keywords
@@ -86,4 +87,5 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.AblStatement,
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
+    SyntaxNodeType.VariableAssignment,
 ]);
