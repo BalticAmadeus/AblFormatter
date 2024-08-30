@@ -32,7 +32,6 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        // let newText = text;
         let newText = this.collectStructure(node, fullText);
 
         if (this.settings.addParentheses()) {
@@ -141,19 +140,19 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
     }
 
     private hasTernaryExpressionChildren(node: Readonly<SyntaxNode>): boolean {
-        let ret = false;
+        let foundTernaryExpression = false;
         node.children.forEach((child) => {
             if (child.type === SyntaxNodeType.TernaryExpression) {
-                ret = true;
+                foundTernaryExpression = true;
                 return;
             } else if (child.type === SyntaxNodeType.ParenthesizedExpression) {
                 if (this.hasTernaryExpressionChildren(child)) {
-                    ret = true;
+                    foundTernaryExpression = true;
                     return;
                 }
             }
         });
-        return ret;
+        return foundTernaryExpression;
     }
 
     private hasTernaryExpressionParent(node: Readonly<SyntaxNode>): boolean {
