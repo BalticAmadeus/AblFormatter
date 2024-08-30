@@ -1,6 +1,8 @@
 import { MyFancySet } from "../utils/MyFancySet";
 
 export enum SyntaxNodeType {
+    Error = "ERROR",
+
     AvailableExpression = "available_expression",
     CaseStatement = "case_statement",
     CaseBody = "case_body",
