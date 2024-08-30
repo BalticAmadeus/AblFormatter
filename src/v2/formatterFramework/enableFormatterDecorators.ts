@@ -5,6 +5,7 @@ import { DefineFormatter } from "../formatters/define/DefineFormatter";
 import { UsingFormatter } from "../formatters/using/UsingFormatter";
 import { CaseFormatter } from "../formatters/case/CaseFormatter";
 import { ForFormatter } from "../formatters/for/ForFormatter";
+import { IfFunctionFormatter } from "../formatters/ifFunction/IfFunctionFormatter";
 import { EmptyBlockFormatter } from "../formatters/emptyblock/EmptyBlockFormatter";
 import { TempTableFormatter } from "../formatters/tempTable/TempTableFormatter";
 import { PropertyFormatter } from "../formatters/property/PropertyFormatter";
@@ -21,4 +22,5 @@ export function enableFormatterDecorators(): void {
     EmptyBlockFormatter;
     TempTableFormatter;
     PropertyFormatter;
+    IfFunctionFormatter;
 }
