@@ -7,6 +7,7 @@ export enum SyntaxNodeType {
     DoBlock = "do_block",
     Body = "body",
     ClassBody = "class_body",
+    InterfaceBody = "interface_body",
     IfStatement = "if_statement",
     ElseStatement = "else_statement",
     AblStatement = "abl_statement",

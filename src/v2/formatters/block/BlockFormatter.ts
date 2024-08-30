@@ -25,7 +25,8 @@ export class BlockFormater extends AFormatter implements IFormatter {
         if (
             node.type === SyntaxNodeType.Body ||
             node.type === SyntaxNodeType.CaseBody ||
-            node.type === SyntaxNodeType.ClassBody
+            node.type === SyntaxNodeType.ClassBody ||
+            node.type === SyntaxNodeType.InterfaceBody
         ) {
             found = true;
         }
