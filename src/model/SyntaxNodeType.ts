@@ -17,6 +17,7 @@ export enum SyntaxNodeType {
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
+    VariableAssignment = "variable_assignment",
     ConstructorDefinition = "constructor_definition",
     DestructorDefinition = "destructor_definition",
     MethodDefinition = "method_definition",
