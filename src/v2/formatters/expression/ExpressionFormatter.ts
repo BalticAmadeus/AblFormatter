@@ -38,7 +38,88 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        const newText = FormatterHelper.collectExpression(node, fullText);
+
+        let newText = "";
+        if (
+            node.type === SyntaxNodeType.LogicalExpression &&
+            this.settings.newLineAfterLogical()
+        ) {
+            newText = this.collectLogicalStructure(node, fullText);
+        } else {
+            newText = FormatterHelper.collectExpression(node, fullText);
+        }
         return this.getCodeEdit(node, text, newText, fullText);
+    }
+    private collectLogicalStructure(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getLogicalExpressionString(child, fullText)
+            );
+        });
+
+        if (
+            this.settings.newLineAfterLogical() &&
+            !this.hasLogicalExpressionParent(node)
+        ) {
+            resultString = FormatterHelper.addIndentation(
+                resultString,
+                node.startPosition.column +
+                    FormatterHelper.getActualTextIndentation(
+                        resultString,
+                        fullText
+                    ),
+                fullText.eolDelimiter
+            );
+        }
+
+        return resultString;
+    }
+
+    private getLogicalExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        switch (node.type) {
+            // case SyntaxNodeType.LogicalExpression:
+            //     newString = FormatterHelper.getCurrentText(node, fullText);
+            //     break;
+            case SyntaxNodeType.ParenthesizedExpression:
+                node.children.forEach((child) => {
+                    newString = newString.concat(
+                        FormatterHelper.getParenthesizedExpressionString(
+                            child,
+                            fullText
+                        )
+                    );
+                });
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    private hasLogicalExpressionParent(node: Readonly<SyntaxNode>): boolean {
+        if (node.parent === null) {
+            return false;
+        }
+        if (node.parent.type === SyntaxNodeType.LogicalExpression) {
+            return true;
+        }
+        if (node.parent.type === SyntaxNodeType.ParenthesizedExpression) {
+            return this.hasLogicalExpressionParent(node.parent);
+        }
+        return false;
     }
 }

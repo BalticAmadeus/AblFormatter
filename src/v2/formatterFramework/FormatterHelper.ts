@@ -112,7 +112,14 @@ export class FormatterHelper {
         fullText: Readonly<FullText>
     ): string {
         let newString = "";
+
         switch (node.type) {
+            case SyntaxNodeType.ParenthesizedExpression:
+                newString = this.getParenthesizedExpressionString(
+                    node,
+                    fullText
+                );
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -129,17 +136,20 @@ export class FormatterHelper {
         fullText: Readonly<FullText>
     ) {
         let newString = "";
-        switch (node.type) {
-            case SyntaxNodeType.LeftParenthesis:
-                newString =
-                    " " + FormatterHelper.getCurrentText(node, fullText);
-                break;
-            default:
-                newString = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
-                break;
+        if (node.type === SyntaxNodeType.LeftParenthesis) {
+            newString =
+                " " + FormatterHelper.getCurrentText(node, fullText).trim();
+        } else if (
+            node.type === SyntaxNodeType.RightParenthesis ||
+            (node.previousSibling !== null &&
+                node.previousSibling.type === SyntaxNodeType.LeftParenthesis)
+        ) {
+            newString = FormatterHelper.getCurrentText(
+                node,
+                fullText
+            ).trimStart();
+        } else {
+            newString = FormatterHelper.getCurrentText(node, fullText);
         }
         return newString;
     }
