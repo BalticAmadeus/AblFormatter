@@ -61,7 +61,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
             fullText
         );
 
-        const indentationStep = 4;
+        const indentationStep = this.settings.tabSize();
         const blockStatementsStartRows = node.children.map(
             (node) =>
                 node.startPosition.row +
@@ -73,11 +73,13 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
         const codeLines = FormatterHelper.getCurrentText(parent, fullText)
             .split(fullText.eolDelimiter)
-            .slice(0, -1);
+            .slice(1, -1);
 
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
+            // the first line was removed, so index needs to be incremented
+            index++;
             const lineNumber = parent.startPosition.row + index;
 
             // adjust delta
@@ -93,7 +95,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 n++;
             }
 
-            // add edits
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
                     line: index,
@@ -195,6 +196,12 @@ export class BlockFormater extends AFormatter implements IFormatter {
         ) {
             return node.parent;
         } else if (
+            node.type === SyntaxNodeType.DoBlock &&
+            (node.parent?.type === SyntaxNodeType.CaseWhenBranch ||
+                node.parent?.type === SyntaxNodeType.CaseOtherwiseBranch)
+        ) {
+            return node.parent;
+        }else if (
             node.type === SyntaxNodeType.DoBlock &&
             (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
                 node.parent?.type === SyntaxNodeType.ElseStatement)

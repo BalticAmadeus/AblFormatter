@@ -6,7 +6,10 @@ import { Range, TextEdit } from "vscode";
 import { FormatterSettings } from "../model/FormatterSettings";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
-export class AblTemptableFormatter extends AAblFormatter implements IAblFormatter {
+export class AblTemptableFormatter
+    extends AAblFormatter
+    implements IAblFormatter
+{
     private startColumn = 0;
     private temptableValueColumn = 0;
     private temptableBodyValue = "";
@@ -72,9 +75,10 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
     }
 
     private collectTemptableStructure(node: SyntaxNode): void {
-        this.startColumn          = node.startPosition.column;
-        this.temptableValueColumn = this.startColumn + FormatterSettings.tabSize();
-        this.temptableBodyValue   = this.getTemptableBlock(node);
+        this.startColumn = node.startPosition.column;
+        this.temptableValueColumn =
+            this.startColumn + FormatterSettings.tabSize();
+        this.temptableBodyValue = this.getTemptableBlock(node);
     }
 
     private getTemptableBlock(node: SyntaxNode): string {
@@ -82,14 +86,20 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
 
         node.children.forEach((child) => {
             resultString = resultString.concat(
-                this.getTemptableExpressionString(child, "\r\n".concat(" ".repeat(this.temptableValueColumn)))
+                this.getTemptableExpressionString(
+                    child,
+                    "\r\n".concat(" ".repeat(this.temptableValueColumn))
+                )
             );
         });
 
         return resultString.trim();
     }
 
-    private getTemptableExpressionString(node: SyntaxNode, separator: string): string {
+    private getTemptableExpressionString(
+        node: SyntaxNode,
+        separator: string
+    ): string {
         switch (node.type.trim()) {
             case SyntaxNodeType.FieldDefinition:
             case SyntaxNodeType.IndexDefinition:
@@ -97,15 +107,21 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
 
                 node.children.forEach((child) => {
                     resultTemptableString = resultTemptableString.concat(
-                        this.getTemptableExpressionString(child, "\r\n".concat(" ".repeat(this.temptableValueColumn)))
+                        this.getTemptableExpressionString(
+                            child,
+                            "\r\n".concat(" ".repeat(this.temptableValueColumn))
+                        )
                     );
                 });
 
                 return separator + resultTemptableString;
             case SyntaxNodeType.LikeKeyword:
-                if (node.parent!.type.trim() === SyntaxNodeType.FieldDefinition ||
-                    node.parent!.type.trim() === SyntaxNodeType.IndexDefinition) {
-                 return " " + node.text.trim();
+                if (
+                    node.parent!.type.trim() ===
+                        SyntaxNodeType.FieldDefinition ||
+                    node.parent!.type.trim() === SyntaxNodeType.IndexDefinition
+                ) {
+                    return " " + node.text.trim();
                 } else {
                     return separator + node.text.trim();
                 }
@@ -118,9 +134,7 @@ export class AblTemptableFormatter extends AAblFormatter implements IAblFormatte
     }
 
     private getPrettyBlock(): string {
-        const block = ""
-            .concat(this.temptableBodyValue.trim())
-            .concat(".");
+        const block = "".concat(this.temptableBodyValue.trim()).concat(".");
 
         return block;
     }

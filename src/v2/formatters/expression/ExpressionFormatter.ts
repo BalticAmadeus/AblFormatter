@@ -6,7 +6,7 @@ import { FullText } from "../../model/FullText";
 import { AFormatter } from "../AFormatter";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { ExpressionSettings } from "./ExpressionSettings";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import { logicalKeywords, SyntaxNodeType } from "../../../model/SyntaxNodeType";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
@@ -68,11 +68,7 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
         ) {
             resultString = FormatterHelper.addIndentation(
                 resultString,
-                node.startPosition.column +
-                    FormatterHelper.getActualTextIndentation(
-                        resultString,
-                        fullText
-                    ),
+                node.startPosition.column,
                 fullText.eolDelimiter
             );
         }
@@ -86,9 +82,17 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
     ): string {
         let newString = "";
         switch (node.type) {
-            // case SyntaxNodeType.LogicalExpression:
-            //     newString = FormatterHelper.getCurrentText(node, fullText);
-            //     break;
+            case SyntaxNodeType.LogicalExpression:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
+            case logicalKeywords.hasFancy(node.type, ""):
+                newString = this.settings.newLineAfterLogical()
+                    ? " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim() +
+                      fullText.eolDelimiter
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.ParenthesizedExpression:
                 node.children.forEach((child) => {
                     newString = newString.concat(

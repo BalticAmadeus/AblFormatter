@@ -6,7 +6,10 @@ import { AFormatter } from "../AFormatter";
 import { IfSettings } from "./IfSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    afterThenStatements,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
@@ -89,15 +92,26 @@ export class IfFormatter extends AFormatter implements IFormatter {
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
-            case SyntaxNodeType.ReturnStatement:
-            case SyntaxNodeType.AblStatement:
+            case afterThenStatements.hasFancy(node.type, ""):
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
                       " ".repeat(this.startColumn) +
                       " ".repeat(this.settings.tabSize()) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
+                      FormatterHelper.getCurrentTextMultilineAdjust(
+                          node,
+                          fullText,
+                          this.startColumn +
+                              this.settings.tabSize() -
+                              node.startPosition.column
+                      ).trim()
                     : " " +
-                      FormatterHelper.getCurrentText(node, fullText).trim();
+                      FormatterHelper.getCurrentTextMultilineAdjust(
+                          node,
+                          fullText,
+                          this.startColumn +
+                              this.settings.tabSize() -
+                              node.startPosition.column
+                      ).trim();
                 break;
             case SyntaxNodeType.ElseIfStatement:
                 newString = node.children
@@ -141,8 +155,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
-            case SyntaxNodeType.ReturnStatement:
-            case SyntaxNodeType.AblStatement:
+            case afterThenStatements.hasFancy(node.type, ""):
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
                       " ".repeat(this.startColumn) +

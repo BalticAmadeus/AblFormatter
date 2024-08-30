@@ -192,14 +192,46 @@
           "default": "true",
           "description": "Enable EMPTY BLOCK formatting"
         },
-        "AblFormatter.expressionFormatting": {
+        "AblFormatter.propertyFormatting": {
           "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable property formatting"
+        },
+        "AblFormatter.ifFunctionFormatting": {
+          "order": 1200,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable IF FUNCTION formatting"
+        },
+        "AblFormatter.ifFunctionFormattingAddParentheses": {
+          "order": 1201,
+          "type": "string",
+          "default": "Yes",
+          "enum": [
+            "Yes",
+            "No"
+          ],
+          "description": "Add parentheses around the expression?"
+        },
+        "AblFormatter.ifFunctionFormattingElseLocation": {
+          "order": 1202,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Add a new line before the ELSE?"
+        },
+        "AblFormatter.expressionFormatting": {
+          "order": 1300,
           "type": "boolean",
           "default": "true",
           "description": "Enable EXPRESSION formatting"
         },
         "AblFormatter.expressionFormattingLogicalLocation": {
-          "order": 1101,
+          "order": 1301,
           "type": "string",
           "default": "Same",
           "enum": [

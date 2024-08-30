@@ -6,7 +6,10 @@ import { AFormatter } from "../AFormatter";
 import { CaseSettings } from "./CaseSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { RegisterFormatter } from "../../formatterFramework/formatterDecorator";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    afterThenStatements,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
@@ -46,7 +49,10 @@ export class CaseFormatter extends AFormatter implements IFormatter {
         node: SyntaxNode,
         fullText: Readonly<FullText>
     ) {
-        this.startColumn = this.getStartColumn(node);
+        this.startColumn = FormatterHelper.getActualStatementIndentation(
+            node,
+            fullText
+        );
         this.caseBodyValue = this.getCaseBodyBranchBlock(node, fullText);
     }
 
@@ -73,11 +79,6 @@ export class CaseFormatter extends AFormatter implements IFormatter {
 
         switch (node.type) {
             case SyntaxNodeType.WhenKeyword:
-                newString =
-                    fullText.eolDelimiter +
-                    " ".repeat(this.startColumn) +
-                    FormatterHelper.getCurrentText(node, fullText).trim();
-                break;
             case SyntaxNodeType.OtherwiseKeyword:
                 newString =
                     fullText.eolDelimiter +
@@ -100,8 +101,7 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
-            case SyntaxNodeType.ReturnStatement:
-            case SyntaxNodeType.AblStatement:
+            case afterThenStatements.hasFancy(node.type, ""):
                 newString = this.settings.newLineBeforeStatement()
                     ? fullText.eolDelimiter +
                       " ".repeat(this.startColumn + this.settings.tabSize()) +
@@ -119,23 +119,5 @@ export class CaseFormatter extends AFormatter implements IFormatter {
         }
 
         return newString;
-    }
-
-    private getStartColumn(node: SyntaxNode): number {
-        if (node.type === SyntaxNodeType.CaseStatement) {
-            return node.startPosition.column;
-        } else {
-            return this.findParentCaseStatementStartColumn(node);
-        }
-    }
-
-    private findParentCaseStatementStartColumn(node: SyntaxNode): number {
-        if (node.parent === null) {
-            return 0;
-        }
-
-        return node.type === SyntaxNodeType.CaseStatement
-            ? node.startPosition.column
-            : this.findParentCaseStatementStartColumn(node.parent);
     }
 }
