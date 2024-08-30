@@ -71,6 +71,8 @@ export enum SyntaxNodeType {
     EndKeyword = "END",
     IfKeyword = "IF",
     DefineKeyword = "DEFINE",
+    DefiKeyword = "DEFI",
+    DefKeyword = "DEF",
 }
 
 export class MyFancySet<T> extends Set {
