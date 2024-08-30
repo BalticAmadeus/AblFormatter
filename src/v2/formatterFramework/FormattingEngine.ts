@@ -9,8 +9,11 @@ import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { ParseResult } from "../../model/ParseResult";
 import { FormatterFactory } from "./FormatterFactory";
 import { EOL } from "../model/EOL";
+import { DebugManager } from "../../providers/DebugManager";
 
 export class FormattingEngine {
+    private numOfCodeEdits: number = 0;
+
     constructor(
         private parserHelper: IParserHelper,
         private fileIdentifier: FileIdentifier,
@@ -35,6 +38,10 @@ export class FormattingEngine {
         );
 
         this.iterateTree(parseResult.tree, fullText, formatters);
+
+        DebugManager.getInstance().fileFormattedSuccessfully(
+            this.numOfCodeEdits
+        );
 
         return fullText.text;
     }
@@ -72,6 +79,7 @@ export class FormattingEngine {
                 if (codeEdit !== undefined) {
                     this.insertChangeIntoTree(tree, codeEdit);
                     this.insertChangeIntoFullText(codeEdit, fullText);
+                    this.numOfCodeEdits++;
                 }
 
                 // Mark the current node as the last visited node

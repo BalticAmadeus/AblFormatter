@@ -10,29 +10,20 @@ import { FormatterCache } from "./model/FormatterCache";
 import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
 import { ConfigurationManager2 } from "./utils/ConfigurationManager2";
 import { enableFormatterDecorators } from "./v2/formatterFramework/enableFormatterDecorators";
+import { DebugManager } from "./providers/DebugManager";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
     register_memoryFileProvider(context);
+    DebugManager.getInstance(context);
 
     await Parser.init().then(() => {});
 
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
-    const statusBarItem = vscode.window.createStatusBarItem(
-        vscode.StatusBarAlignment.Right,
-        101
-    );
-    statusBarItem.text = "ABL Formatter • Loading...";
-    statusBarItem.show();
-    context.subscriptions.push(statusBarItem);
-
-    const parserHelper = new AblParserHelper(
-        context.extensionPath,
-        statusBarItem
-    );
+    const parserHelper = new AblParserHelper(context.extensionPath);
     const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
