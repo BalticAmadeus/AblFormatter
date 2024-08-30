@@ -13,6 +13,7 @@ export enum SyntaxNodeType {
     LogicalExpression = "logical_expression",
     WhenExpression = "when_expression",
     TemptableDefinition = "temp_table_definition",
+    PropertyDefinition = "property_definition",
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
@@ -72,6 +73,7 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    DefineKeyword = "DEFINE",
 }
 
 export class MyFancySet<T> extends Set {

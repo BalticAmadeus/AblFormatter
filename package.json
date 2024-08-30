@@ -192,14 +192,20 @@
           "default": "true",
           "description": "Enable EMPTY BLOCK formatting"
         },
-        "AblFormatter.ifFunctionFormatting": {
+        "AblFormatter.propertyFormatting": {
           "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable property formatting"
+        },
+        "AblFormatter.ifFunctionFormatting": {
+          "order": 1200,
           "type": "boolean",
           "default": "true",
           "description": "Enable IF FUNCTION formatting"
         },
         "AblFormatter.ifFunctionFormattingAddParentheses": {
-          "order": 1101,
+          "order": 1201,
           "type": "string",
           "default": "Yes",
           "enum": [
@@ -209,7 +215,7 @@
           "description": "Add parentheses around the expression?"
         },
         "AblFormatter.ifFunctionFormattingElseLocation": {
-          "order": 1102,
+          "order": 1202,
           "type": "string",
           "default": "Same",
           "enum": [

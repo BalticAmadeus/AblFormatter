@@ -160,7 +160,6 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
         if (node.parent === null) {
             return false;
         }
-        console.log("parType: " + node.parent.type);
         if (node.parent.type === SyntaxNodeType.TernaryExpression) {
             return true;
         }
