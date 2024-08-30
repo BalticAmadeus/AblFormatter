@@ -48,7 +48,6 @@ export enum SyntaxNodeType {
     OnStatement = "on_statement",
     Getter = "getter",
     Setter = "setter",
-    VariableAssignment = "variable_assignment",
     LeftParenthesis = "(",
     RightParenthesis = ")",
 
