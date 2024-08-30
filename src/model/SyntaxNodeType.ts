@@ -90,3 +90,10 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
 ]);
+
+export const bodyBlockKeywords = new MyFancySet<string>([
+    SyntaxNodeType.Body,
+    SyntaxNodeType.CaseBody,
+    SyntaxNodeType.ClassBody,
+    SyntaxNodeType.InterfaceBody,
+]);
