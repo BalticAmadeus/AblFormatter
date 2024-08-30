@@ -61,7 +61,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
             fullText
         );
 
-        const indentationStep = 4;
+        const indentationStep = this.settings.tabSize();
         const blockStatementsStartRows = node.children.map(
             (node) =>
                 node.startPosition.row +
