@@ -11,6 +11,7 @@ export enum SyntaxNodeType {
     DoBlock = "do_block",
     Body = "body",
     ClassBody = "class_body",
+    InterfaceBody = "interface_body",
     IfStatement = "if_statement",
     ElseStatement = "else_statement",
     AblStatement = "abl_statement",
@@ -95,4 +96,11 @@ export const definitionKeywords = new MyFancySet<string>([
     SyntaxNodeType.DefineKeyword,
     SyntaxNodeType.DefiKeyword,
     SyntaxNodeType.DefKeyword,
+]);
+
+export const bodyBlockKeywords = new MyFancySet<string>([
+    SyntaxNodeType.Body,
+    SyntaxNodeType.CaseBody,
+    SyntaxNodeType.ClassBody,
+    SyntaxNodeType.InterfaceBody,
 ]);
