@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.StatusBarAlignment.Right,
         101
     );
-    statusBarItem.text = "ABL Formatter • ";
+    statusBarItem.text = "ABL Formatter • Loading...";
     statusBarItem.tooltip = "ABL Formatter";
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);

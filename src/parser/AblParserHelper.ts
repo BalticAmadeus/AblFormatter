@@ -48,24 +48,28 @@ export class AblParserHelper implements IParserHelper {
             ranges: ranges,
         };
 
+        //TODO move this to a separate class
         if (this.statusBarItem !== undefined) {
             const nodes = getNodesWithErrors(newTree.rootNode, true);
-            this.statusBarItem.text =
-                "Abl Formatter • " +
-                nodes.length +
-                " Parser Errors" +
-                nodes[0].startPosition.row +
-                ":" +
-                nodes[0].startPosition.column +
-                " " +
-                nodes[0].endPosition.row +
-                ":" +
-                nodes[0].endPosition.column;
+            this.statusBarItem.text = "Abl Formatter • No Parser Errors";
 
             if (nodes.length > 0) {
                 this.statusBarItem.backgroundColor = new ThemeColor(
                     "statusBarItem.errorBackground"
                 );
+
+                this.statusBarItem.text =
+                    "Abl Formatter • " +
+                    nodes.length +
+                    " Parser Error(s) (" +
+                    nodes[0].startPosition.row +
+                    ":" +
+                    nodes[0].startPosition.column +
+                    " " +
+                    nodes[0].endPosition.row +
+                    ":" +
+                    nodes[0].endPosition.column +
+                    ")";
 
                 //TODO
                 // const arg: { to: string; by: string } = {
