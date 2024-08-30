@@ -13,8 +13,8 @@ PROCEDURE testCase:
     CASE i:
         WHEN 1
         THEN DO:
-                MESSAGE "Case 1".
-            END.
+            MESSAGE "Case 1".
+        END.
         OTHERWISE
         MESSAGE "No match found".
     END CASE.

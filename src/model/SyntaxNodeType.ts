@@ -15,9 +15,11 @@ export enum SyntaxNodeType {
     LogicalExpression = "logical_expression",
     WhenExpression = "when_expression",
     TemptableDefinition = "temp_table_definition",
+    PropertyDefinition = "property_definition",
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
+    VariableAssignment = "variable_assignment",
     ConstructorDefinition = "constructor_definition",
     DestructorDefinition = "destructor_definition",
     MethodDefinition = "method_definition",
@@ -72,6 +74,7 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    DefineKeyword = "DEFINE",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
