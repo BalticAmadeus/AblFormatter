@@ -30,6 +30,7 @@ export enum SyntaxNodeType {
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
     ComparisonExpression = "comparison_expression",
+    TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
@@ -45,9 +46,11 @@ export enum SyntaxNodeType {
     OnStatement = "on_statement",
     Getter = "getter",
     Setter = "setter",
+    LeftParenthesis = "(",
+    RightParenthesis = ")",
 
-    WhenKeyword = "WHEN",
     // keywords
+    WhenKeyword = "WHEN",
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
