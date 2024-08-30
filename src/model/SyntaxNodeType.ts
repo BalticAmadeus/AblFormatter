@@ -91,3 +91,9 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
 ]);
+
+export const definitionKeywords = new MyFancySet<string>([
+    SyntaxNodeType.DefineKeyword,
+    SyntaxNodeType.DefiKeyword,
+    SyntaxNodeType.DefKeyword,
+]);

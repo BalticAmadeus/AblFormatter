@@ -4,10 +4,13 @@ import { IFormatter } from "../../formatterFramework/IFormatter";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { AFormatter } from "../AFormatter";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 import { TempTableSettings } from "./TempTableSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
+import {
+    definitionKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 
 @RegisterFormatter
 export class TempTableFormatter extends AFormatter implements IFormatter {
@@ -63,7 +66,7 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
             );
         });
 
-        resultString += "."
+        resultString += ".";
 
         return resultString;
     }
@@ -76,13 +79,8 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
         let newString = "";
 
         switch (node.type) {
-            case SyntaxNodeType.DefiKeyword:
-            case SyntaxNodeType.DefKeyword:
-            case SyntaxNodeType.DefineKeyword:
-                newString = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                );
+            case definitionKeywords.hasFancy(node.type, ""):
+                newString = FormatterHelper.getCurrentText(node, fullText);
                 break;
             case SyntaxNodeType.FieldDefinition:
             case SyntaxNodeType.IndexDefinition:
