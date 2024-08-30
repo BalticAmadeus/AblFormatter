@@ -100,8 +100,6 @@ export class FormatterHelper {
         // Split the text into lines
         const lines = text.split(eolDelimiter);
 
-        console.log("aaa", moveDelta);
-
         // Add indentation to each line except the first one
         const indentedLines = lines.map((line, index) => {
             return index === 0

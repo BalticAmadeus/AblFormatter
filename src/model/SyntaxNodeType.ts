@@ -1,3 +1,5 @@
+import { MyFancySet } from "../utils/MyFancySet";
+
 export enum SyntaxNodeType {
     AvailableExpression = "available_expression",
     CaseStatement = "case_statement",
@@ -81,16 +83,8 @@ export enum SyntaxNodeType {
     ColonKeyword = ":",
     CommaKeyword = ",",
     DefineKeyword = "DEFINE",
-}
-
-export class MyFancySet<T> extends Set {
-    public hasFancy(value: T, inCaseOfNotHave: T): T {
-        if (this.has(value)) {
-            return value;
-        } else {
-            return inCaseOfNotHave;
-        }
-    }
+    DefiKeyword = "DEFI",
+    DefKeyword = "DEF",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
@@ -98,4 +92,11 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.AblStatement,
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
+    SyntaxNodeType.VariableAssignment,
+]);
+
+export const definitionKeywords = new MyFancySet<string>([
+    SyntaxNodeType.DefineKeyword,
+    SyntaxNodeType.DefiKeyword,
+    SyntaxNodeType.DefKeyword,
 ]);
