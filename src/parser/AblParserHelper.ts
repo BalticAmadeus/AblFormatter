@@ -4,6 +4,7 @@ import { FileIdentifier } from "../model/FileIdentifier";
 import { ParseResult } from "../model/ParseResult";
 import path from "path";
 import { commands, Range, StatusBarItem, ThemeColor, window } from "vscode";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
 
 export class AblParserHelper implements IParserHelper {
     private parser = new Parser();
@@ -59,17 +60,22 @@ export class AblParserHelper implements IParserHelper {
                 );
 
                 this.statusBarItem.text =
-                    "Abl Formatter • " +
-                    nodes.length +
-                    " Parser Error(s) (" +
-                    nodes[0].startPosition.row +
-                    ":" +
-                    nodes[0].startPosition.column +
-                    " " +
-                    nodes[0].endPosition.row +
-                    ":" +
-                    nodes[0].endPosition.column +
-                    ")";
+                    "Abl Formatter • " + nodes.length + " Parser Error(s)";
+
+                this.statusBarItem.tooltip = "Error ranges: \n";
+                nodes.forEach((node) => {
+                    if (this.statusBarItem !== undefined) {
+                        this.statusBarItem.tooltip +=
+                            node.startPosition.row +
+                            ":" +
+                            node.startPosition.column +
+                            " " +
+                            node.endPosition.row +
+                            ":" +
+                            node.endPosition.column +
+                            "\n";
+                    }
+                });
 
                 //TODO
                 // const arg: { to: string; by: string } = {
@@ -91,6 +97,7 @@ export class AblParserHelper implements IParserHelper {
                 // );
                 // window.activeTextEditor?.setDecorations(a, [range]);
             } else {
+                this.statusBarItem.tooltip = "";
                 this.statusBarItem.backgroundColor = undefined;
             }
         }
@@ -105,7 +112,11 @@ function getNodesWithErrors(
 ): Parser.SyntaxNode[] {
     let errorNodes: Parser.SyntaxNode[] = [];
 
-    if (node.hasError() && !isRoot) {
+    if (
+        node.type === SyntaxNodeType.Error &&
+        node.text.trim() !== "ERROR" &&
+        !isRoot
+    ) {
         errorNodes.push(node);
     }
 

@@ -26,7 +26,6 @@ export async function activate(context: vscode.ExtensionContext) {
         101
     );
     statusBarItem.text = "ABL Formatter • Loading...";
-    statusBarItem.tooltip = "ABL Formatter";
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
 
