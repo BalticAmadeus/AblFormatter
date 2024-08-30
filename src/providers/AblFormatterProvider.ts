@@ -17,11 +17,14 @@ export class AblFormatterProvider
     }
 
     public provideDocumentFormattingEdits(
-        document: vscode.TextDocument
+        document: vscode.TextDocument,
+        options: vscode.FormattingOptions
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
+
+        configurationManager.setTabSize(options.tabSize);
 
         try {
             const codeFormatter = new FormattingEngine(
@@ -89,7 +92,8 @@ export class AblFormatterProvider
 
     provideDocumentRangesFormattingEdits?(
         document: vscode.TextDocument,
-        ranges: vscode.Range[]
+        ranges: vscode.Range[],
+        options: vscode.FormattingOptions
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log(
             "AblFormatterProvider.provideDocumentFormattingEdits2",
@@ -106,7 +110,7 @@ export class AblFormatterProvider
                 );
             default:
                 // for now, just format whole document, if there is more than one range
-                return this.provideDocumentFormattingEdits(document);
+                return this.provideDocumentFormattingEdits(document, options);
         }
     }
 }
