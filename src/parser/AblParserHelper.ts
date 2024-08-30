@@ -43,30 +43,31 @@ export class AblParserHelper implements IParserHelper {
             ranges = []; // TODO
         }
 
-        //this.trees.set(fileIdentifier.name, newTree);
-
         const result: ParseResult = {
             tree: newTree,
             ranges: ranges,
         };
 
-        const a = window.createTextEditorDecorationType({
-            backgroundColor: new ThemeColor("errorForeground"),
-        });
-
         if (this.statusBarItem !== undefined) {
-            const nodes = getNodesWithErrors(newTree.rootNode);
+            const nodes = getNodesWithErrors(newTree.rootNode, true);
             this.statusBarItem.text =
                 "Abl Formatter • " +
                 nodes.length +
                 " Parser Errors" +
-                nodes[0].startPosition.row;
+                nodes[0].startPosition.row +
+                ":" +
+                nodes[0].startPosition.column +
+                " " +
+                nodes[0].endPosition.row +
+                ":" +
+                nodes[0].endPosition.column;
 
             if (nodes.length > 0) {
                 this.statusBarItem.backgroundColor = new ThemeColor(
                     "statusBarItem.errorBackground"
                 );
 
+                //TODO
                 // const arg: { to: string; by: string } = {
                 //     to: "left",
                 //     by: "character",
@@ -78,16 +79,15 @@ export class AblParserHelper implements IParserHelper {
                 //     arguments: [arg],
                 // };
 
-                const range = new Range(
-                    nodes[0].startPosition.row,
-                    nodes[0].startPosition.column,
-                    nodes[0].endPosition.row,
-                    nodes[0].endPosition.column
-                );
-                window.activeTextEditor?.setDecorations(a, [range]);
+                // const range = new Range(
+                //     nodes[0].startPosition.row,
+                //     nodes[0].startPosition.column,
+                //     nodes[0].endPosition.row,
+                //     nodes[0].endPosition.column
+                // );
+                // window.activeTextEditor?.setDecorations(a, [range]);
             } else {
                 this.statusBarItem.backgroundColor = undefined;
-                window.activeTextEditor?.setDecorations(a, []);
             }
         }
 
@@ -95,15 +95,18 @@ export class AblParserHelper implements IParserHelper {
     }
 }
 
-function getNodesWithErrors(node: Parser.SyntaxNode): Parser.SyntaxNode[] {
+function getNodesWithErrors(
+    node: Parser.SyntaxNode,
+    isRoot: boolean
+): Parser.SyntaxNode[] {
     let errorNodes: Parser.SyntaxNode[] = [];
 
-    if (node.hasError()) {
+    if (node.hasError() && !isRoot) {
         errorNodes.push(node);
     }
 
     node.children.forEach((child) => {
-        errorNodes = errorNodes.concat(getNodesWithErrors(child));
+        errorNodes = errorNodes.concat(getNodesWithErrors(child, false));
     });
 
     return errorNodes;
