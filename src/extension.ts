@@ -21,7 +21,19 @@ export async function activate(context: vscode.ExtensionContext) {
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
-    const parserHelper = new AblParserHelper(context.extensionPath);
+    const statusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Right,
+        101
+    );
+    statusBarItem.text = "ABL Formatter • ";
+    statusBarItem.tooltip = "ABL Formatter";
+    statusBarItem.show();
+    context.subscriptions.push(statusBarItem);
+
+    const parserHelper = new AblParserHelper(
+        context.extensionPath,
+        statusBarItem
+    );
     const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
