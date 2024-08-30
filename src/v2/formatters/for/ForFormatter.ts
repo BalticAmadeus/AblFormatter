@@ -48,7 +48,10 @@ export class ForFormatter extends AFormatter implements IFormatter {
         node: SyntaxNode,
         fullText: Readonly<FullText>
     ) {
-        this.startColumn = node.startPosition.column;
+        this.startColumn = FormatterHelper.getActualStatementIndentation(
+            node,
+            fullText
+        );
         this.forBodyValue = this.getForStatementBlock(node, fullText);
     }
 
