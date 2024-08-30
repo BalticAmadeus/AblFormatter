@@ -32,20 +32,13 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
-        let newText = text;
-        // let newText = this.collectStructure(node, fullText);
+        // let newText = text;
+        let newText = this.collectStructure(node, fullText);
 
         if (this.settings.addParentheses()) {
             const parent = node.parent;
-            if (parent !== null) {
-                console.log("parent:" + parent.type);
-                console.log(
-                    "parent: " +
-                        FormatterHelper.getCurrentText(parent, fullText)
-                );
-            }
             if (
-                parent !== null &&
+                parent === null ||
                 parent.type !== SyntaxNodeType.ParenthesizedExpression
             ) {
                 newText = this.addParenthesesAroundExpression(newText);
@@ -62,11 +55,25 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
         let resultString = "";
 
         node.children.forEach((child) => {
-            console.log("child: " + child.type);
             resultString = resultString.concat(
                 this.getIfExpressionString(child, fullText)
             );
         });
+
+        if (
+            this.settings.newLineBeforeElse() &&
+            !this.hasTernaryExpressionParent(node)
+        ) {
+            resultString = FormatterHelper.addIndentation(
+                resultString,
+                node.startPosition.column +
+                    FormatterHelper.getActualTextIndentation(
+                        resultString,
+                        fullText
+                    ),
+                fullText.eolDelimiter
+            );
+        }
 
         return resultString;
     }
@@ -77,20 +84,24 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
     ): string {
         let newString = "";
         switch (node.type) {
-            case SyntaxNodeType.ElseKeyword:
-                console.log("Here: " + this.settings.newLineBeforeElse());
-                newString = this.settings.newLineBeforeElse()
-                    ? fullText.eolDelimiter +
-                      " ".repeat(this.startColumn) +
-                      FormatterHelper.getCurrentText(node, fullText).trim()
-                    : FormatterHelper.getCurrentText(node, fullText).trim();
+            case SyntaxNodeType.TernaryExpression:
+                newString = FormatterHelper.getCurrentText(node, fullText);
                 break;
-            case SyntaxNodeType.ThenKeyword:
-                this.startColumn = node.startPosition.column;
-                newString = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
+            case SyntaxNodeType.ParenthesizedExpression:
+                node.children.forEach((child) => {
+                    newString = newString.concat(
+                        this.getParenthesizedExpressionString(child, fullText)
+                    );
+                });
+                break;
+            case SyntaxNodeType.ElseKeyword:
+                newString = this.settings.newLineBeforeElse()
+                    ? " " +
+                      fullText.eolDelimiter +
+                      FormatterHelper.getCurrentText(node, fullText).trim()
+                    : " " +
+                      FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -102,8 +113,60 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
         return newString;
     }
 
+    private getParenthesizedExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ) {
+        let newString = "";
+        if (node.type === SyntaxNodeType.LeftParenthesis) {
+            newString =
+                " " + FormatterHelper.getCurrentText(node, fullText).trim();
+        } else if (
+            node.previousSibling !== null &&
+            node.previousSibling.type === SyntaxNodeType.LeftParenthesis
+        ) {
+            newString = FormatterHelper.getCurrentText(
+                node,
+                fullText
+            ).trimStart();
+        } else {
+            newString = FormatterHelper.getCurrentText(node, fullText);
+        }
+        return newString;
+    }
+
     private addParenthesesAroundExpression(expression: string): string {
         const trimmedExpression = expression.trim();
         return expression.replace(trimmedExpression, `(${trimmedExpression})`);
+    }
+
+    private hasTernaryExpressionChildren(node: Readonly<SyntaxNode>): boolean {
+        let ret = false;
+        node.children.forEach((child) => {
+            if (child.type === SyntaxNodeType.TernaryExpression) {
+                ret = true;
+                return;
+            } else if (child.type === SyntaxNodeType.ParenthesizedExpression) {
+                if (this.hasTernaryExpressionChildren(child)) {
+                    ret = true;
+                    return;
+                }
+            }
+        });
+        return ret;
+    }
+
+    private hasTernaryExpressionParent(node: Readonly<SyntaxNode>): boolean {
+        if (node.parent === null) {
+            return false;
+        }
+        console.log("parType: " + node.parent.type);
+        if (node.parent.type === SyntaxNodeType.TernaryExpression) {
+            return true;
+        }
+        if (node.parent.type === SyntaxNodeType.ParenthesizedExpression) {
+            return this.hasTernaryExpressionParent(node.parent);
+        }
+        return false;
     }
 }

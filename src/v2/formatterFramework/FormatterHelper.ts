@@ -78,4 +78,47 @@ export class FormatterHelper {
         }
         return "";
     }
+
+    public static getCurrentTextMultilineAdjust(
+        node: Readonly<SyntaxNode>,
+        fullText: Readonly<FullText>,
+        moveDelta: number
+    ): string {
+        const text = FormatterHelper.getCurrentText(node, fullText);
+        return FormatterHelper.addIndentation(
+            text,
+            moveDelta,
+            fullText.eolDelimiter
+        );
+    }
+
+    private static addIndentation(
+        text: string,
+        moveDelta: number,
+        eolDelimiter: string
+    ): string {
+        // Split the text into lines
+        const lines = text.split(eolDelimiter);
+
+        console.log("aaa", moveDelta);
+
+        // Add indentation to each line except the first one
+        const indentedLines = lines.map((line, index) => {
+            return index === 0
+                ? line
+                : " ".repeat(
+                      FormatterHelper.countLeadingSpaces(line) + moveDelta
+                  ) + line.trim();
+        });
+
+        // Join the lines back into a single string
+        return indentedLines.join(eolDelimiter);
+    }
+
+    private static countLeadingSpaces(text: string): number {
+        // Use a regular expression to match leading spaces
+        const match = text.match(/^(\s*)/);
+        // If there's a match, return the length of the matched string; otherwise, return 0
+        return match ? match[1].length : 0;
+    }
 }

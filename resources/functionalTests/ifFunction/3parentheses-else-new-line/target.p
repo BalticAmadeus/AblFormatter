@@ -3,6 +3,5 @@
       "AblFormatter.ifFunctionFormattingAddParentheses": "Yes",
       "AblFormatter.ifFunctionFormattingElseLocation": "New"}*/
 
-assign
-    a =      if Customer.Balance > 10000 then 1 else 2
-    .
+a = (if Customer.Balance > 10000 then 1 
+    else 2).

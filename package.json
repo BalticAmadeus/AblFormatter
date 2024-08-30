@@ -181,10 +181,16 @@
           "description": "Enable TEMP-TABLE formatting"
         },
         "AblFormatter.usingFormatting": {
-          "order": 9,
+          "order": 900,
           "type": "boolean",
           "default": "true",
           "description": "Enable USING formatting"
+        },
+        "AblFormatter.emptyBlockFormatting": {
+          "order": 1000,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable EMPTY BLOCK formatting"
         },
         "AblFormatter.ifFunctionFormatting": {
           "order": 1100,
