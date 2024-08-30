@@ -75,6 +75,8 @@ export enum SyntaxNodeType {
     EndKeyword = "END",
     IfKeyword = "IF",
     DefineKeyword = "DEFINE",
+    DefiKeyword = "DEFI",
+    DefKeyword = "DEF",
 }
 
 export class MyFancySet<T> extends Set {
@@ -92,4 +94,10 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.AblStatement,
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
+]);
+
+export const definitionKeywords = new MyFancySet<string>([
+    SyntaxNodeType.DefineKeyword,
+    SyntaxNodeType.DefiKeyword,
+    SyntaxNodeType.DefKeyword,
 ]);
