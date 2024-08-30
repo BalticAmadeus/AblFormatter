@@ -92,7 +92,7 @@ export class FormatterHelper {
         );
     }
 
-    private static addIndentation(
+    public static addIndentation(
         text: string,
         moveDelta: number,
         eolDelimiter: string

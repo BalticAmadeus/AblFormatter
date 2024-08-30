@@ -15,9 +15,11 @@ export enum SyntaxNodeType {
     LogicalExpression = "logical_expression",
     WhenExpression = "when_expression",
     TemptableDefinition = "temp_table_definition",
+    PropertyDefinition = "property_definition",
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
+    VariableAssignment = "variable_assignment",
     ConstructorDefinition = "constructor_definition",
     DestructorDefinition = "destructor_definition",
     MethodDefinition = "method_definition",
@@ -30,6 +32,7 @@ export enum SyntaxNodeType {
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
     ComparisonExpression = "comparison_expression",
+    TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
@@ -45,10 +48,11 @@ export enum SyntaxNodeType {
     OnStatement = "on_statement",
     Getter = "getter",
     Setter = "setter",
-    VariableAssignment = "variable_assignment",
+    LeftParenthesis = "(",
+    RightParenthesis = ")",
 
-    WhenKeyword = "WHEN",
     // keywords
+    WhenKeyword = "WHEN",
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
@@ -72,6 +76,9 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    DefineKeyword = "DEFINE",
+    DefiKeyword = "DEFI",
+    DefKeyword = "DEF",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
@@ -80,4 +87,10 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
     SyntaxNodeType.VariableAssignment,
+]);
+
+export const definitionKeywords = new MyFancySet<string>([
+    SyntaxNodeType.DefineKeyword,
+    SyntaxNodeType.DefiKeyword,
+    SyntaxNodeType.DefKeyword,
 ]);

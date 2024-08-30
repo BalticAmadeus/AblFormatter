@@ -4,7 +4,7 @@
 "AblFormatter.caseFormattingThenLocation": "New",
 "AblFormatter.caseFormattingDoLocation": "Same",
 "AblFormatter.caseFormattingStatementLocation": "New",
-"AblFormatter.blockFormatting": false}*/
+"AblFormatter.blockFormatting": true}*/
 
 PROCEDURE testCase:
     DEFINE VARIABLE i AS INTEGER NO-UNDO.

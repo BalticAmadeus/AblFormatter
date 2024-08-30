@@ -4,10 +4,13 @@ import { IFormatter } from "../../formatterFramework/IFormatter";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { AFormatter } from "../AFormatter";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 import { TempTableSettings } from "./TempTableSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
+import {
+    definitionKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 
 @RegisterFormatter
 export class TempTableFormatter extends AFormatter implements IFormatter {
@@ -36,17 +39,14 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
         const text = FormatterHelper.getCurrentText(node, fullText);
 
         this.collectTemptableStructure(node, fullText);
-        const newText = this.getPrettyBlock();
-        // console.log("text:\n" + text);
-        // console.log("newText:\n" + newText);
-        return this.getCodeEdit(node, text, newText, fullText);
+        return this.getCodeEdit(node, text, this.temptableBodyValue, fullText);
     }
 
-    private collectTemptableStructure(
-        node: SyntaxNode,
-        fullText: FullText
-    ): void {
-        this.startColumn = node.startPosition.column;
+    private collectTemptableStructure(node: SyntaxNode, fullText: FullText) {
+        this.startColumn = FormatterHelper.getActualStatementIndentation(
+            node,
+            fullText
+        );
         this.temptableValueColumn = this.startColumn + this.settings.tabSize();
         this.temptableBodyValue = this.getTemptableBlock(node, fullText);
     }
@@ -64,10 +64,11 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
                     fullText
                 )
             );
-            // console.log("currText:\n" + resultString);
         });
 
-        return resultString.trim();
+        resultString += ".";
+
+        return resultString;
     }
 
     private getTemptableExpressionString(
@@ -78,6 +79,9 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
         let newString = "";
 
         switch (node.type) {
+            case definitionKeywords.hasFancy(node.type, ""):
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             case SyntaxNodeType.FieldDefinition:
             case SyntaxNodeType.IndexDefinition:
                 node.children.forEach((child) => {
@@ -122,11 +126,5 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
                 break;
         }
         return newString;
-    }
-
-    private getPrettyBlock(): string {
-        const block = "".concat(this.temptableBodyValue.trim()).concat(".");
-
-        return block;
     }
 }
