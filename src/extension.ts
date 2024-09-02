@@ -16,14 +16,17 @@ import { DebugManager } from "./providers/DebugManager";
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
     register_memoryFileProvider(context);
-    DebugManager.getInstance(context);
+    const debugManager = DebugManager.getInstance(context);
 
     await Parser.init().then(() => {});
 
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
-    const parserHelper = new AblParserHelper(context.extensionPath);
+    const parserHelper = new AblParserHelper(
+        context.extensionPath,
+        debugManager
+    );
     const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(

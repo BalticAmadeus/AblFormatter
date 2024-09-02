@@ -4,16 +4,16 @@ import { FileIdentifier } from "../model/FileIdentifier";
 import { ParseResult } from "../model/ParseResult";
 import path from "path";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
-import { DebugManager } from "../providers/DebugManager";
+import { IDebugManager } from "../providers/IDebugManager";
 
 export class AblParserHelper implements IParserHelper {
     private parser = new Parser();
     private trees = new Map<string, Parser.Tree>();
     private ablLanguagePromise: Promise<Parser.Language>;
-    private debugManager: DebugManager;
+    private debugManager: IDebugManager;
 
-    public constructor(extensionPath: string) {
-        this.debugManager = DebugManager.getInstance();
+    public constructor(extensionPath: string, debugManager: IDebugManager) {
+        this.debugManager = debugManager;
         this.ablLanguagePromise = Parser.Language.load(
             path.join(extensionPath, "resources/tree-sitter-abl.wasm")
         );

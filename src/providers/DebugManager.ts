@@ -10,8 +10,9 @@ import {
 import { SyntaxNode, Tree } from "web-tree-sitter";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { IDebugManager } from "./IDebugManager";
 
-export class DebugManager {
+export class DebugManager implements IDebugManager {
     private static instance: DebugManager;
 
     private statusBarItem: StatusBarItem;
@@ -37,7 +38,7 @@ export class DebugManager {
         return DebugManager.instance;
     }
 
-    constructor(extensionContext: ExtensionContext) {
+    private constructor(extensionContext: ExtensionContext) {
         this.statusBarItem = window.createStatusBarItem(
             StatusBarAlignment.Right,
             101
@@ -56,7 +57,7 @@ export class DebugManager {
         );
     }
 
-    public handleErrors(tree: Tree) {
+    public handleErrors(tree: Tree): void {
         const nodes = this.getNodesWithErrors(tree.rootNode, true);
 
         this.errorRanges = [];
@@ -116,14 +117,14 @@ export class DebugManager {
         }
     }
 
-    public parserReady() {
+    public parserReady(): void {
         this.statusBarItem.text = "Abl Formatter • Ready";
         this.statusBarItem.tooltip = this.isInDebugMode()
             ? "In DEBUG mode"
             : "";
     }
 
-    public fileFormattedSuccessfully(numOfEdits: number) {
+    public fileFormattedSuccessfully(numOfEdits: number): void {
         this.statusBarItem.tooltip =
             this.statusBarItem.tooltip +
             "" +
@@ -180,7 +181,7 @@ export class DebugManager {
         this.statusBarItem.command = this.debugModeCommandName;
     }
 
-    public isInDebugMode() {
+    public isInDebugMode(): boolean {
         return (
             ConfigurationManager2.getInstance().get("showTreeInfoOnHover") ===
                 true || this.debugModeOverride

@@ -9,7 +9,7 @@ import { IConfigurationManager } from "../../utils/IConfigurationManager";
 import { ParseResult } from "../../model/ParseResult";
 import { FormatterFactory } from "./FormatterFactory";
 import { EOL } from "../model/EOL";
-import { DebugManager } from "../../providers/DebugManager";
+import { IDebugManager } from "../../providers/IDebugManager";
 
 export class FormattingEngine {
     private numOfCodeEdits: number = 0;
@@ -17,7 +17,8 @@ export class FormattingEngine {
     constructor(
         private parserHelper: IParserHelper,
         private fileIdentifier: FileIdentifier,
-        private configurationManager: IConfigurationManager
+        private configurationManager: IConfigurationManager,
+        private debugManager: IDebugManager
     ) {}
 
     public formatText(fulfullTextString: string, eol: EOL): string {
@@ -39,9 +40,7 @@ export class FormattingEngine {
 
         this.iterateTree(parseResult.tree, fullText, formatters);
 
-        DebugManager.getInstance().fileFormattedSuccessfully(
-            this.numOfCodeEdits
-        );
+        this.debugManager.fileFormattedSuccessfully(this.numOfCodeEdits);
 
         return fullText.text;
     }
