@@ -145,8 +145,11 @@ export class FormatterHelper {
             });
             if (node.type === SyntaxNodeType.Assignment) {
                 // In this case, we need to trim the spaces at the start of the string as well
-                return resultString.trimStart();
+                resultString = resultString.trimStart();
+            } else if (node.type === SyntaxNodeType.VariableAssignment) {
+                resultString = resultString.trimStart() + ".";
             }
+
             return resultString;
         }
     }
@@ -159,10 +162,11 @@ export class FormatterHelper {
 
         switch (node.type) {
             case SyntaxNodeType.ParenthesizedExpression:
-                newString = this.getParenthesizedExpressionString(
-                    node,
-                    fullText
-                );
+                node.children.forEach((child) => {
+                    newString = newString.concat(
+                        this.getParenthesizedExpressionString(child, fullText)
+                    );
+                });
                 break;
             // Recheck the code below after ticket #116 is closed!
             case SyntaxNodeType.EqualsSign:

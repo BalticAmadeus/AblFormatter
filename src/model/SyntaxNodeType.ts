@@ -35,6 +35,7 @@ export enum SyntaxNodeType {
     AdditiveExpression = "additive_expression",
     MultiplicativeExpression = "multiplicative_expression",
     UnaryExpression = "unary_expression",
+    NewExpression = "new_expression",
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
     ReturnStatement = "return_statement",
