@@ -3,7 +3,8 @@
 "abl.completion.upperCase": true,
 "AblFormatter.assignFormattingAssignLocation": "Same",
 "AblFormatter.assignFormattingAlignRightExpression": "Yes",
-"AblFormatter.assignFormattingEndDotLocation": "Same"}*/
+"AblFormatter.assignFormattingEndDotLocation": "Same",
+"AblFormatter.expressionFormatting": false}*/
 
 DEFINE VARIABLE number11 AS INTEGER NO-UNDO.
 DEFINE VARIABLE number2 AS INTEGER NO-UNDO.
