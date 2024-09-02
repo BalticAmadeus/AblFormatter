@@ -51,6 +51,11 @@ export enum SyntaxNodeType {
     Setter = "setter",
     LeftParenthesis = "(",
     RightParenthesis = ")",
+    EqualsSign = "=",
+    PlusSign = "+",
+    MinusSign = "-",
+    MultiplicationSign = "*",
+    DivisionSign = "/",
 
     // keywords
     WhenKeyword = "WHEN",
@@ -108,4 +113,11 @@ export const definitionKeywords = new MyFancySet<string>([
 export const logicalKeywords = new MyFancySet<string>([
     SyntaxNodeType.AndKeyword,
     SyntaxNodeType.OrKeyword,
+]);
+
+export const arithmeticOperators = new MyFancySet<string>([
+    SyntaxNodeType.PlusSign,
+    SyntaxNodeType.MinusSign,
+    SyntaxNodeType.MultiplicationSign,
+    SyntaxNodeType.DivisionSign,
 ]);

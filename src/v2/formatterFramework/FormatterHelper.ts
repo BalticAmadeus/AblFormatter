@@ -1,6 +1,9 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { FullText } from "../model/FullText";
-import { SyntaxNodeType } from "../../model/SyntaxNodeType";
+import {
+    arithmeticOperators,
+    SyntaxNodeType,
+} from "../../model/SyntaxNodeType";
 
 export class FormatterHelper {
     public static getActualTextIndentation(
@@ -160,6 +163,17 @@ export class FormatterHelper {
                     node,
                     fullText
                 );
+                break;
+            // Recheck the code below after ticket #116 is closed!
+            case SyntaxNodeType.EqualsSign:
+                const previousSibling = node.previousSibling;
+                newString =
+                    previousSibling !== null &&
+                    (arithmeticOperators.hasFancy(previousSibling.type, "") ||
+                        previousSibling.hasError())
+                        ? FormatterHelper.getCurrentText(node, fullText).trim()
+                        : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
             default:
                 const text = FormatterHelper.getCurrentText(
