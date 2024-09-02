@@ -28,6 +28,7 @@ export enum SyntaxNodeType {
     MethodDefinition = "method_definition",
     FindStatement = "find_statement",
     WhereClause = "where_clause",
+    UndoStatement = "undo_statement",
     AssignStatement = "assign_statement",
     Assignment = "assignment",
     SourceCode = "source_code",
@@ -90,6 +91,7 @@ export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
     SyntaxNodeType.VariableAssignment,
+    SyntaxNodeType.UndoStatement,
 ]);
 
 export const definitionKeywords = new MyFancySet<string>([
