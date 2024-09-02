@@ -120,6 +120,9 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
                     fullText
                 ).trim();
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 newString =
                     " " + FormatterHelper.getCurrentText(node, fullText).trim();
