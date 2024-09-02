@@ -82,6 +82,9 @@ export class PropertyFormatter extends AFormatter implements IFormatter {
                     " ".repeat(this.startColumn + this.settings.tabSize()) +
                     FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 newString =
                     " " + FormatterHelper.getCurrentText(node, fullText).trim();
