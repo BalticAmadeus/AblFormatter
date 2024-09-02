@@ -9,7 +9,7 @@ export class ConfigurationManager2 implements IConfigurationManager {
     private externalConfiguration: WorkspaceConfiguration | undefined =
         undefined;
     private overridingSettings: any | undefined;
-    private tabSize: number | undefined; // Add this line to store tabSize
+    private tabSize: number | undefined;
 
     private constructor() {
         workspace.onDidChangeConfiguration((e) => {
