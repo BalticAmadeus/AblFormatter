@@ -9,6 +9,7 @@ export class ConfigurationManager2 implements IConfigurationManager {
     private externalConfiguration: WorkspaceConfiguration | undefined =
         undefined;
     private overridingSettings: any | undefined;
+    private tabSize: number | undefined;
 
     private constructor() {
         workspace.onDidChangeConfiguration((e) => {
@@ -37,6 +38,14 @@ export class ConfigurationManager2 implements IConfigurationManager {
             this.configuration = workspace.getConfiguration("AblFormatter");
         }
         return this.getConfig(name);
+    }
+
+    public setTabSize(tabSize: number): void {
+        this.tabSize = tabSize;
+    }
+
+    public getTabSize(): number {
+        return this.tabSize || 4; // Default to 4 if not set
     }
 
     public getCasing() {
