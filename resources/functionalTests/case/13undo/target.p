@@ -4,9 +4,9 @@
 "AblFormatter.caseFormattingThenLocation": "Same",
 "AblFormatter.caseFormattingStatementLocation": "New"}*/
 
-case pcBatchType:
-    when BatchConst:TYPE_REFUND then
-        iNextBatchNum = next-value(rfnd_batch_seq).
+case weekday():
+    when "SATURDAY" then
+        iValue = iValue + 1.
     otherwise
-        undo, throw new AppException(subst("Invalid batch type '&1'", pcBatchType)).
+        undo, throw new AppException("It is not SATURDAY").
 end case.
