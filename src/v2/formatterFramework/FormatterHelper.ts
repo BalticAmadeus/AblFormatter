@@ -179,6 +179,12 @@ export class FormatterHelper {
                         : " " +
                           FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
+            case SyntaxNodeType.ArrayLiteral:
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,

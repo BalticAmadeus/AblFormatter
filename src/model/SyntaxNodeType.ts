@@ -54,6 +54,7 @@ export enum SyntaxNodeType {
     ProcedureStatement = "procedure_statement",
     RepeatStatement = "repeat_statement",
     OnStatement = "on_statement",
+    ArrayLiteral = "array_literal",
     Getter = "getter",
     Setter = "setter",
     LeftParenthesis = "(",
