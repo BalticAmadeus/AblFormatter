@@ -8,7 +8,7 @@ import { AblParserHelper } from "./parser/AblParserHelper";
 import { register_memoryFileProvider } from "./model/MemoryFile";
 import { FormatterCache } from "./model/FormatterCache";
 import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
-import { ConfigurationManager2 } from "./utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "./utils/ConfigurationManager";
 import { enableFormatterDecorators } from "./v2/formatterFramework/enableFormatterDecorators";
 import { DebugManager } from "./providers/DebugManager";
 

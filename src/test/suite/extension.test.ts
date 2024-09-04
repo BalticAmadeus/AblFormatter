@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { AblParserHelper } from "../../parser/AblParserHelper";
 import { FileIdentifier } from "../../model/FileIdentifier";
 import { FormattingEngine } from "../../v2/formatterFramework/FormattingEngine";
-import { ConfigurationManager2 } from "../../utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "../../utils/ConfigurationManager";
 import Parser from "web-tree-sitter";
 import { enableFormatterDecorators } from "../../v2/formatterFramework/enableFormatterDecorators";
 import path from "path";
