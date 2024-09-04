@@ -119,6 +119,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
                         this.getElseIfStatementPart(child, fullText)
                     )
                     .join("");
+
                 break;
             case SyntaxNodeType.ElseStatement:
                 newString = node.children
@@ -157,6 +158,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
                       FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
+                newString = newString.trimEnd();
                 break;
             case afterThenStatements.hasFancy(node.type, ""):
                 newString = this.settings.newLineBeforeStatement()
@@ -202,6 +204,7 @@ export class IfFormatter extends AFormatter implements IFormatter {
                       FormatterHelper.getCurrentText(node, fullText).trim()
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
+                newString = newString.trimEnd();
                 break;
             case SyntaxNodeType.Error:
                 newString = FormatterHelper.getCurrentText(node, fullText);
