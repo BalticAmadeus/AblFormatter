@@ -55,6 +55,7 @@ export enum SyntaxNodeType {
     RepeatStatement = "repeat_statement",
     OnStatement = "on_statement",
     ArrayLiteral = "array_literal",
+    FunctionalCallArgument = "functional_call_argument",
     Getter = "getter",
     Setter = "setter",
     LeftParenthesis = "(",

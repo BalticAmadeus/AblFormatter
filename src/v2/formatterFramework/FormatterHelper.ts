@@ -168,6 +168,12 @@ export class FormatterHelper {
                     );
                 });
                 break;
+            case SyntaxNodeType.LeftParenthesis:
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                break;
             // Recheck the code below after ticket #116 is closed!
             case SyntaxNodeType.EqualsSign:
                 const previousSibling = node.previousSibling;
@@ -186,11 +192,23 @@ export class FormatterHelper {
                 ).trim();
                 break;
             default:
-                const text = FormatterHelper.getCurrentText(
-                    node,
-                    fullText
-                ).trim();
-                newString = text.length === 0 ? "" : " " + text;
+                if (
+                    node.type === SyntaxNodeType.RightParenthesis ||
+                    (node.previousSibling !== null &&
+                        node.previousSibling.type ===
+                            SyntaxNodeType.LeftParenthesis)
+                ) {
+                    newString = FormatterHelper.getCurrentText(
+                        node,
+                        fullText
+                    ).trim();
+                } else {
+                    const text = FormatterHelper.getCurrentText(
+                        node,
+                        fullText
+                    ).trim();
+                    newString = text.length === 0 ? "" : " " + text;
+                }
                 break;
         }
         return newString;

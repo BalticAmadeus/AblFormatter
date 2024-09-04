@@ -29,7 +29,8 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
             node.type === SyntaxNodeType.Assignment ||
             node.type === SyntaxNodeType.UnaryExpression ||
             node.type === SyntaxNodeType.NewExpression ||
-            node.type === SyntaxNodeType.VariableAssignment
+            node.type === SyntaxNodeType.VariableAssignment ||
+            node.type === SyntaxNodeType.FunctionalCallArgument
         ) {
             return true;
         }
