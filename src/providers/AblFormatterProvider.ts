@@ -4,6 +4,7 @@ import { FileIdentifier } from "../model/FileIdentifier";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
 import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
 import { EOL } from "../v2/model/EOL";
+import { DebugManager } from "./DebugManager";
 
 export class AblFormatterProvider
     implements
@@ -17,17 +18,22 @@ export class AblFormatterProvider
     }
 
     public provideDocumentFormattingEdits(
-        document: vscode.TextDocument
+        document: vscode.TextDocument,
+        options: vscode.FormattingOptions
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
+        const debugManager = DebugManager.getInstance();
+
+        configurationManager.setTabSize(options.tabSize);
 
         try {
             const codeFormatter = new FormattingEngine(
                 this.parserHelper,
                 new FileIdentifier(document.fileName, document.version),
-                configurationManager
+                configurationManager,
+                debugManager
             );
 
             const str = codeFormatter.formatText(
@@ -61,12 +67,14 @@ export class AblFormatterProvider
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
+        const debugManager = DebugManager.getInstance();
 
         try {
             const codeFormatter = new FormattingEngine(
                 this.parserHelper,
                 new FileIdentifier(document.fileName, document.version),
-                configurationManager
+                configurationManager,
+                debugManager
             );
 
             const str = codeFormatter.formatText(
@@ -89,7 +97,8 @@ export class AblFormatterProvider
 
     provideDocumentRangesFormattingEdits?(
         document: vscode.TextDocument,
-        ranges: vscode.Range[]
+        ranges: vscode.Range[],
+        options: vscode.FormattingOptions
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         console.log(
             "AblFormatterProvider.provideDocumentFormattingEdits2",
@@ -106,7 +115,7 @@ export class AblFormatterProvider
                 );
             default:
                 // for now, just format whole document, if there is more than one range
-                return this.provideDocumentFormattingEdits(document);
+                return this.provideDocumentFormattingEdits(document, options);
         }
     }
 }

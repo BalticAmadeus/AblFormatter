@@ -104,6 +104,9 @@ export class IfFunctionFormatter extends AFormatter implements IFormatter {
                     : " " +
                       FormatterHelper.getCurrentText(node, fullText).trim();
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,

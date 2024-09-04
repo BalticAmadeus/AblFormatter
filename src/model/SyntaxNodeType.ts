@@ -1,4 +1,8 @@
+import { MyFancySet } from "../utils/MyFancySet";
+
 export enum SyntaxNodeType {
+    Error = "ERROR",
+
     AvailableExpression = "available_expression",
     CaseStatement = "case_statement",
     CaseBody = "case_body",
@@ -7,6 +11,7 @@ export enum SyntaxNodeType {
     DoBlock = "do_block",
     Body = "body",
     ClassBody = "class_body",
+    InterfaceBody = "interface_body",
     IfStatement = "if_statement",
     ElseStatement = "else_statement",
     AblStatement = "abl_statement",
@@ -22,6 +27,7 @@ export enum SyntaxNodeType {
     MethodDefinition = "method_definition",
     FindStatement = "find_statement",
     WhereClause = "where_clause",
+    UndoStatement = "undo_statement",
     AssignStatement = "assign_statement",
     Assignment = "assignment",
     VariableAssignment = "variable_assignment",
@@ -88,27 +94,26 @@ export enum SyntaxNodeType {
     DefKeyword = "DEF",
 }
 
-export class MyFancySet<T> extends Set {
-    public hasFancy(value: T, inCaseOfNotHave: T): T {
-        if (this.has(value)) {
-            return value;
-        } else {
-            return inCaseOfNotHave;
-        }
-    }
-}
-
 export const afterThenStatements = new MyFancySet<string>([
     SyntaxNodeType.ReturnStatement,
     SyntaxNodeType.AblStatement,
     SyntaxNodeType.FunctionCallStatement,
     SyntaxNodeType.AssignStatement,
+    SyntaxNodeType.VariableAssignment,
+    SyntaxNodeType.UndoStatement,
 ]);
 
 export const definitionKeywords = new MyFancySet<string>([
     SyntaxNodeType.DefineKeyword,
     SyntaxNodeType.DefiKeyword,
     SyntaxNodeType.DefKeyword,
+]);
+
+export const bodyBlockKeywords = new MyFancySet<string>([
+    SyntaxNodeType.Body,
+    SyntaxNodeType.CaseBody,
+    SyntaxNodeType.ClassBody,
+    SyntaxNodeType.InterfaceBody,
 ]);
 
 export const logicalKeywords = new MyFancySet<string>([

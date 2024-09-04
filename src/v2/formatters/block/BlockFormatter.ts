@@ -1,6 +1,6 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IFormatter } from "../../formatterFramework/IFormatter";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import { bodyBlockKeywords, SyntaxNodeType } from "../../../model/SyntaxNodeType";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
@@ -22,11 +22,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
     public match(node: Readonly<SyntaxNode>): boolean {
         let found: boolean = false;
 
-        if (
-            node.type === SyntaxNodeType.Body ||
-            node.type === SyntaxNodeType.CaseBody ||
-            node.type === SyntaxNodeType.ClassBody
-        ) {
+        if (bodyBlockKeywords.hasFancy(node.type, "")) {
             found = true;
         }
 
