@@ -77,14 +77,19 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     )
             );
 
-        const codeLines = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(0, -1);
+        console.log(
+            "Body text:\n " + FormatterHelper.getBodyText(node, fullText)
+        );
+        console.log("blockStatement:\n" + blockStatementsStartRows);
+        const codeLines = FormatterHelper.getBodyText(node, fullText).split(
+            fullText.eolDelimiter
+        );
 
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
-            const lineNumber = parent.startPosition.row + index;
+            const lineNumber = node.startPosition.row + index;
+            console.log("line nr " + lineNumber + " :\n" + codeLine);
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -96,8 +101,22 @@ export class BlockFormater extends AFormatter implements IFormatter {
                         fullText
                     );
 
+                console.log(
+                    "ind: " +
+                        parentIndentation +
+                        " " +
+                        indentationStep +
+                        " " +
+                        FormatterHelper.getActualTextIndentation(
+                            codeLine,
+                            fullText
+                        )
+                );
+
                 n++;
             }
+
+            console.log("myDelta: " + lineChangeDelta);
 
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({

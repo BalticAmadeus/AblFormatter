@@ -122,10 +122,10 @@ export class ForFormatter extends AFormatter implements IFormatter {
                 );
                 break;
             case SyntaxNodeType.Body:
-                newString =
-                    fullText.eolDelimiter +
-                    " ".repeat(this.startColumn + this.settings.tabSize()) +
-                    FormatterHelper.getCurrentText(node, fullText).trim();
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
                 break;
             default:
                 const text = FormatterHelper.getCurrentText(
