@@ -17,7 +17,7 @@ import { DebugManagerMock } from "./DebugManagerMock";
 let parserHelper: AblParserHelper;
 
 const extensionDevelopmentPath = path.resolve(__dirname, "../../../");
-const functionalTestDir = "resources\\functionalTests";
+const functionalTestDir = "resources/functionalTests";
 const functionalTestDirs = getDirs(
     path.join(extensionDevelopmentPath, functionalTestDir)
 );
