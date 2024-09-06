@@ -6,7 +6,7 @@ export abstract class ASettings {
     ) {}
 
     public tabSize() {
-        return this.configurationManager.get("tabSize");
+        return this.configurationManager.getTabSize();
     }
 
     public casing() {

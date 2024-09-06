@@ -121,6 +121,9 @@ export class CaseFormatter extends AFormatter implements IFormatter {
                               node.startPosition.column
                       ).trim();
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,

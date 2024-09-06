@@ -5,23 +5,25 @@ import Parser from "web-tree-sitter";
 import { AblFormatterProvider } from "./providers/AblFormatterProvider";
 import { Constants } from "./model/Constants";
 import { AblParserHelper } from "./parser/AblParserHelper";
-import { register_memoryFileProvider } from "./model/MemoryFile";
-import { FormatterCache } from "./model/FormatterCache";
 import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
-import { ConfigurationManager2 } from "./utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "./utils/ConfigurationManager";
 import { enableFormatterDecorators } from "./v2/formatterFramework/enableFormatterDecorators";
+import { DebugManager } from "./providers/DebugManager";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-    register_memoryFileProvider(context);
+    const debugManager = DebugManager.getInstance(context);
 
     await Parser.init().then(() => {});
 
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
-    const parserHelper = new AblParserHelper(context.extensionPath);
+    const parserHelper = new AblParserHelper(
+        context.extensionPath,
+        debugManager
+    );
     const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
@@ -55,6 +57,4 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {
-    FormatterCache.clearCache();
-}
+export function deactivate() {}
