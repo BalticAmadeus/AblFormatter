@@ -1,6 +1,9 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IFormatter } from "../../formatterFramework/IFormatter";
-import { bodyBlockKeywords, SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    bodyBlockKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
@@ -58,24 +61,29 @@ export class BlockFormater extends AFormatter implements IFormatter {
         );
 
         const indentationStep = this.settings.tabSize();
-        const blockStatementsStartRows = node.children.map(
-            (node) =>
-                node.startPosition.row +
-                FormatterHelper.getActualTextRow(
-                    FormatterHelper.getCurrentText(node, fullText),
-                    fullText
-                )
-        );
+        const blockStatementsStartRows = node.children
+            .filter((child) => {
+                if (child.type === ":") {
+                    return false;
+                }
+                return true;
+            })
+            .map(
+                (child) =>
+                    child.startPosition.row +
+                    FormatterHelper.getActualTextRow(
+                        FormatterHelper.getCurrentText(child, fullText),
+                        fullText
+                    )
+            );
 
         const codeLines = FormatterHelper.getCurrentText(parent, fullText)
             .split(fullText.eolDelimiter)
-            .slice(1, -1);
+            .slice(0, -1);
 
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
-            // the first line was removed, so index needs to be incremented
-            index++;
             const lineNumber = parent.startPosition.row + index;
 
             // adjust delta
@@ -197,7 +205,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 node.parent?.type === SyntaxNodeType.CaseOtherwiseBranch)
         ) {
             return node.parent;
-        }else if (
+        } else if (
             node.type === SyntaxNodeType.DoBlock &&
             (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
                 node.parent?.type === SyntaxNodeType.ElseStatement)
