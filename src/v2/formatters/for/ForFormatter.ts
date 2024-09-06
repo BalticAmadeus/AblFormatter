@@ -66,6 +66,10 @@ export class ForFormatter extends AFormatter implements IFormatter {
             if (child.type === SyntaxNodeType.Identifier) {
                 alignColumn = this.startColumn + resultString.length;
             }
+            console.log("child: " + child.type);
+            console.log(
+                "childText: " + FormatterHelper.getCurrentText(child, fullText)
+            );
             resultString = resultString.concat(
                 this.getForExpressionString(child, fullText, alignColumn)
             );
