@@ -24,24 +24,24 @@ const functionalTestDirs = getDirs(
 let functionalTestCases: string[] = [];
 functionalTestDirs.forEach((dir) => {
     const testsInsideDir = getDirs(
-        path.join(extensionDevelopmentPath, functionalTestDir + "\\" + dir)
+        path.join(extensionDevelopmentPath, functionalTestDir + "/" + dir)
     );
     testsInsideDir.forEach((test) => {
-        functionalTestCases.push(dir + "\\" + test);
+        functionalTestCases.push(dir + "/" + test);
     });
 });
 
-const treeSitterErrorTestDir = "resources\\treeSitterErrorTests";
+const treeSitterErrorTestDir = "resources/treeSitterErrorTests";
 const treeSitterErrorTestDirs = getDirs(
     path.join(extensionDevelopmentPath, treeSitterErrorTestDir)
 );
 let treeSitterTestCases: string[] = [];
 treeSitterErrorTestDirs.forEach((dir) => {
     const testsInsideDir = getDirs(
-        path.join(extensionDevelopmentPath, treeSitterErrorTestDir + "\\" + dir)
+        path.join(extensionDevelopmentPath, treeSitterErrorTestDir + "/" + dir)
     );
     testsInsideDir.forEach((test) => {
-        treeSitterTestCases.push(dir + "\\" + test);
+        treeSitterTestCases.push(dir + "/" + test);
     });
 });
 
