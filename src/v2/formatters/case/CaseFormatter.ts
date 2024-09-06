@@ -49,6 +49,9 @@ export class CaseFormatter extends AFormatter implements IFormatter {
         node: SyntaxNode,
         fullText: Readonly<FullText>
     ) {
+        console.log(
+            "caseText:\n" + FormatterHelper.getCurrentText(node, fullText)
+        );
         this.startColumn = FormatterHelper.getActualStatementIndentation(
             node,
             fullText
