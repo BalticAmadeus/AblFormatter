@@ -35,7 +35,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        console.log("found: " + node.type);
         let indentationEdits: IndentationEdits[] = [];
 
         let parent = node.parent;
@@ -62,7 +61,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
         );
 
         const indentationStep = this.settings.tabSize();
-        console.log("text:\n" + FormatterHelper.getCurrentText(node, fullText));
         const blockStatementsStartRows = node.children
             .filter((child) => {
                 if (child.type === ":") {
@@ -87,7 +85,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
             const lineNumber = parent.startPosition.row + index;
-            console.log("line:\n" + codeLine);
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -155,9 +152,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
             indentationEdits,
             fullText
         );
-
-        console.log("oldText:\n" + text);
-        console.log("newBlockText:\n" + newText);
 
         return this.getCodeEdit(node, text, newText, fullText);
     }
