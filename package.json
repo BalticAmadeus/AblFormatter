@@ -201,7 +201,7 @@
         "AblFormatter.ifFunctionFormattingAddParentheses": {
           "order": 1201,
           "type": "string",
-          "default": "Yes",
+          "default": "No",
           "enum": [
             "Yes",
             "No"

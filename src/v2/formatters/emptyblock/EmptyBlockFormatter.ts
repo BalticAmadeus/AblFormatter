@@ -80,10 +80,6 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
                     )
             );
 
-        console.log(
-            "Body text:\n " + FormatterHelper.getBodyText(node, fullText)
-        );
-        console.log("blockStatement:\n" + blockStatementsStartRows);
         const codeLines = FormatterHelper.getBodyText(node, fullText).split(
             fullText.eolDelimiter
         );
@@ -92,7 +88,6 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
             const lineNumber = node.startPosition.row + index;
-            console.log("line nr " + lineNumber + " :\n" + codeLine);
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -104,22 +99,8 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
                         fullText
                     );
 
-                console.log(
-                    "ind: " +
-                        parentIndentation +
-                        " " +
-                        indentationStep +
-                        " " +
-                        FormatterHelper.getActualTextIndentation(
-                            codeLine,
-                            fullText
-                        )
-                );
-
                 n++;
             }
-
-            console.log("myDelta: " + lineChangeDelta);
 
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
@@ -146,8 +127,6 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
                         lastLine,
                         fullText
                     );
-
-                console.log("endDelta: " + endRowDelta);
 
                 if (endRowDelta !== 0) {
                     indentationEdits.push({
@@ -176,9 +155,6 @@ export class EmptyBlockFormatter extends AFormatter implements IFormatter {
             indentationEdits,
             fullText
         );
-
-        console.log("oldText:\n" + text);
-        console.log("text:\n" + newText);
 
         return this.getCodeEdit(node, text, newText, fullText);
     }
