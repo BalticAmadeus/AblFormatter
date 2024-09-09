@@ -180,11 +180,11 @@
           "default": "true",
           "description": "Enable USING formatting"
         },
-        "AblFormatter.emptyBlockFormatting": {
+        "AblFormatter.bodyFormatting": {
           "order": 1000,
           "type": "boolean",
           "default": "true",
-          "description": "Enable EMPTY BLOCK formatting"
+          "description": "Enable BODY formatting"
         },
         "AblFormatter.propertyFormatting": {
           "order": 1100,

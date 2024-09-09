@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.emptyBlockFormatting": false,
+/*  { "AblFormatter.bodyFormatting": false,
 "AblFormatter.forFormatting": false}*/
 
 for each Customer no-lock:

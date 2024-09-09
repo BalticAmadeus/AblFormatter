@@ -1,7 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.blockFormatting": true,
-"AblFormatter.forFormatting": true
-}*/
+/*  { "AblFormatter.forFormatting": true}*/
 
 for each Customer where
          Customer.var = 1:

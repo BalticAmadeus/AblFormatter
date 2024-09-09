@@ -4,7 +4,7 @@ import { IFormatter } from "../../formatterFramework/IFormatter";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { AFormatter } from "../AFormatter";
-import { EmptyBlockSettings } from "./EmptyBlockSettings";
+import { BodySettings } from "./BodySettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import {
     bodyBlockKeywords,
@@ -13,13 +13,13 @@ import {
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
 
 @RegisterFormatter
-export class EmptyBlockFormatter extends AFormatter implements IFormatter {
-    public static readonly formatterLabel = "emptyBlockFormatting";
-    private readonly settings: EmptyBlockSettings;
+export class BodyFormatter extends AFormatter implements IFormatter {
+    public static readonly formatterLabel = "bodyFormatting";
+    private readonly settings: BodySettings;
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);
-        this.settings = new EmptyBlockSettings(configurationManager);
+        this.settings = new BodySettings(configurationManager);
     }
 
     public match(node: Readonly<SyntaxNode>): boolean {

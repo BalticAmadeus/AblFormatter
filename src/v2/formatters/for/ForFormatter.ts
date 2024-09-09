@@ -66,10 +66,6 @@ export class ForFormatter extends AFormatter implements IFormatter {
             if (child.type === SyntaxNodeType.Identifier) {
                 alignColumn = this.startColumn + resultString.length;
             }
-            console.log("child: " + child.type);
-            console.log(
-                "childText: " + FormatterHelper.getCurrentText(child, fullText)
-            );
             resultString = resultString.concat(
                 this.getForExpressionString(child, fullText, alignColumn)
             );
@@ -184,10 +180,6 @@ export class ForFormatter extends AFormatter implements IFormatter {
             );
         });
 
-        console.log("sortClauseText:\n" + resultString);
-        console.log(
-            "sortClauseNode:\n" + FormatterHelper.getCurrentText(node, fullText)
-        );
         return resultString;
     }
 
@@ -220,8 +212,6 @@ export class ForFormatter extends AFormatter implements IFormatter {
                 break;
         }
 
-        console.log("sortClauseType:\n" + node.type);
-        console.log("sortClausePart:\n" + newString);
         return newString;
     }
 
@@ -251,8 +241,6 @@ export class ForFormatter extends AFormatter implements IFormatter {
                 break;
         }
 
-        console.log("sortColumnType:\n" + node.type);
-        console.log("sortColumnPart:\n" + newString);
         return newString;
     }
 
