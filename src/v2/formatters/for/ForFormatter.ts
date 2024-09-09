@@ -111,8 +111,8 @@ export class ForFormatter extends AFormatter implements IFormatter {
             case SyntaxNodeType.SortClause:
                 newString =
                     fullText.eolDelimiter +
-                    " ".repeat(alignColumn + 1) +
-                    FormatterHelper.getCurrentText(node, fullText).trim();
+                    " ".repeat(alignColumn) +
+                    this.getSortClauseText(node, fullText, alignColumn);
                 break;
             case SyntaxNodeType.ForPhrase:
                 newString = this.getSortClauseBlock(
@@ -171,6 +171,91 @@ export class ForFormatter extends AFormatter implements IFormatter {
         return resultString;
     }
 
+    private getSortClauseText(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>,
+        alignColumn: number
+    ): string {
+        let resultString = "";
+
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getSortClauseChildText(child, fullText, alignColumn)
+            );
+        });
+
+        console.log("sortClauseText:\n" + resultString);
+        console.log(
+            "sortClauseNode:\n" + FormatterHelper.getCurrentText(node, fullText)
+        );
+        return resultString;
+    }
+
+    private getSortClauseChildText(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>,
+        alignColumn: number
+    ): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.SortColumn:
+                newString = "";
+                node.children.forEach((child) => {
+                    newString = newString.concat(
+                        this.getSortColumnChildText(
+                            child,
+                            fullText,
+                            alignColumn
+                        )
+                    );
+                });
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        console.log("sortClauseType:\n" + node.type);
+        console.log("sortClausePart:\n" + newString);
+        return newString;
+    }
+
+    private getSortColumnChildText(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>,
+        alignColumn: number
+    ): string {
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.TernaryExpression:
+                newString =
+                    " " +
+                    FormatterHelper.addIndentation(
+                        FormatterHelper.getCurrentText(node, fullText).trim(),
+                        -node.startPosition.column + alignColumn + 3, // this assumes that if the sort column contains a ternary expression, then it does not contain anything else
+                        fullText.eolDelimiter
+                    ).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+
+        console.log("sortColumnType:\n" + node.type);
+        console.log("sortColumnPart:\n" + newString);
+        return newString;
+    }
+
     private getSortClauseBlock(
         node: SyntaxNode,
         fullText: Readonly<FullText>,
@@ -190,8 +275,8 @@ export class ForFormatter extends AFormatter implements IFormatter {
                 case SyntaxNodeType.SortClause:
                     resultString = resultString.concat(
                         fullText.eolDelimiter,
-                        " ".repeat(alignColumn + 1),
-                        FormatterHelper.getCurrentText(child, fullText).trim()
+                        " ".repeat(alignColumn),
+                        this.getSortClauseText(child, fullText, alignColumn)
                     );
                     break;
                 default:

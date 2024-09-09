@@ -37,6 +37,7 @@ export enum SyntaxNodeType {
     ForStatement = "for_statement",
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
+    SortColumn = "sort_column",
     ComparisonExpression = "comparison_expression",
     TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
@@ -59,6 +60,7 @@ export enum SyntaxNodeType {
 
     // keywords
     WhenKeyword = "WHEN",
+    ByKeyword = "BY",
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",

@@ -1,5 +1,6 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.ifFunctionFormatting": true,
+      "AblFormatter.forFormatting": true,
       "AblFormatter.ifFunctionFormattingAddParentheses": "No",
       "AblFormatter.ifFunctionFormattingElseLocation": "New"}*/
 
