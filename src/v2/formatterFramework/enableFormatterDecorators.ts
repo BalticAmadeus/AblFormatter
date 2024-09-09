@@ -13,13 +13,13 @@ import { PropertyFormatter } from "../formatters/property/PropertyFormatter";
 // needed just for enabling decorators. Decorators does not work if there is no usage of a class in the reachable code
 export function enableFormatterDecorators(): void {
     AssignFormatter;
+    EmptyBlockFormatter;
     BlockFormater;
     IfFormatter;
     DefineFormatter;
     UsingFormatter;
     CaseFormatter;
     ForFormatter;
-    EmptyBlockFormatter;
     TempTableFormatter;
     PropertyFormatter;
     IfFunctionFormatter;

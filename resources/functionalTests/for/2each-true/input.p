@@ -6,5 +6,5 @@
 for 
 each 
 Customer:
-    Customer.var += 1.
+            Customer.var += 1.
 end.

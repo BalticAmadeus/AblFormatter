@@ -1,6 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.emptyBlockFormatting": true,
-"AblFormatter.forFormatting": false}*/
+/*  { "AblFormatter.forFormatting": true}*/
 
 for each Customer by Customer.CreditLimit by Customer.Name:
         end.

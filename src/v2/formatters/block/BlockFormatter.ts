@@ -22,14 +22,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
         this.settings = new BlockSettings(configurationManager);
     }
 
-    public match(node: Readonly<SyntaxNode>): boolean {
-        let found: boolean = false;
-
-        if (bodyBlockKeywords.hasFancy(node.type, "")) {
-            found = true;
+    match(node: Readonly<SyntaxNode>): boolean {
+        if (!bodyBlockKeywords.hasFancy(node.type, "")) {
+            return false;
         }
 
-        return found;
+        let parent = node.parent;
+        if (parent === null || parent.type === SyntaxNodeType.ForStatement) {
+            return false;
+        }
+
+        return true;
     }
     public parse(
         node: Readonly<SyntaxNode>,
@@ -77,19 +80,14 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     )
             );
 
-        console.log(
-            "Body text:\n " + FormatterHelper.getBodyText(node, fullText)
-        );
-        console.log("blockStatement:\n" + blockStatementsStartRows);
-        const codeLines = FormatterHelper.getBodyText(node, fullText).split(
-            fullText.eolDelimiter
-        );
+        const codeLines = FormatterHelper.getCurrentText(parent, fullText)
+            .split(fullText.eolDelimiter)
+            .slice(0, -1);
 
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
-            const lineNumber = node.startPosition.row + index;
-            console.log("line nr " + lineNumber + " :\n" + codeLine);
+            const lineNumber = parent.startPosition.row + index;
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -101,22 +99,8 @@ export class BlockFormater extends AFormatter implements IFormatter {
                         fullText
                     );
 
-                console.log(
-                    "ind: " +
-                        parentIndentation +
-                        " " +
-                        indentationStep +
-                        " " +
-                        FormatterHelper.getActualTextIndentation(
-                            codeLine,
-                            fullText
-                        )
-                );
-
                 n++;
             }
-
-            console.log("myDelta: " + lineChangeDelta);
 
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
@@ -154,7 +138,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
         }
 
         return this.getCodeEditsFromIndentationEdits(
-            node,
+            parent,
             fullText,
             indentationEdits
         );
