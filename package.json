@@ -146,7 +146,7 @@
             "New",
             "Same"
           ],
-          "description": "TODO"
+          "description": "Should THEN clause be on a new line or the same line as the IF keyword?"
         },
         "AblFormatter.ifFormattingDoLocation": {
           "order": 702,
@@ -156,7 +156,7 @@
             "New",
             "Same"
           ],
-          "description": "TODO"
+          "description": "Should DO block be on a new line or the same line as the THEN keyword?"
         },
         "AblFormatter.ifFormattingStatementLocation": {
           "order": 703,
@@ -166,7 +166,7 @@
             "New",
             "Same"
           ],
-          "description": "TODO"
+          "description": "Should the first statement in an IF block be on a new line or the same line?"
         },
         "AblFormatter.temptableFormatting": {
           "order": 800,
@@ -217,12 +217,6 @@
             "Same"
           ],
           "description": "Add a new line before the ELSE?"
-        },
-        "AblFormatter.treeLogging": {
-          "order": 10000,
-          "type": "boolean",
-          "default": "true",
-          "description": "TODO: REMOVE THIS SETTING. Enable tree printing to console"
         },
         "AblFormatter.showTreeInfoOnHover": {
           "order": 10100,

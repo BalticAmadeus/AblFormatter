@@ -26,4 +26,3 @@ Already implemented:
 |  | ifFormattingDoLocation | Same | New, Same | `if true then do:`<br>`    return a.`<br>`end.` <br> ⬇️ <br> `if true then`<br>`do:`<br>`    return a.`<br>`end.` |
 |  | ifFormattingStatementLocation | Same | New, Same | `if true then return a.` <br> ⬇️ <br> `if true then`<br>`    return a.` |
 |  | temptableFormatting | true | Boolean |  |
-|  | treeLogging | true | Boolean |  |
