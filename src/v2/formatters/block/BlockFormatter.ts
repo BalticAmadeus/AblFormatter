@@ -1,6 +1,9 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IFormatter } from "../../formatterFramework/IFormatter";
-import { bodyBlockKeywords, SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    bodyBlockKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
@@ -96,6 +99,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     line: index,
                     lineChangeDelta: lineChangeDelta,
                 });
+                console.log("change line: " + index);
             }
         });
 
@@ -103,25 +107,36 @@ export class BlockFormater extends AFormatter implements IFormatter {
             .split(fullText.eolDelimiter)
             .slice(-1)[0];
 
-        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
-        if (parentOfEndNode !== null) {
-            const endNode = parentOfEndNode.children.find(
-                (node) => node.type === SyntaxNodeType.EndKeyword
-            );
+        if (this.matchEndPattern(lastLine)) {
+            const parentOfEndNode = formattingOnStatement
+                ? node.parent
+                : parent;
+            if (parentOfEndNode !== null) {
+                const endNode = parentOfEndNode.children.find(
+                    (node) => node.type === SyntaxNodeType.EndKeyword
+                );
 
-            if (endNode !== undefined) {
-                const endRowDelta =
-                    parentIndentation -
-                    FormatterHelper.getActualTextIndentation(
-                        lastLine,
-                        fullText
-                    );
+                if (endNode !== undefined) {
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualStatementIndentation(
+                            endNode,
+                            fullText
+                        );
 
-                if (endRowDelta !== 0) {
-                    indentationEdits.push({
-                        line: parent.endPosition.row - parent.startPosition.row,
-                        lineChangeDelta: endRowDelta,
-                    });
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line:
+                                parent.endPosition.row -
+                                parent.startPosition.row,
+                            lineChangeDelta: endRowDelta,
+                        });
+                        console.log(
+                            "change lineEnd: " +
+                                (parent.endPosition.row -
+                                    parent.startPosition.row)
+                        );
+                    }
                 }
             }
         }
@@ -197,7 +212,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 node.parent?.type === SyntaxNodeType.CaseOtherwiseBranch)
         ) {
             return node.parent;
-        }else if (
+        } else if (
             node.type === SyntaxNodeType.DoBlock &&
             (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
                 node.parent?.type === SyntaxNodeType.ElseStatement)
@@ -209,6 +224,14 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return node.parent.parent;
         }
         return node;
+    }
+
+    private matchEndPattern(str: string): boolean {
+        /* Returns true if string matches the pattern: (any characters)end(any characters that do not include a dot).(any characters)
+           In essence, it returns true on the case when on a line there is nothing but an end statement.
+        */
+        const pattern = /^.*end[^.]*\..*$/;
+        return pattern.test(str);
     }
 }
 
