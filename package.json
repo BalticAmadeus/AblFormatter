@@ -3,6 +3,7 @@
   "displayName": "AblFormatter",
   "description": "TODO",
   "version": "0.0.1",
+  "icon": "resources/Formatter_LOGO.png",
   "repository": {},
   "engines": {
     "vscode": "^1.84.0"
