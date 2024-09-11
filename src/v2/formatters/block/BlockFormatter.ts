@@ -161,7 +161,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 if (endNode !== undefined) {
                     const index = endNode.startPosition.column;
                     const firstPart = lastLine.slice(0, index);
-                    const secondPart = lastLine.slice(index);
+                    const secondPart = lastLine.slice(index).trimEnd();
                     codeLines[codeLines.length - 1] = firstPart;
                     codeLines.push(secondPart);
                     const endRowDelta =
@@ -271,7 +271,9 @@ export class BlockFormater extends AFormatter implements IFormatter {
         /* Returns true if string matches the pattern: (any characters that do not include a dot)end(any characters that do not include a dot).(any characters)
            In essence, it returns true on the case when on a line there is nothing but an end statement.
         */
-        const pattern = /^[^.]*end[^.]*\..*$/i;
+        const pattern = /^[^.]*end[^.]*\.[^.]*$/i;
+        console.log("str:\n" + str);
+        console.log(pattern.test(str));
         return pattern.test(str);
     }
 }
