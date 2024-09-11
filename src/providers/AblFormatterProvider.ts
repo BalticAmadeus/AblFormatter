@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
-import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager";
 import { EOL } from "../v2/model/EOL";
+import { DebugManager } from "./DebugManager";
 
 export class AblFormatterProvider
     implements
@@ -23,6 +24,7 @@ export class AblFormatterProvider
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
+        const debugManager = DebugManager.getInstance();
 
         configurationManager.setTabSize(options.tabSize);
 
@@ -30,7 +32,8 @@ export class AblFormatterProvider
             const codeFormatter = new FormattingEngine(
                 this.parserHelper,
                 new FileIdentifier(document.fileName, document.version),
-                configurationManager
+                configurationManager,
+                debugManager
             );
 
             const str = codeFormatter.formatText(
@@ -64,12 +67,14 @@ export class AblFormatterProvider
         console.log("AblFormatterProvider.provideDocumentFormattingEdits");
 
         const configurationManager = ConfigurationManager2.getInstance();
+        const debugManager = DebugManager.getInstance();
 
         try {
             const codeFormatter = new FormattingEngine(
                 this.parserHelper,
                 new FileIdentifier(document.fileName, document.version),
-                configurationManager
+                configurationManager,
+                debugManager
             );
 
             const str = codeFormatter.formatText(

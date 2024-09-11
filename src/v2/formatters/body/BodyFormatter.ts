@@ -84,8 +84,6 @@ export class BodyFormatter extends AFormatter implements IFormatter {
             fullText.eolDelimiter
         );
 
-        console.log("codeLines: " + codeLines);
-
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
