@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { IParserHelper } from "../parser/IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { FormattingEngine } from "../v2/formatterFramework/FormattingEngine";
-import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager";
 import { EOL } from "../v2/model/EOL";
 import { DebugManager } from "./DebugManager";
 

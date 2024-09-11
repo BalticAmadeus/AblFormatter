@@ -9,7 +9,7 @@ import {
 } from "vscode";
 import { SyntaxNode, Tree } from "web-tree-sitter";
 import { SyntaxNodeType } from "../model/SyntaxNodeType";
-import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { ConfigurationManager2 } from "../utils/ConfigurationManager";
 import { IDebugManager } from "./IDebugManager";
 
 export class DebugManager implements IDebugManager {

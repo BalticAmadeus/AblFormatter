@@ -1,50 +1,68 @@
-import { WorkspaceConfiguration, window, workspace, commands } from "vscode";
+import { commands, window, workspace, WorkspaceConfiguration } from "vscode";
+import { IConfigurationManager } from "./IConfigurationManager";
 
-export class ConfigurationManager {
-    private static reloadConfig = true;
-    private static reloadExternalConfig = true;
-    private static configuration: WorkspaceConfiguration;
-    private static externalConfiguration: WorkspaceConfiguration;
-    private static overridingSettings: any | undefined;
-    public static readonly _ = workspace.onDidChangeConfiguration((e) => {
-        if (e.affectsConfiguration("AblFormatter")) {
-            ConfigurationManager.reloadConfig = true;
-            window.showInformationMessage("ABL Formatter was changed!");
+export class ConfigurationManager2 implements IConfigurationManager {
+    private static instance: ConfigurationManager2;
+    private reloadConfig = true;
+    private reloadExternalConfig = true;
+    private configuration: WorkspaceConfiguration | undefined = undefined;
+    private externalConfiguration: WorkspaceConfiguration | undefined =
+        undefined;
+    private overridingSettings: any | undefined;
+    private tabSize: number | undefined;
+
+    private constructor() {
+        workspace.onDidChangeConfiguration((e) => {
+            if (e.affectsConfiguration("AblFormatter")) {
+                this.reloadConfig = true;
+                window.showInformationMessage("ABL Formatter was changed2!");
+            }
+
+            if (e.affectsConfiguration("abl.completion")) {
+                this.reloadExternalConfig = true;
+                window.showInformationMessage("ABL cassing was changed2!");
+            }
+        });
+    }
+
+    public static getInstance(): ConfigurationManager2 {
+        if (!ConfigurationManager2.instance) {
+            ConfigurationManager2.instance = new ConfigurationManager2();
         }
+        return ConfigurationManager2.instance;
+    }
 
-        if (e.affectsConfiguration("abl.completion")) {
-            ConfigurationManager.reloadExternalConfig = true;
-            window.showInformationMessage("ABL cassing was changed!");
+    public get(name: string) {
+        if (this.reloadConfig) {
+            this.reloadConfig = false;
+            this.configuration = workspace.getConfiguration("AblFormatter");
         }
-    });
-
-    public static get(name: string): any {
-        if (ConfigurationManager.reloadConfig) {
-            ConfigurationManager.reloadConfig = false;
-            ConfigurationManager.configuration =
-                workspace.getConfiguration("AblFormatter");
-        }
-
         return this.getConfig(name);
     }
 
-    public static getCasing(): any {
-        if (ConfigurationManager.reloadExternalConfig) {
-            ConfigurationManager.reloadExternalConfig = false;
-            ConfigurationManager.externalConfiguration =
+    public setTabSize(tabSize: number): void {
+        this.tabSize = tabSize;
+    }
+
+    public getTabSize(): number {
+        return this.tabSize || 4; // Default to 4 if not set
+    }
+
+    public getCasing() {
+        if (this.reloadExternalConfig) {
+            this.reloadExternalConfig = false;
+            this.externalConfiguration =
                 workspace.getConfiguration("abl.completion");
         }
-
         return this.getCassingConfig();
     }
 
-    public static setOverridingSettings(settings: any) {
+    public setOverridingSettings(settings: any): void {
         this.overridingSettings = settings;
     }
 
-    private static getCassingConfig(): any {
-        const config =
-            ConfigurationManager.externalConfiguration.get("upperCase");
+    private getCassingConfig(): any {
+        const config = this.externalConfiguration?.get("upperCase");
 
         if (config === undefined || (config !== true && config !== false)) {
             window
@@ -77,8 +95,9 @@ export class ConfigurationManager {
         return config;
     }
 
-    private static getConfig(name: string): any {
-        const config = ConfigurationManager.configuration.get(name);
+    private getConfig(name: string): any {
+        const config = this.configuration?.get(name);
+
         if (this.overridingSettings !== undefined) {
             const overridingConfig =
                 this.overridingSettings["AblFormatter." + name];

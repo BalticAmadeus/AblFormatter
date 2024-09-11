@@ -83,6 +83,15 @@ export class FormatterHelper {
         return "";
     }
 
+    public static getBodyText(
+        node: Readonly<SyntaxNode>,
+        fullText: Readonly<FullText>
+    ): string {
+        let text = this.getCurrentText(node, fullText);
+        let firstColonIndex = text.indexOf(":");
+        return text.substring(firstColonIndex + 1);
+    }
+
     public static getCurrentTextMultilineAdjust(
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>,
