@@ -3,6 +3,7 @@
   "displayName": "AblFormatter",
   "description": "TODO",
   "version": "0.0.1",
+  "repository": {},
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -13,6 +14,7 @@
     "onLanguage:abl"
   ],
   "main": "./out/extension.js",
+  "publisher": "BalticAmadeus",
   "contributes": {
     "languages": [
       {
@@ -30,6 +32,200 @@
         ]
       }
     ],
+    "configuration": {
+      "title": "AblFormatter",
+      "properties": {
+        "AblFormatter.assignFormatting": {
+          "order": 100,
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Enable/disable ASSIGN statement formatting."
+        },
+        "AblFormatter.assignFormattingAssignLocation": {
+          "order": 101,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should assigns be located on same or new line after ASSIGN keyword?"
+        },
+        "AblFormatter.assignFormattingAlignRightExpression": {
+          "order": 102,
+          "type": "string",
+          "default": "Yes",
+          "enum": [
+            "Yes",
+            "No"
+          ],
+          "description": "Should right expression be aligned by longest one?"
+        },
+        "AblFormatter.assignFormattingEndDotLocation": {
+          "order": 103,
+          "type": "string",
+          "default": "New aligned",
+          "enum": [
+            "New",
+            "New aligned",
+            "Same"
+          ],
+          "description": "Should end dot be located on same or new line after ASSIGN statement?"
+        },
+        "AblFormatter.defineFormatting": {
+          "order": 200,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable DEFINE formatting"
+        },
+        "AblFormatter.findFormatting": {
+          "order": 300,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable FIND formatting"
+        },
+        "AblFormatter.forFormatting": {
+          "order": 400,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable FOR formatting"
+        },
+        "AblFormatter.caseFormatting": {
+          "order": 500,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable CASE formatting"
+        },
+        "AblFormatter.caseFormattingThenLocation": {
+          "order": 501,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should THEN clause be on a new line or the same line as the WHEN keyword?"
+        },
+        "AblFormatter.caseFormattingDoLocation": {
+          "order": 502,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should DO block be on a new line or the same line as the THEN keyword?"
+        },
+        "AblFormatter.caseFormattingStatementLocation": {
+          "order": 503,
+          "type": "string",
+          "default": "New",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should the first statement in a WHEN block be on a new line or the same line?"
+        },
+        "AblFormatter.blockFormatting": {
+          "order": 600,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable block formatting"
+        },
+        "AblFormatter.ifFormatting": {
+          "order": 700,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable IF formatting"
+        },
+        "AblFormatter.ifFormattingThenLocation": {
+          "order": 701,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should THEN clause be on a new line or the same line as the IF keyword?"
+        },
+        "AblFormatter.ifFormattingDoLocation": {
+          "order": 702,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should DO block be on a new line or the same line as the THEN keyword?"
+        },
+        "AblFormatter.ifFormattingStatementLocation": {
+          "order": 703,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should the first statement in an IF block be on a new line or the same line?"
+        },
+        "AblFormatter.temptableFormatting": {
+          "order": 800,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable TEMP-TABLE formatting"
+        },
+        "AblFormatter.usingFormatting": {
+          "order": 900,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable USING formatting"
+        },
+        "AblFormatter.emptyBlockFormatting": {
+          "order": 1000,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable EMPTY BLOCK formatting"
+        },
+        "AblFormatter.propertyFormatting": {
+          "order": 1100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable property formatting"
+        },
+        "AblFormatter.ifFunctionFormatting": {
+          "order": 1200,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable IF FUNCTION formatting"
+        },
+        "AblFormatter.ifFunctionFormattingAddParentheses": {
+          "order": 1201,
+          "type": "string",
+          "default": "Yes",
+          "enum": [
+            "Yes",
+            "No"
+          ],
+          "description": "Add parentheses around the expression?"
+        },
+        "AblFormatter.ifFunctionFormattingElseLocation": {
+          "order": 1202,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Add a new line before the ELSE?"
+        },
+        "AblFormatter.showTreeInfoOnHover": {
+          "order": 10100,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable table view with tree info on hover"
+        }
+      }
+    },
     "commands": [
       {
         "command": "AblFormatter.helloWorld",
@@ -38,26 +234,40 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "copy-wasm": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",
+    "delete-out": "rimraf out",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run copy-wasm",
+    "build": "npm run esbuild",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
+    "prep-ui-test": "npm run delete-out && npm run compile && extest setup-tests -s ./.test_dir -e ./.ext_dir -c 1.85.1 -t stable",
+    "run-ui-test": "npm run copy-test-settings && npm run copy-test-cases && npm run compile && extest run-tests './out/ui-test/testRunner.js' -s ./.test_dir -e ./.ext_dir -c 1.85.1 -t stable",
+    "copy-test-cases": "copyfiles -u 2 ./resources/samples/* .test_dir/samples",
+    "copy-test-settings": "copyfiles -u 2 ./resources/samples/.vscode/* .test_dir/samples/",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.3.1",
+    "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
     "@types/vscode": "^1.84.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "chai": "^4.3.11",
+    "copyfiles": "^2.4.1",
+    "esbuild": "0.19.11",
     "eslint": "^8.52.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
+    "rimraf": "^5.0.5",
     "typescript": "^5.2.2",
-    "@usagi-coffee/tree-sitter-abl": "0.0.3"
+    "vscode-extension-tester": "^6.0.0"
   },
   "dependencies": {
     "web-tree-sitter": "0.20.8"

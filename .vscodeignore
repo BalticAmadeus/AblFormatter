@@ -1,4 +1,6 @@
-.vscode/**
+.vscode/
+.ext_dir/
+.test_dir/
 .vscode-test/**
 src/**
 .gitignore
@@ -8,3 +10,6 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+node_modules/**
+resources/functionalTests/**
+resources/samples/**

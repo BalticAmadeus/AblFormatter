@@ -5,13 +5,26 @@ import Parser from "web-tree-sitter";
 import { AblFormatterProvider } from "./providers/AblFormatterProvider";
 import { Constants } from "./model/Constants";
 import { AblParserHelper } from "./parser/AblParserHelper";
+import { AblDebugHoverProvider } from "./providers/AblDebugHoverProvider";
+import { ConfigurationManager2 } from "./utils/ConfigurationManager";
+import { enableFormatterDecorators } from "./v2/formatterFramework/enableFormatterDecorators";
+import { DebugManager } from "./providers/DebugManager";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+    const debugManager = DebugManager.getInstance(context);
+
     await Parser.init().then(() => {});
 
-    const formatter = new AblFormatterProvider(new AblParserHelper(context));
+    ConfigurationManager2.getInstance();
+    enableFormatterDecorators();
+
+    const parserHelper = new AblParserHelper(
+        context.extensionPath,
+        debugManager
+    );
+    const formatter = new AblFormatterProvider(parserHelper);
 
     vscode.languages.registerDocumentRangeFormattingEditProvider(
         Constants.ablId,
@@ -22,6 +35,9 @@ export async function activate(context: vscode.ExtensionContext) {
         Constants.ablId,
         formatter
     );
+
+    const hoverProvider = new AblDebugHoverProvider(parserHelper);
+    vscode.languages.registerHoverProvider(Constants.ablId, hoverProvider);
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand

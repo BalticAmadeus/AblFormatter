@@ -1,32 +1,39 @@
-import Parser from "web-tree-sitter";
+import Parser, { Tree } from "web-tree-sitter";
 import { IParserHelper } from "./IParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { ParseResult } from "../model/ParseResult";
-import * as vscode from "vscode";
 import path from "path";
+import { SyntaxNodeType } from "../model/SyntaxNodeType";
+import { IDebugManager } from "../providers/IDebugManager";
 
 export class AblParserHelper implements IParserHelper {
     private parser = new Parser();
     private trees = new Map<string, Parser.Tree>();
+    private ablLanguagePromise: Promise<Parser.Language>;
+    private debugManager: IDebugManager;
 
-    public constructor(context: vscode.ExtensionContext) {
-        console.log("Hello Parser!");
-
-        const ablPromise = Parser.Language.load(
-            path.join(
-                context.extensionPath,
-                "node_modules/@usagi-coffee/tree-sitter-abl/tree-sitter-abl.wasm"
-            )
+    public constructor(extensionPath: string, debugManager: IDebugManager) {
+        this.debugManager = debugManager;
+        this.ablLanguagePromise = Parser.Language.load(
+            path.join(extensionPath, "resources/tree-sitter-abl.wasm")
         );
 
-        ablPromise.then((abl) => {
+        this.ablLanguagePromise.then((abl) => {
             this.parser.setLanguage(abl);
+            this.debugManager.parserReady();
         });
     }
 
-    public parse(fileIdentifier: FileIdentifier, text: string): ParseResult {
-        const previousTree = this.trees.get(fileIdentifier.name);
-        const newTree = this.parser.parse(text);
+    public async awaitLanguage(): Promise<void> {
+        await this.ablLanguagePromise;
+    }
+
+    public parse(
+        fileIdentifier: FileIdentifier,
+        text: string,
+        previousTree?: Tree
+    ): ParseResult {
+        const newTree = this.parser.parse(text, previousTree);
         let ranges: Parser.Range[];
 
         if (previousTree !== undefined) {
@@ -35,13 +42,34 @@ export class AblParserHelper implements IParserHelper {
             ranges = []; // TODO
         }
 
-        this.trees.set(fileIdentifier.name, newTree);
-
         const result: ParseResult = {
             tree: newTree,
             ranges: ranges,
         };
 
+        this.debugManager.handleErrors(newTree);
+
         return result;
     }
+}
+
+function getNodesWithErrors(
+    node: Parser.SyntaxNode,
+    isRoot: boolean
+): Parser.SyntaxNode[] {
+    let errorNodes: Parser.SyntaxNode[] = [];
+
+    if (
+        node.type === SyntaxNodeType.Error &&
+        node.text.trim() !== "ERROR" &&
+        !isRoot
+    ) {
+        errorNodes.push(node);
+    }
+
+    node.children.forEach((child) => {
+        errorNodes = errorNodes.concat(getNodesWithErrors(child, false));
+    });
+
+    return errorNodes;
 }
