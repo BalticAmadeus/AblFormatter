@@ -80,9 +80,21 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     )
             );
 
-        const codeLines = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(0, -1);
+        let codeLines = FormatterHelper.getCurrentText(parent, fullText).split(
+            fullText.eolDelimiter
+        );
+
+        // Do not do any changes for one-liner blocks
+        if (codeLines.length === 1) {
+            const text = FormatterHelper.getCurrentText(node, fullText);
+            return this.getCodeEdit(node, text, text, fullText);
+        }
+        const lastLine = codeLines[codeLines.length - 1];
+
+        const lastLineMatchesTypicalStructure = this.matchEndPattern(lastLine);
+        if (lastLineMatchesTypicalStructure) {
+            codeLines.pop();
+        }
 
         let n = 0;
         let lineChangeDelta = 0;
@@ -110,29 +122,61 @@ export class BlockFormater extends AFormatter implements IFormatter {
             }
         });
 
-        const lastLine = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(-1)[0];
+        if (lastLineMatchesTypicalStructure) {
+            const parentOfEndNode = formattingOnStatement
+                ? node.parent
+                : parent;
+            if (parentOfEndNode !== null) {
+                const endNode = parentOfEndNode.children.find(
+                    (node) => node.type === SyntaxNodeType.EndKeyword
+                );
 
-        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
-        if (parentOfEndNode !== null) {
-            const endNode = parentOfEndNode.children.find(
-                (node) => node.type === SyntaxNodeType.EndKeyword
-            );
+                if (endNode !== undefined) {
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualTextIndentation(
+                            lastLine,
+                            fullText
+                        );
 
-            if (endNode !== undefined) {
-                const endRowDelta =
-                    parentIndentation -
-                    FormatterHelper.getActualTextIndentation(
-                        lastLine,
-                        fullText
-                    );
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line:
+                                parent.endPosition.row -
+                                parent.startPosition.row,
+                            lineChangeDelta: endRowDelta,
+                        });
+                    }
+                }
+            }
+            codeLines.push(lastLine);
+        } else {
+            const parentOfEndNode = formattingOnStatement
+                ? node.parent
+                : parent;
+            if (parentOfEndNode !== null) {
+                const endNode = parentOfEndNode.children.find(
+                    (node) => node.type === SyntaxNodeType.EndKeyword
+                );
+                if (endNode !== undefined) {
+                    const index = endNode.startPosition.column;
+                    const firstPart = lastLine.slice(0, index);
+                    const secondPart = lastLine.slice(index).trimEnd();
+                    codeLines[codeLines.length - 1] = firstPart;
+                    codeLines.push(secondPart);
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualTextIndentation(
+                            secondPart,
+                            fullText
+                        );
 
-                if (endRowDelta !== 0) {
-                    indentationEdits.push({
-                        line: parent.endPosition.row - parent.startPosition.row,
-                        lineChangeDelta: endRowDelta,
-                    });
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line: codeLines.length - 1,
+                            lineChangeDelta: endRowDelta,
+                        });
+                    }
                 }
             }
         }
@@ -140,32 +184,33 @@ export class BlockFormater extends AFormatter implements IFormatter {
         return this.getCodeEditsFromIndentationEdits(
             parent,
             fullText,
-            indentationEdits
+            indentationEdits,
+            codeLines
         );
     }
 
     private getCodeEditsFromIndentationEdits(
         node: SyntaxNode,
         fullText: FullText,
-        indentationEdits: IndentationEdits[]
+        indentationEdits: IndentationEdits[],
+        codeLines: string[]
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
         const newText = this.applyIndentationEdits(
-            text,
             indentationEdits,
-            fullText
+            fullText,
+            codeLines
         );
 
         return this.getCodeEdit(node, text, newText, fullText);
     }
 
     private applyIndentationEdits(
-        code: string,
         edits: IndentationEdits[],
-        fullText: FullText
+        fullText: FullText,
+        lines: string[]
     ): string {
         // Split the code into lines
-        const lines = code.split(fullText.eolDelimiter);
 
         // Apply each edit
         edits.forEach((edit) => {
@@ -220,6 +265,16 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return node.parent.parent;
         }
         return node;
+    }
+
+    private matchEndPattern(str: string): boolean {
+        /* Returns true if string matches the pattern: (any characters that do not include a dot)end(any characters that do not include a dot).(any characters)
+           In essence, it returns true on the case when on a line there is nothing but an end statement.
+        */
+        const pattern = /^[^.]*end[^.]*\.[^.]*$/i;
+        console.log("str:\n" + str);
+        console.log(pattern.test(str));
+        return pattern.test(str);
     }
 }
 
