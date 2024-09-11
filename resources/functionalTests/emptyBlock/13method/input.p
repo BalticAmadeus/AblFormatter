@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.emptyBlockFormatting": true}*/
+/*  { "AblFormatter.blockFormatting": true}*/
 
 class Class final:
     method public void mt():
