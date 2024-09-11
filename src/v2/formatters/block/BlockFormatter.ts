@@ -164,6 +164,19 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     const secondPart = lastLine.slice(index);
                     codeLines[codeLines.length - 1] = firstPart;
                     codeLines.push(secondPart);
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualTextIndentation(
+                            secondPart,
+                            fullText
+                        );
+
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line: codeLines.length - 1,
+                            lineChangeDelta: endRowDelta,
+                        });
+                    }
                 }
             }
         }
