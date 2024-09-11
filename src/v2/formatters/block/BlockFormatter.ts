@@ -272,8 +272,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
            In essence, it returns true on the case when on a line there is nothing but an end statement.
         */
         const pattern = /^[^.]*end[^.]*\.[^.]*$/i;
-        console.log("str:\n" + str);
-        console.log(pattern.test(str));
         return pattern.test(str);
     }
 }
