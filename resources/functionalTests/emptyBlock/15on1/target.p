@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.emptyBlockFormatting": true}*/
+/*  { "AblFormatter.blockFormatting": true}*/
 
 ON F1    GO.       /* F1 will now perform the GO function */
 ON F2    HELP.     /* F2 will now perform the HELP function   */

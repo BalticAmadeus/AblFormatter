@@ -22,14 +22,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
         this.settings = new BlockSettings(configurationManager);
     }
 
-    public match(node: Readonly<SyntaxNode>): boolean {
-        let found: boolean = false;
-
-        if (bodyBlockKeywords.hasFancy(node.type, "")) {
-            found = true;
+    match(node: Readonly<SyntaxNode>): boolean {
+        if (!bodyBlockKeywords.hasFancy(node.type, "")) {
+            return false;
         }
 
-        return found;
+        let parent = node.parent;
+        if (parent === null || parent.type === SyntaxNodeType.ForStatement) {
+            return false;
+        }
+
+        return true;
     }
     public parse(
         node: Readonly<SyntaxNode>,
