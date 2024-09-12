@@ -1,28 +1,69 @@
 # AblFormatter
 
-VSCode extension for Progress OpenEdge code formatting
+VSCode extension for Progress OpenEdge code formatting.
 
-## Feature Summary
+This extension uses tree-sitter-abl implementation by Kamil Jakubus. TODO: add links
 
-Already implemented:
-- Block
-- Assign
-- Define
+## Current status
 
-|  | Feature | Default value | Values | Code example |
-|--|---------|---------------|-----------------|--------------|
-|  | tabSize | 4 | Number |  |
-|  | assignFormatting | true | Boolean |  |
-|  | assignFormattingAssignLocation | New | New, Same |  |
-|  | assignFormattingAlignRightExpression | Yes | Yes, No |  |
-|  | assignFormattingEndDotLocation | New aligned | New, New aligned, Same |  |
-|  | defineFormatting | true | Boolean |  |
-|  | findFormatting | true | Boolean |  |
-|  | forFormatting | true | Boolean |  |
-|  | caseFormatting | true | Boolean |  |
-|  | blockFormatting | true | Boolean |  |
-|  | ifFormatting | true | Boolean |  |
-|  | ifFormattingThenLocation | Same | New, Same | `if true then return a.` <br> ⬇️ <br> `if true`<br>`then return a.` |
-|  | ifFormattingDoLocation | Same | New, Same | `if true then do:`<br>`    return a.`<br>`end.` <br> ⬇️ <br> `if true then`<br>`do:`<br>`    return a.`<br>`end.` |
-|  | ifFormattingStatementLocation | Same | New, Same | `if true then return a.` <br> ⬇️ <br> `if true then`<br>`    return a.` |
-|  | temptableFormatting | true | Boolean |  |
+Early preview blah blah blah
+
+TODO: Add gif here
+
+## Features
+
+At the moment we implemented formatting logic for these language features:
+
+- Code blocks
+- ASSIGN
+- CASE
+- DEFINE
+- FOR
+- IF statement
+- IF function
+- USING
+
+## Configuration
+
+TODO: blah blah about reasoning for settings
+
+TODO: link a separate file with settings
+
+## Installation
+
+TODO: generic stuff
+
+## Usage
+
+Alowed file extensions:
+
+- **.p**
+- **.cls**
+- **.i**
+- **.w**
+
+Commands:
+
+- **Format Document**: Formats the entire ABL document.
+- **Format Selection**: Formats only the selected lines of code.
+
+## Debuging
+
+- TODO: describe how to deal with debug mode
+
+## Contributing
+
+### Registering formatter issues
+
+- TODO: create issue template
+
+### Fixing yourself
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes and push to your branch.
+4. Submit a pull request to the main repository.
+
+## License
+
+This project is licensed under the APACHE 2.0 License - see the LICENSE file for details.
