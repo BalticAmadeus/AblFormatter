@@ -62,11 +62,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
             this.getParentIndentationSourceNode(parent),
             fullText
         );
-        console.log("parIndentation: " + parentIndentation);
-        console.log(
-            "parType: " + this.getParentIndentationSourceNode(parent).type
-        );
-        console.log("myType: " + node.type);
 
         const indentationStep = this.settings.tabSize();
         let indexOfColon = -1;
@@ -87,7 +82,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     )
             );
 
-        console.log("blockStatementRowsFound:\n" + blockStatementsStartRows);
         let codeLines = FormatterHelper.getCurrentText(parent, fullText).split(
             fullText.eolDelimiter
         );
@@ -105,13 +99,8 @@ export class BlockFormater extends AFormatter implements IFormatter {
             codeLines.pop();
         }
 
-        console.log("codeLinesBefore:\n" + codeLines);
-        console.log("blockStatementRows:\n" + blockStatementsStartRows);
-
         if (indexOfColon !== -1) {
             // indexOfColon += parentIndentation;
-            console.log("indexOfColon: " + indexOfColon);
-            console.log("colonLine:\n" + firstLine);
             indexOfColon -= parent.startPosition.column;
             const partAfterColon = firstLine
                 .slice(indexOfColon + 1)
@@ -133,17 +122,10 @@ export class BlockFormater extends AFormatter implements IFormatter {
             }
         }
 
-        console.log("codeLines:\n" + codeLines);
-        console.log("blockStatementRows:\n" + blockStatementsStartRows);
-
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
             const lineNumber = parent.startPosition.row + index;
-            console.log(
-                "lineNumber: " + lineNumber + " " + blockStatementsStartRows[n]
-            );
-            console.log("line:\n" + codeLine);
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -157,18 +139,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
                 n++;
             }
-
-            console.log(
-                "delta: " +
-                    parentIndentation +
-                    indentationStep +
-                    FormatterHelper.getActualTextIndentation(
-                        codeLine,
-                        fullText
-                    ) +
-                    " " +
-                    lineChangeDelta
-            );
 
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
@@ -195,8 +165,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                             lastLine,
                             fullText
                         );
-
-                    console.log("endRowDelta: " + endRowDelta);
 
                     if (endRowDelta !== 0) {
                         indentationEdits.push({
@@ -283,15 +251,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 const newLeadingSpaces = Math.max(
                     0,
                     currentLeadingSpaces + lineChangeDelta
-                );
-
-                console.log(
-                    "line: " +
-                        lines[line] +
-                        " " +
-                        lineChangeDelta +
-                        " " +
-                        newLeadingSpaces
                 );
 
                 // Update the line with the new indentation
