@@ -110,33 +110,6 @@ export class BodyFormatter extends AFormatter implements IFormatter {
             }
         });
 
-        const lastLine = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(-1)[0];
-
-        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
-        if (parentOfEndNode !== null) {
-            const endNode = parentOfEndNode.children.find(
-                (node) => node.type === SyntaxNodeType.EndKeyword
-            );
-
-            if (endNode !== undefined) {
-                const endRowDelta =
-                    parentIndentation -
-                    FormatterHelper.getActualTextIndentation(
-                        lastLine,
-                        fullText
-                    );
-
-                if (endRowDelta !== 0) {
-                    indentationEdits.push({
-                        line: parent.endPosition.row - parent.startPosition.row,
-                        lineChangeDelta: endRowDelta,
-                    });
-                }
-            }
-        }
-
         return this.getCodeEditsFromIndentationEdits(
             node,
             fullText,
