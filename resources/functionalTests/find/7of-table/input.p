@@ -1,4 +1,4 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.findFormatting": true}*/
 
-FIND Order WHERE Order.CustomerID = Customer.CustomerID NO-WAIT.
+FIND FIRST Order OF Customer WHERE Customer.Country = "USA" AND Customer.Balance > 1000.
