@@ -62,11 +62,18 @@ export class BlockFormater extends AFormatter implements IFormatter {
             this.getParentIndentationSourceNode(parent),
             fullText
         );
+        console.log("parIndentation: " + parentIndentation);
+        console.log(
+            "parType: " + this.getParentIndentationSourceNode(parent).type
+        );
+        console.log("myType: " + node.type);
 
         const indentationStep = this.settings.tabSize();
-        const blockStatementsStartRows = node.children
+        let indexOfColon = -1;
+        let blockStatementsStartRows = node.children
             .filter((child) => {
                 if (child.type === ":") {
+                    indexOfColon = child.startPosition.column;
                     return false;
                 }
                 return true;
@@ -80,15 +87,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
                     )
             );
 
+        console.log("blockStatementRowsFound:\n" + blockStatementsStartRows);
         let codeLines = FormatterHelper.getCurrentText(parent, fullText).split(
             fullText.eolDelimiter
         );
 
         // Do not do any changes for one-liner blocks
-        if (codeLines.length === 1) {
+        if (codeLines.length <= 1) {
             const text = FormatterHelper.getCurrentText(node, fullText);
             return this.getCodeEdit(node, text, text, fullText);
         }
+        const firstLine = codeLines[0];
         const lastLine = codeLines[codeLines.length - 1];
 
         const lastLineMatchesTypicalStructure = this.matchEndPattern(lastLine);
@@ -96,10 +105,45 @@ export class BlockFormater extends AFormatter implements IFormatter {
             codeLines.pop();
         }
 
+        console.log("codeLinesBefore:\n" + codeLines);
+        console.log("blockStatementRows:\n" + blockStatementsStartRows);
+
+        if (indexOfColon !== -1) {
+            // indexOfColon += parentIndentation;
+            console.log("indexOfColon: " + indexOfColon);
+            console.log("colonLine:\n" + firstLine);
+            indexOfColon -= parent.startPosition.column;
+            const partAfterColon = firstLine
+                .slice(indexOfColon + 1)
+                .trimStart();
+            // If the part after the colon is not only whitespace, put it on the next line
+            if (partAfterColon.trim().length !== 0) {
+                const firstPart = firstLine.slice(0, indexOfColon + 1);
+                codeLines.shift(); // pop from the start of the list
+                codeLines.unshift(firstPart, partAfterColon);
+                const firstBlockStatementRow = blockStatementsStartRows[0];
+                blockStatementsStartRows.shift();
+                blockStatementsStartRows.unshift(
+                    firstBlockStatementRow - 1,
+                    firstBlockStatementRow
+                );
+                blockStatementsStartRows = blockStatementsStartRows.map(
+                    (currentRow) => currentRow + 1
+                );
+            }
+        }
+
+        console.log("codeLines:\n" + codeLines);
+        console.log("blockStatementRows:\n" + blockStatementsStartRows);
+
         let n = 0;
         let lineChangeDelta = 0;
         codeLines.forEach((codeLine, index) => {
             const lineNumber = parent.startPosition.row + index;
+            console.log(
+                "lineNumber: " + lineNumber + " " + blockStatementsStartRows[n]
+            );
+            console.log("line:\n" + codeLine);
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
@@ -114,6 +158,18 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 n++;
             }
 
+            console.log(
+                "delta: " +
+                    parentIndentation +
+                    indentationStep +
+                    FormatterHelper.getActualTextIndentation(
+                        codeLine,
+                        fullText
+                    ) +
+                    " " +
+                    lineChangeDelta
+            );
+
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
                     line: index,
@@ -123,6 +179,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
         });
 
         if (lastLineMatchesTypicalStructure) {
+            codeLines.push(lastLine);
             const parentOfEndNode = formattingOnStatement
                 ? node.parent
                 : parent;
@@ -139,17 +196,16 @@ export class BlockFormater extends AFormatter implements IFormatter {
                             fullText
                         );
 
+                    console.log("endRowDelta: " + endRowDelta);
+
                     if (endRowDelta !== 0) {
                         indentationEdits.push({
-                            line:
-                                parent.endPosition.row -
-                                parent.startPosition.row,
+                            line: codeLines.length - 1,
                             lineChangeDelta: endRowDelta,
                         });
                     }
                 }
             }
-            codeLines.push(lastLine);
         } else {
             const parentOfEndNode = formattingOnStatement
                 ? node.parent
@@ -227,6 +283,15 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 const newLeadingSpaces = Math.max(
                     0,
                     currentLeadingSpaces + lineChangeDelta
+                );
+
+                console.log(
+                    "line: " +
+                        lines[line] +
+                        " " +
+                        lineChangeDelta +
+                        " " +
+                        newLeadingSpaces
                 );
 
                 // Update the line with the new indentation
