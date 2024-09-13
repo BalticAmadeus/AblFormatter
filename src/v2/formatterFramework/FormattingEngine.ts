@@ -186,7 +186,6 @@ export class FormattingEngine {
             this.configurationManager.setOverridingSettings(
                 JSON.parse(settingsString)
             );
-            console.log("Settings override");
         }
     }
 
