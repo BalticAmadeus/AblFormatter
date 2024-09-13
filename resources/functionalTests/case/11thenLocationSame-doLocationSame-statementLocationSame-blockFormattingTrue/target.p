@@ -11,7 +11,8 @@ PROCEDURE testCase:
     i = 2.
 
     CASE i:
-        WHEN 1 THEN DO: MESSAGE "Case 1".
+        WHEN 1 THEN DO:
+            MESSAGE "Case 1".
         END.
         OTHERWISE MESSAGE "No match found".
     END CASE.
