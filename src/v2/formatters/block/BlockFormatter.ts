@@ -67,7 +67,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
         let indexOfColon = -1;
         let blockStatementsStartRows = node.children
             .filter((child) => {
-                if (child.type === ":") {
+                if (child.type === SyntaxNodeType.ColonKeyword) {
                     indexOfColon = child.startPosition.column;
                     return false;
                 }
@@ -129,13 +129,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
-                lineChangeDelta =
-                    parentIndentation +
-                    indentationStep -
-                    FormatterHelper.getActualTextIndentation(
-                        codeLine,
-                        fullText
-                    );
+                if (index === 0) {
+                    lineChangeDelta = 0;
+                } else {
+                    lineChangeDelta =
+                        parentIndentation +
+                        indentationStep -
+                        FormatterHelper.getActualTextIndentation(
+                            codeLine,
+                            fullText
+                        );
+                }
 
                 n++;
             }
