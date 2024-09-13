@@ -87,6 +87,9 @@ export class FindFormatter extends AFormatter implements IFormatter {
                     alignColumn
                 );
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -114,6 +117,11 @@ export class FindFormatter extends AFormatter implements IFormatter {
                         FormatterHelper.getCurrentText(child, fullText).trim(),
                         fullText.eolDelimiter,
                         " ".repeat(alignColumn)
+                    );
+                    break;
+                case SyntaxNodeType.Error:
+                    resultString = resultString.concat(
+                        FormatterHelper.getCurrentText(node, fullText)
                     );
                     break;
                 default:

@@ -1,5 +1,6 @@
 /* formattersettingsoverride */
-/*  { "AblFormatter.blockFormatting": true}*/
+/*  { "AblFormatter.blockFormatting": true,
+"AblFormatter.forFormatting": false}*/
 
 do transaction:
     for each Customer no-lock:

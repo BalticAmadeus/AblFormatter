@@ -10,7 +10,7 @@ import { Point, SyntaxNode } from "web-tree-sitter";
 import { AblParserHelper } from "../parser/AblParserHelper";
 import { FileIdentifier } from "../model/FileIdentifier";
 import { ParseResult } from "../model/ParseResult";
-import { ConfigurationManager2 } from "../utils/ConfigurationManager2";
+import { DebugManager } from "./DebugManager";
 
 interface DocumentParseInstance {
     fileIdentifier: FileIdentifier;
@@ -30,9 +30,7 @@ export class AblDebugHoverProvider implements HoverProvider {
         position: Position,
         token: CancellationToken
     ): ProviderResult<Hover> {
-        const configurationManager = ConfigurationManager2.getInstance();
-
-        if (!configurationManager.get("showTreeInfoOnHover") === true) {
+        if (!DebugManager.getInstance().isInDebugMode()) {
             return;
         }
 

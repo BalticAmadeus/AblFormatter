@@ -1,6 +1,9 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { IFormatter } from "../../formatterFramework/IFormatter";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    bodyBlockKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
@@ -19,18 +22,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
         this.settings = new BlockSettings(configurationManager);
     }
 
-    public match(node: Readonly<SyntaxNode>): boolean {
-        let found: boolean = false;
-
-        if (
-            node.type === SyntaxNodeType.Body ||
-            node.type === SyntaxNodeType.CaseBody ||
-            node.type === SyntaxNodeType.ClassBody
-        ) {
-            found = true;
+    match(node: Readonly<SyntaxNode>): boolean {
+        if (!bodyBlockKeywords.hasFancy(node.type, "")) {
+            return false;
         }
 
-        return found;
+        let parent = node.parent;
+        if (parent === null || parent.type === SyntaxNodeType.ForStatement) {
+            return false;
+        }
+
+        return true;
     }
     public parse(
         node: Readonly<SyntaxNode>,
@@ -61,19 +63,38 @@ export class BlockFormater extends AFormatter implements IFormatter {
             fullText
         );
 
-        const indentationStep = 4;
-        const blockStatementsStartRows = node.children.map(
-            (node) =>
-                node.startPosition.row +
-                FormatterHelper.getActualTextRow(
-                    FormatterHelper.getCurrentText(node, fullText),
-                    fullText
-                )
+        const indentationStep = this.settings.tabSize();
+        const blockStatementsStartRows = node.children
+            .filter((child) => {
+                if (child.type === ":") {
+                    return false;
+                }
+                return true;
+            })
+            .map(
+                (child) =>
+                    child.startPosition.row +
+                    FormatterHelper.getActualTextRow(
+                        FormatterHelper.getCurrentText(child, fullText),
+                        fullText
+                    )
+            );
+
+        let codeLines = FormatterHelper.getCurrentText(parent, fullText).split(
+            fullText.eolDelimiter
         );
 
-        const codeLines = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(0, -1);
+        // Do not do any changes for one-liner blocks
+        if (codeLines.length === 1) {
+            const text = FormatterHelper.getCurrentText(node, fullText);
+            return this.getCodeEdit(node, text, text, fullText);
+        }
+        const lastLine = codeLines[codeLines.length - 1];
+
+        const lastLineMatchesTypicalStructure = this.matchEndPattern(lastLine);
+        if (lastLineMatchesTypicalStructure) {
+            codeLines.pop();
+        }
 
         let n = 0;
         let lineChangeDelta = 0;
@@ -93,7 +114,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 n++;
             }
 
-            // add edits
             if (lineChangeDelta !== 0) {
                 indentationEdits.push({
                     line: index,
@@ -102,29 +122,61 @@ export class BlockFormater extends AFormatter implements IFormatter {
             }
         });
 
-        const lastLine = FormatterHelper.getCurrentText(parent, fullText)
-            .split(fullText.eolDelimiter)
-            .slice(-1)[0];
+        if (lastLineMatchesTypicalStructure) {
+            const parentOfEndNode = formattingOnStatement
+                ? node.parent
+                : parent;
+            if (parentOfEndNode !== null) {
+                const endNode = parentOfEndNode.children.find(
+                    (node) => node.type === SyntaxNodeType.EndKeyword
+                );
 
-        const parentOfEndNode = formattingOnStatement ? node.parent : parent;
-        if (parentOfEndNode !== null) {
-            const endNode = parentOfEndNode.children.find(
-                (node) => node.type === SyntaxNodeType.EndKeyword
-            );
+                if (endNode !== undefined) {
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualTextIndentation(
+                            lastLine,
+                            fullText
+                        );
 
-            if (endNode !== undefined) {
-                const endRowDelta =
-                    parentIndentation -
-                    FormatterHelper.getActualTextIndentation(
-                        lastLine,
-                        fullText
-                    );
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line:
+                                parent.endPosition.row -
+                                parent.startPosition.row,
+                            lineChangeDelta: endRowDelta,
+                        });
+                    }
+                }
+            }
+            codeLines.push(lastLine);
+        } else {
+            const parentOfEndNode = formattingOnStatement
+                ? node.parent
+                : parent;
+            if (parentOfEndNode !== null) {
+                const endNode = parentOfEndNode.children.find(
+                    (node) => node.type === SyntaxNodeType.EndKeyword
+                );
+                if (endNode !== undefined) {
+                    const index = endNode.startPosition.column;
+                    const firstPart = lastLine.slice(0, index);
+                    const secondPart = lastLine.slice(index).trimEnd();
+                    codeLines[codeLines.length - 1] = firstPart;
+                    codeLines.push(secondPart);
+                    const endRowDelta =
+                        parentIndentation -
+                        FormatterHelper.getActualTextIndentation(
+                            secondPart,
+                            fullText
+                        );
 
-                if (endRowDelta !== 0) {
-                    indentationEdits.push({
-                        line: parent.endPosition.row - parent.startPosition.row,
-                        lineChangeDelta: endRowDelta,
-                    });
+                    if (endRowDelta !== 0) {
+                        indentationEdits.push({
+                            line: codeLines.length - 1,
+                            lineChangeDelta: endRowDelta,
+                        });
+                    }
                 }
             }
         }
@@ -132,32 +184,33 @@ export class BlockFormater extends AFormatter implements IFormatter {
         return this.getCodeEditsFromIndentationEdits(
             parent,
             fullText,
-            indentationEdits
+            indentationEdits,
+            codeLines
         );
     }
 
     private getCodeEditsFromIndentationEdits(
         node: SyntaxNode,
         fullText: FullText,
-        indentationEdits: IndentationEdits[]
+        indentationEdits: IndentationEdits[],
+        codeLines: string[]
     ): CodeEdit | CodeEdit[] | undefined {
         const text = FormatterHelper.getCurrentText(node, fullText);
         const newText = this.applyIndentationEdits(
-            text,
             indentationEdits,
-            fullText
+            fullText,
+            codeLines
         );
 
         return this.getCodeEdit(node, text, newText, fullText);
     }
 
     private applyIndentationEdits(
-        code: string,
         edits: IndentationEdits[],
-        fullText: FullText
+        fullText: FullText,
+        lines: string[]
     ): string {
         // Split the code into lines
-        const lines = code.split(fullText.eolDelimiter);
 
         // Apply each edit
         edits.forEach((edit) => {
@@ -196,6 +249,12 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return node.parent;
         } else if (
             node.type === SyntaxNodeType.DoBlock &&
+            (node.parent?.type === SyntaxNodeType.CaseWhenBranch ||
+                node.parent?.type === SyntaxNodeType.CaseOtherwiseBranch)
+        ) {
+            return node.parent;
+        } else if (
+            node.type === SyntaxNodeType.DoBlock &&
             (node.parent?.type === SyntaxNodeType.ElseIfStatement ||
                 node.parent?.type === SyntaxNodeType.ElseStatement)
         ) {
@@ -206,6 +265,14 @@ export class BlockFormater extends AFormatter implements IFormatter {
             return node.parent.parent;
         }
         return node;
+    }
+
+    private matchEndPattern(str: string): boolean {
+        /* Returns true if string matches the pattern: (any characters that do not include a dot)end(any characters that do not include a dot).(any characters)
+           In essence, it returns true on the case when on a line there is nothing but an end statement.
+        */
+        const pattern = /^[^.]*end[^.]*\.[^.]*$/i;
+        return pattern.test(str);
     }
 }
 
