@@ -126,9 +126,6 @@ export class BlockFormater extends AFormatter implements IFormatter {
                 blockStatementsStartRows = blockStatementsStartRows.map(
                     (currentRow) => currentRow + 1
                 );
-            } else {
-                // This is a way to ensure that there is no whitespace between the statement and the colon
-                codeLines[0] = statementWithColon + " " + partAfterColon;
             }
         }
 
