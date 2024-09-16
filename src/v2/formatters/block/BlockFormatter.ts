@@ -64,9 +64,11 @@ export class BlockFormater extends AFormatter implements IFormatter {
         );
 
         const indentationStep = this.settings.tabSize();
-        const blockStatementsStartRows = node.children
+        let indexOfColon = -1;
+        let blockStatementsStartRows = node.children
             .filter((child) => {
-                if (child.type === ":") {
+                if (child.type === SyntaxNodeType.ColonKeyword) {
+                    indexOfColon = child.startPosition.column;
                     return false;
                 }
                 return true;
@@ -85,15 +87,39 @@ export class BlockFormater extends AFormatter implements IFormatter {
         );
 
         // Do not do any changes for one-liner blocks
-        if (codeLines.length === 1) {
+        if (codeLines.length <= 1) {
             const text = FormatterHelper.getCurrentText(node, fullText);
             return this.getCodeEdit(node, text, text, fullText);
         }
+        const firstLine = codeLines[0];
         const lastLine = codeLines[codeLines.length - 1];
 
         const lastLineMatchesTypicalStructure = this.matchEndPattern(lastLine);
         if (lastLineMatchesTypicalStructure) {
             codeLines.pop();
+        }
+
+        if (indexOfColon !== -1) {
+            // indexOfColon += parentIndentation;
+            indexOfColon -= parent.startPosition.column;
+            const partAfterColon = firstLine
+                .slice(indexOfColon + 1)
+                .trimStart();
+            // If the part after the colon is not only whitespace, put it on the next line
+            if (partAfterColon.trim().length !== 0) {
+                const firstPart = firstLine.slice(0, indexOfColon + 1);
+                codeLines.shift(); // pop from the start of the list
+                codeLines.unshift(firstPart, partAfterColon);
+                const firstBlockStatementRow = blockStatementsStartRows[0];
+                blockStatementsStartRows.shift();
+                blockStatementsStartRows.unshift(
+                    firstBlockStatementRow - 1,
+                    firstBlockStatementRow
+                );
+                blockStatementsStartRows = blockStatementsStartRows.map(
+                    (currentRow) => currentRow + 1
+                );
+            }
         }
 
         let n = 0;
@@ -103,13 +129,17 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
             // adjust delta
             if (blockStatementsStartRows[n] === lineNumber) {
-                lineChangeDelta =
-                    parentIndentation +
-                    indentationStep -
-                    FormatterHelper.getActualTextIndentation(
-                        codeLine,
-                        fullText
-                    );
+                if (index === 0) {
+                    lineChangeDelta = 0;
+                } else {
+                    lineChangeDelta =
+                        parentIndentation +
+                        indentationStep -
+                        FormatterHelper.getActualTextIndentation(
+                            codeLine,
+                            fullText
+                        );
+                }
 
                 n++;
             }
@@ -123,6 +153,7 @@ export class BlockFormater extends AFormatter implements IFormatter {
         });
 
         if (lastLineMatchesTypicalStructure) {
+            codeLines.push(lastLine);
             const parentOfEndNode = formattingOnStatement
                 ? node.parent
                 : parent;
@@ -141,15 +172,12 @@ export class BlockFormater extends AFormatter implements IFormatter {
 
                     if (endRowDelta !== 0) {
                         indentationEdits.push({
-                            line:
-                                parent.endPosition.row -
-                                parent.startPosition.row,
+                            line: codeLines.length - 1,
                             lineChangeDelta: endRowDelta,
                         });
                     }
                 }
             }
-            codeLines.push(lastLine);
         } else {
             const parentOfEndNode = formattingOnStatement
                 ? node.parent
