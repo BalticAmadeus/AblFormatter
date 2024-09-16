@@ -1,10 +1,12 @@
 {
-  "name": "AblFormatter",
-  "displayName": "AblFormatter",
-  "description": "TODO",
+  "name": "abl-formatter",
+  "displayName": "Abl Formatter",
+  "description": "Progress OpenEdge (ABL) code formatter",
   "version": "0.0.1",
   "icon": "resources/Formatter_LOGO.png",
-  "repository": {},
+  "repository": {
+    "url": "https://github.com/BalticAmadeus/AblFormatter"
+  },
   "engines": {
     "vscode": "^1.84.0"
   },
@@ -226,13 +228,7 @@
           "description": "Enable table view with tree info on hover"
         }
       }
-    },
-    "commands": [
-      {
-        "command": "AblFormatter.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    }
   },
   "scripts": {
     "copy-wasm": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out",

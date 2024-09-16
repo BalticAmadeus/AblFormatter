@@ -13,3 +13,4 @@ vsc-extension-quickstart.md
 node_modules/**
 resources/functionalTests/**
 resources/samples/**
+resources/treeSitterErrorTests/**
