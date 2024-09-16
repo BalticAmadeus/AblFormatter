@@ -14,6 +14,7 @@ export class ExpressionFormatter extends AFormatter implements IFormatter {
     public static readonly formatterLabel = "expressionFormatting";
     private readonly settings: ExpressionSettings;
     private lastComparisonExpressionColumn = 0;
+    private currentlyInsideParentheses = false;
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);

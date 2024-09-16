@@ -147,9 +147,14 @@ export class FormatterHelper {
             });
             return resultString;
         } else {
+            let currentlyInsideParentheses = new Boolean(false);
             node.children.forEach((child) => {
                 resultString = resultString.concat(
-                    this.getExpressionString(child, fullText)
+                    this.getExpressionString(
+                        child,
+                        fullText,
+                        currentlyInsideParentheses
+                    )
                 );
             });
             if (node.type === SyntaxNodeType.Assignment) {
@@ -163,10 +168,16 @@ export class FormatterHelper {
         }
     }
 
-    public static getExpressionString(
+    private static getExpressionString(
         node: SyntaxNode,
-        fullText: Readonly<FullText>
+        fullText: Readonly<FullText>,
+        currentlyInsideParentheses: Boolean
     ): string {
+        console.log("nodeType: " + node.type);
+        console.log("par? " + currentlyInsideParentheses);
+        if (currentlyInsideParentheses === true) {
+            return this.getParenthesizedExpressionString(node, fullText);
+        }
         let newString = "";
 
         switch (node.type) {
@@ -178,10 +189,18 @@ export class FormatterHelper {
                 });
                 break;
             case SyntaxNodeType.LeftParenthesis:
-                newString = FormatterHelper.getCurrentText(
+                currentlyInsideParentheses = true;
+                newString = this.getParenthesizedExpressionString(
                     node,
                     fullText
-                ).trim();
+                );
+                break;
+            case SyntaxNodeType.RightParenthesis:
+                currentlyInsideParentheses = false;
+                newString = this.getParenthesizedExpressionString(
+                    node,
+                    fullText
+                );
                 break;
             // Recheck the code below after ticket #116 is closed!
             case SyntaxNodeType.EqualsSign:
@@ -201,23 +220,11 @@ export class FormatterHelper {
                 ).trim();
                 break;
             default:
-                if (
-                    node.type === SyntaxNodeType.RightParenthesis ||
-                    (node.previousSibling !== null &&
-                        node.previousSibling.type ===
-                            SyntaxNodeType.LeftParenthesis)
-                ) {
-                    newString = FormatterHelper.getCurrentText(
-                        node,
-                        fullText
-                    ).trim();
-                } else {
-                    const text = FormatterHelper.getCurrentText(
-                        node,
-                        fullText
-                    ).trim();
-                    newString = text.length === 0 ? "" : " " + text;
-                }
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
                 break;
         }
         return newString;
@@ -243,6 +250,7 @@ export class FormatterHelper {
         } else {
             newString = FormatterHelper.getCurrentText(node, fullText);
         }
+        console.log("newString:\n" + newString);
         return newString;
     }
 }
