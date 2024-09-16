@@ -6,7 +6,6 @@ export class FormatterFactory {
     public static getFormatterInstances(
         configurationManager: IConfigurationManager
     ): IFormatter[] {
-        console.log("Getting formatters ... ");
         const instances: IFormatter[] = [];
         for (const formatterClass in formatterRegistry) {
             if (
@@ -15,17 +14,8 @@ export class FormatterFactory {
                     configurationManager
                 )
             ) {
-                console.log(
-                    "Formatter activated:",
-                    formatterRegistry[formatterClass].formatterLabel
-                );
                 instances.push(
                     new formatterRegistry[formatterClass](configurationManager)
-                );
-            } else {
-                console.log(
-                    "Formatter disabled:",
-                    formatterRegistry[formatterClass].formatterLabel
                 );
             }
         }
