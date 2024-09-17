@@ -6,7 +6,7 @@ This extension uses tree-sitter-abl implementation by Kamil Jakubus. TODO: add l
 
 ## Current status
 
-This is an early preview. Currently, the formatter is not ready for the public release. You can only download it here as an early preview. In a few months we should be able to release it on the marketplace.
+This is an early preview. Currently, the formatter is not ready for the public release. You can only download it here and install from **vsix** file. In a few months we should be able to release it to the marketplaces.
 
 TODO: Add gif here
 
@@ -31,9 +31,9 @@ TODO: link a separate file with settings
 
 ## Installation
 
-Download the extension .vsix file from GitHub repository and install it on your machine.
+Download the extension **vsix** file from GitHub repository and install it on your machine.
 
-Installing from .vsix https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix
+[How to install from **vsix**?](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix)
 
 ## Usage
 
