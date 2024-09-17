@@ -6,7 +6,7 @@ This extension uses tree-sitter-abl implementation by Kamil Jakubus. TODO: add l
 
 ## Current status
 
-Early preview blah blah blah
+This is an early preview. Currently, the formatter is not ready for the public release. You can only download it here as an early preview. In a few months we should be able to release it on the marketplace.
 
 TODO: Add gif here
 
@@ -25,13 +25,15 @@ At the moment we implemented formatting logic for these language features:
 
 ## Configuration
 
-TODO: blah blah about reasoning for settings
+We implemented extensive settings configuration to allow users to easly tailor the experience to their needs. This might not be the case in the future.
 
 TODO: link a separate file with settings
 
 ## Installation
 
-TODO: generic stuff
+Download the extension .vsix file from GitHub repository and install it on your machine.
+
+Installing from .vsix https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix
 
 ## Usage
 
