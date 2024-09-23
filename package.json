@@ -211,6 +211,12 @@
           ],
           "description": "Add parentheses around the expression?"
         },
+        "AblFormatter.enumFormatting": {
+          "order": 1300,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable ENUM formatting"
+        },
         "AblFormatter.ifFunctionFormattingElseLocation": {
           "order": 1202,
           "type": "string",
