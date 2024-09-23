@@ -63,8 +63,13 @@ export class ForFormatter extends AFormatter implements IFormatter {
         let alignColumn = 0;
 
         node.children.forEach((child) => {
-            if (child.type === SyntaxNodeType.Identifier) {
+            console.log("type: " + child.type);
+            if (
+                child.type === SyntaxNodeType.Identifier ||
+                child.type === SyntaxNodeType.QualifiedName
+            ) {
                 alignColumn = this.startColumn + resultString.length;
+                console.log("found!" + alignColumn);
             }
             resultString = resultString.concat(
                 this.getForExpressionString(child, fullText, alignColumn)
