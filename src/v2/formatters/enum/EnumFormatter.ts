@@ -52,7 +52,8 @@ export class EnumFormatter extends AFormatter implements IFormatter {
             );
             if (!foundFirstMember && child.type === SyntaxNodeType.EnumMember) {
                 foundFirstMember = true;
-                this.alignColumn = this.startColumn + resultString.length;
+                this.alignColumn =
+                    this.startColumn + resultString.trim().length + 1; // +1 for space between member and DEFINE ENUM
             }
             resultString = resultString.concat(childString);
         });
