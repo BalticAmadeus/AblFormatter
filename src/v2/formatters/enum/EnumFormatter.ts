@@ -31,7 +31,6 @@ export class EnumFormatter extends AFormatter implements IFormatter {
         const oldText = FormatterHelper.getCurrentText(node, fullText);
 
         const newText = this.collectEnumStructure(node, fullText);
-        console.log("Enum:\n" + newText);
         return this.getCodeEdit(node, oldText, newText, fullText);
     }
 
@@ -57,6 +56,8 @@ export class EnumFormatter extends AFormatter implements IFormatter {
             }
             resultString = resultString.concat(childString);
         });
+        // Look over this after #215 closed, as the dot should no longer be needed!
+        resultString += ".";
         return resultString;
     }
 
@@ -66,9 +67,13 @@ export class EnumFormatter extends AFormatter implements IFormatter {
         foundFirstMember: boolean
     ): string {
         let newString = "";
-        console.log("childType: " + node.type);
 
         switch (node.type) {
+            case SyntaxNodeType.DefineKeyword:
+                newString =
+                    fullText.eolDelimiter +
+                    FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
             case SyntaxNodeType.EnumMember:
                 newString = foundFirstMember
                     ? fullText.eolDelimiter +
