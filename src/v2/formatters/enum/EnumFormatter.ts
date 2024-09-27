@@ -56,7 +56,6 @@ export class EnumFormatter extends AFormatter implements IFormatter {
             }
             resultString = resultString.concat(childString);
         });
-        // Look over this after #215 closed, as the dot should no longer be needed!
         resultString += ".";
         return resultString;
     }
