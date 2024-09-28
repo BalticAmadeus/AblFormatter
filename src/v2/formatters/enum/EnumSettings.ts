@@ -5,4 +5,11 @@ export class EnumSettings extends ASettings {
     public enumFormatting() {
         return this.configurationManager.get("enumFormatting") ? true : false;
     }
+
+    public endDotNewLine() {
+        return (
+            this.configurationManager.get("assignFormattingEndDotLocation") ===
+            "New"
+        );
+    }
 }

@@ -57,7 +57,12 @@ export class EnumFormatter extends AFormatter implements IFormatter {
             }
             resultString = resultString.concat(childString);
         });
-        resultString += ".";
+        if (this.settings.endDotNewLine()) {
+            resultString +=
+                fullText.eolDelimiter + " ".repeat(this.alignColumn) + ".";
+        } else {
+            resultString += ".";
+        }
         return resultString;
     }
 
