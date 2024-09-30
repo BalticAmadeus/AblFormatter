@@ -221,6 +221,12 @@
           ],
           "description": "Add a new line before the ELSE?"
         },
+        "AblFormatter.variableDefinitionFormatting": {
+          "order": 1400,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable DEFINE VARIABLE formatting"
+        },
         "AblFormatter.showTreeInfoOnHover": {
           "order": 10100,
           "type": "boolean",
