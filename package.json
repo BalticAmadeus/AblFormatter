@@ -221,6 +221,22 @@
           ],
           "description": "Add a new line before the ELSE?"
         },
+        "AblFormatter.expressionFormatting": {
+          "order": 1300,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable EXPRESSION formatting"
+        },
+        "AblFormatter.expressionFormattingLogicalLocation": {
+          "order": 1301,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ],
+          "description": "Should expressions with logical AND, OR values be on multiple lines?"
+        },
         "AblFormatter.showTreeInfoOnHover": {
           "order": 10100,
           "type": "boolean",

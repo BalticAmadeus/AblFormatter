@@ -1,5 +1,9 @@
 import { SyntaxNode } from "web-tree-sitter";
 import { FullText } from "../model/FullText";
+import {
+    arithmeticOperators,
+    SyntaxNodeType,
+} from "../../model/SyntaxNodeType";
 
 export class FormatterHelper {
     public static getActualTextIndentation(
@@ -127,5 +131,126 @@ export class FormatterHelper {
         const match = text.match(/^(\s*)/);
         // If there's a match, return the length of the matched string; otherwise, return 0
         return match ? match[1].length : 0;
+    }
+
+    public static collectExpression(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+
+        if (node.type === SyntaxNodeType.ParenthesizedExpression) {
+            node.children.forEach((child) => {
+                resultString = resultString.concat(
+                    this.getParenthesizedExpressionString(child, fullText)
+                );
+            });
+            return resultString;
+        } else {
+            let currentlyInsideParentheses = new Boolean(false);
+            node.children.forEach((child) => {
+                resultString = resultString.concat(
+                    this.getExpressionString(
+                        child,
+                        fullText,
+                        currentlyInsideParentheses
+                    )
+                );
+            });
+            if (node.type === SyntaxNodeType.Assignment) {
+                // In this case, we need to trim the spaces at the start of the string as well
+                resultString = resultString.trimStart();
+            } else if (node.type === SyntaxNodeType.VariableAssignment) {
+                resultString = resultString.trimStart() + ".";
+            }
+
+            return resultString;
+        }
+    }
+
+    private static getExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>,
+        currentlyInsideParentheses: Boolean
+    ): string {
+        console.log("nodeType: " + node.type);
+        console.log("par? " + currentlyInsideParentheses);
+        if (currentlyInsideParentheses === true) {
+            return this.getParenthesizedExpressionString(node, fullText);
+        }
+        let newString = "";
+
+        switch (node.type) {
+            case SyntaxNodeType.ParenthesizedExpression:
+                node.children.forEach((child) => {
+                    newString = newString.concat(
+                        this.getParenthesizedExpressionString(child, fullText)
+                    );
+                });
+                break;
+            case SyntaxNodeType.LeftParenthesis:
+                currentlyInsideParentheses = true;
+                newString = this.getParenthesizedExpressionString(
+                    node,
+                    fullText
+                );
+                break;
+            case SyntaxNodeType.RightParenthesis:
+                currentlyInsideParentheses = false;
+                newString = this.getParenthesizedExpressionString(
+                    node,
+                    fullText
+                );
+                break;
+            // Recheck the code below after ticket #116 is closed!
+            case SyntaxNodeType.EqualsSign:
+                const previousSibling = node.previousSibling;
+                newString =
+                    previousSibling !== null &&
+                    (arithmeticOperators.hasFancy(previousSibling.type, "") ||
+                        previousSibling.hasError())
+                        ? FormatterHelper.getCurrentText(node, fullText).trim()
+                        : " " +
+                          FormatterHelper.getCurrentText(node, fullText).trim();
+                break;
+            case SyntaxNodeType.ArrayLiteral:
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                break;
+            default:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    public static getParenthesizedExpressionString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ) {
+        let newString = "";
+        if (node.type === SyntaxNodeType.LeftParenthesis) {
+            newString =
+                " " + FormatterHelper.getCurrentText(node, fullText).trim();
+        } else if (
+            node.type === SyntaxNodeType.RightParenthesis ||
+            (node.previousSibling !== null &&
+                node.previousSibling.type === SyntaxNodeType.LeftParenthesis)
+        ) {
+            newString = FormatterHelper.getCurrentText(
+                node,
+                fullText
+            ).trimStart();
+        } else {
+            newString = FormatterHelper.getCurrentText(node, fullText);
+        }
+        console.log("newString:\n" + newString);
+        return newString;
     }
 }

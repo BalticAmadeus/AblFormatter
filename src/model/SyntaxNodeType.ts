@@ -22,7 +22,6 @@ export enum SyntaxNodeType {
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
-    VariableAssignment = "variable_assignment",
     ConstructorDefinition = "constructor_definition",
     DestructorDefinition = "destructor_definition",
     MethodDefinition = "method_definition",
@@ -31,6 +30,7 @@ export enum SyntaxNodeType {
     UndoStatement = "undo_statement",
     AssignStatement = "assign_statement",
     Assignment = "assignment",
+    VariableAssignment = "variable_assignment",
     Identifier = "identifier",
     SourceCode = "source_code",
     ForPhrase = "for_phrase",
@@ -41,6 +41,10 @@ export enum SyntaxNodeType {
     ComparisonExpression = "comparison_expression",
     TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
+    AdditiveExpression = "additive_expression",
+    MultiplicativeExpression = "multiplicative_expression",
+    UnaryExpression = "unary_expression",
+    NewExpression = "new_expression",
     BooleanLiteral = "boolean_literal",
     ElseIfStatement = "else_if_statement",
     ReturnStatement = "return_statement",
@@ -53,10 +57,17 @@ export enum SyntaxNodeType {
     ProcedureStatement = "procedure_statement",
     RepeatStatement = "repeat_statement",
     OnStatement = "on_statement",
+    ArrayLiteral = "array_literal",
+    FunctionalCallArgument = "functional_call_argument",
     Getter = "getter",
     Setter = "setter",
     LeftParenthesis = "(",
     RightParenthesis = ")",
+    EqualsSign = "=",
+    PlusSign = "+",
+    MinusSign = "-",
+    MultiplicationSign = "*",
+    DivisionSign = "/",
 
     // keywords
     WhenKeyword = "WHEN",
@@ -113,4 +124,16 @@ export const bodyBlockKeywords = new MyFancySet<string>([
     SyntaxNodeType.CaseBody,
     SyntaxNodeType.ClassBody,
     SyntaxNodeType.InterfaceBody,
+]);
+
+export const logicalKeywords = new MyFancySet<string>([
+    SyntaxNodeType.AndKeyword,
+    SyntaxNodeType.OrKeyword,
+]);
+
+export const arithmeticOperators = new MyFancySet<string>([
+    SyntaxNodeType.PlusSign,
+    SyntaxNodeType.MinusSign,
+    SyntaxNodeType.MultiplicationSign,
+    SyntaxNodeType.DivisionSign,
 ]);
