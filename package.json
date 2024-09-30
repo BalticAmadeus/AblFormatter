@@ -221,6 +221,21 @@
           ],
           "description": "Add a new line before the ELSE?"
         },
+        "AblFormatter.enumFormatting": {
+          "order": 1300,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable ENUM formatting"
+        },
+        "AblFormatter.enumFormattingEndDotLocation": {
+          "order": 1301,
+          "type": "string",
+          "default": "Same",
+          "enum": [
+            "New",
+            "Same"
+          ]
+        },
         "AblFormatter.showTreeInfoOnHover": {
           "order": 10100,
           "type": "boolean",
