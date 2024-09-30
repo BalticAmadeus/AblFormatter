@@ -53,6 +53,8 @@ export enum SyntaxNodeType {
     ProcedureStatement = "procedure_statement",
     RepeatStatement = "repeat_statement",
     OnStatement = "on_statement",
+    TypeTuning = "type_tuning",
+    Comment = "comment",
     Getter = "getter",
     Setter = "setter",
     LeftParenthesis = "(",
@@ -91,6 +93,7 @@ export enum SyntaxNodeType {
     DefineKeyword = "DEFINE",
     DefiKeyword = "DEFI",
     DefKeyword = "DEF",
+    NoUndoKeyword = "NO-UNDO",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
