@@ -27,9 +27,6 @@ const stabilityTestCases = getFilesWithExtensions(
 
 console.log("Parser initialized", stabilityTestCases);
 
-// example for running single test case;
-// testCases = ["assign/1formattingFalse"];
-
 suite("Extension Test Suite", () => {
     console.log("Parser initialized", stabilityTestCases);
 
@@ -56,13 +53,17 @@ suite("Extension Test Suite", () => {
     });
 
     stabilityTestCases.forEach((cases) => {
-        test(`Stability test: ${cases}`, () => {
-            functionalTest(cases);
+        test(`Symbol test: ${cases}`, () => {
+            stabilityTest(cases);
+        });
+
+        test(`Parser error test: ${cases}`, () => {
+            stabilityTest(cases);
         });
     });
 });
 
-function functionalTest(name: string): void {
+function stabilityTest(name: string): void {
     ConfigurationManager2.getInstance();
     enableFormatterDecorators();
 
@@ -75,11 +76,6 @@ function functionalTest(name: string): void {
 }
 
 function getInput(fileName: string): string {
-    // const filePath = path.join(
-    //     extensionDevelopmentPath,
-    //     stabilityTestDir,
-    //     fileName
-    // );
     return readFile(fileName);
 }
 
@@ -148,8 +144,8 @@ function getFileEOL(fileText: string): string {
 function countActualSymbols(text: string): number {
     let count = 0;
 
-    for (let i = 0; i < text.length; i++) {
-        const char = text[i];
+    for (const element of text) {
+        const char = element;
         // Exclude spaces, newlines, carriage returns, and tabs
         if (char !== ' ' && char !== '\n' && char !== '\r' && char !== '\t') {
             count++;
