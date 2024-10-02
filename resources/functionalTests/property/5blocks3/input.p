@@ -6,11 +6,11 @@ class Writer implements IWebRequest:
     define static public property Registry as BuilderRegistry no-undo
         get():
             define variable oRegistry as BuilderRegistry no-undo.
-            if not valid-object(AuthenticationRequestWriterBuilder:Registry) then
             do:
-                assign oRegistry = new BuilderRegistry(get-class(IHttpMessageWriter)).
+                 do transaction:
+                        fun(33).
+                        end.
                 AuthenticationRequestWriterBuilder:InitializeRegistry(oRegistry).                
-                assign AuthenticationRequestWriterBuilder:Registry = oRegistry.
             end.
             return AuthenticationRequestWriterBuilder:Registry.
         end get.
