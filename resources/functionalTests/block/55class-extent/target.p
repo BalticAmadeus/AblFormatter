@@ -1,8 +1,9 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.blockFormatting": true}*/
 
-catch oFunkyError as Progress.Lang.AppError:
-    oGroovyResponse:errorStatus = true.
-    oGroovyResponse:addMessage(oFunkyError:GetMessage(1)).
-    return oGroovyResponse.
-end catch.
+class OpenEdge.DataAdmin.Rest.RestQueryFactory implements IRestQueryFactory: 
+    method private char extent GetNamedQuery(pcname as char):
+        define variable cInfo as character extent no-undo.
+        return cInfo.
+    end.
+end class.

@@ -4,7 +4,10 @@ import { IFormatter } from "../../formatterFramework/IFormatter";
 import { CodeEdit } from "../../model/CodeEdit";
 import { FullText } from "../../model/FullText";
 import { AFormatter } from "../AFormatter";
-import { SyntaxNodeType } from "../../../model/SyntaxNodeType";
+import {
+    definitionKeywords,
+    SyntaxNodeType,
+} from "../../../model/SyntaxNodeType";
 import { VariableDefinitionSettings } from "./VariableDefinitionSettings";
 import { IConfigurationManager } from "../../../utils/IConfigurationManager";
 import { FormatterHelper } from "../../formatterFramework/FormatterHelper";
@@ -113,7 +116,7 @@ export class VariableDefinitionFormatter
         switch (node.type) {
             case SyntaxNodeType.DotKeyword:
                 break;
-            case SyntaxNodeType.DefineKeyword:
+            case definitionKeywords.hasFancy(node.type, ""):
                 newString = text;
                 break;
             case SyntaxNodeType.TypeTuning:
