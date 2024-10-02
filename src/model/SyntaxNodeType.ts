@@ -98,6 +98,11 @@ export enum SyntaxNodeType {
     DefiKeyword = "DEFI",
     DefKeyword = "DEF",
     NoUndoKeyword = "NO-UNDO",
+    InputKeyword = "INPUT",
+    OutputKeyword = "OUTPUT",
+    InputOutputKeyword = "INPUT-OUTPUT",
+    ReturnKeyword = "RETURN",
+    ParameterKeyword = "PARAMETER",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
@@ -120,4 +125,11 @@ export const bodyBlockKeywords = new MyFancySet<string>([
     SyntaxNodeType.CaseBody,
     SyntaxNodeType.ClassBody,
     SyntaxNodeType.InterfaceBody,
+]);
+
+export const parameterTypes = new MyFancySet<string>([
+    SyntaxNodeType.InputKeyword,
+    SyntaxNodeType.OutputKeyword,
+    SyntaxNodeType.InputOutputKeyword,
+    SyntaxNodeType.ReturnKeyword,
 ]);

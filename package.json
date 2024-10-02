@@ -242,6 +242,12 @@
           "default": "true",
           "description": "Enable DEFINE VARIABLE formatting"
         },
+        "AblFormatter.procedureParameterFormatting": {
+          "order": 1500,
+          "type": "boolean",
+          "default": "true",
+          "description": "Enable PROCEDURE PARAMETER formatting"
+        },
         "AblFormatter.showTreeInfoOnHover": {
           "order": 10100,
           "type": "boolean",
