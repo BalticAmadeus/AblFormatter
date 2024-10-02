@@ -35,11 +35,8 @@ export class VariableDefinitionFormatter
         node: Readonly<SyntaxNode>,
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
-        console.log("Found a new node!");
-
         const oldText = FormatterHelper.getCurrentText(node, fullText);
         if (VariableDefinitionFormatter.visitedNodes.has(node.id)) {
-            console.log("Already visited!");
             const newText = this.collectDefineString(node, fullText);
             return this.getCodeEdit(node, oldText, newText, fullText);
         }
@@ -51,11 +48,6 @@ export class VariableDefinitionFormatter
             currentNode !== null;
             currentNode = currentNode.nextSibling
         ) {
-            // console.log("Found: " + currentNode.type);
-            // console.log(
-            //     "Text:\n" +
-            //         FormatterHelper.getCurrentText(currentNode, fullText)
-            // );
             if (currentNode.type === SyntaxNodeType.Comment) {
                 continue;
             }
@@ -117,7 +109,6 @@ export class VariableDefinitionFormatter
         fullText: Readonly<FullText>
     ): string {
         let newString = "";
-        console.log("type: " + node.type);
         const text = FormatterHelper.getCurrentText(node, fullText).trim();
         switch (node.type) {
             case SyntaxNodeType.DotKeyword:
@@ -126,7 +117,6 @@ export class VariableDefinitionFormatter
                 newString = text;
                 break;
             case SyntaxNodeType.TypeTuning:
-                console.log("align: " + VariableDefinitionFormatter.alignType);
                 newString =
                     " " +
                     text +
@@ -135,7 +125,6 @@ export class VariableDefinitionFormatter
                     );
                 break;
             case SyntaxNodeType.Identifier:
-                console.log("align: " + VariableDefinitionFormatter.alignType);
                 newString =
                     " " +
                     text +
