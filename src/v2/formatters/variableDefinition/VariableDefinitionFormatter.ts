@@ -95,7 +95,7 @@ export class VariableDefinitionFormatter
             case SyntaxNodeType.TypeTuning:
                 VariableDefinitionFormatter.alignNoUndo = Math.max(
                     VariableDefinitionFormatter.alignNoUndo,
-                    FormatterHelper.getCurrentText(node, fullText).trim().length
+                    this.collectTypeTuningString(node, fullText).length
                 );
                 break;
             case SyntaxNodeType.Identifier:
@@ -120,11 +120,15 @@ export class VariableDefinitionFormatter
                 newString = text;
                 break;
             case SyntaxNodeType.TypeTuning:
+                const typeTuningText = this.collectTypeTuningString(
+                    node,
+                    fullText
+                );
                 newString =
-                    " " +
-                    text +
+                    typeTuningText +
                     " ".repeat(
-                        VariableDefinitionFormatter.alignNoUndo - text.length
+                        VariableDefinitionFormatter.alignNoUndo -
+                            typeTuningText.length
                     );
                 break;
             case SyntaxNodeType.Identifier:
@@ -135,6 +139,33 @@ export class VariableDefinitionFormatter
                         VariableDefinitionFormatter.alignType - text.length
                     );
                 break;
+            default:
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    private collectTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getTypeTuningString(child, fullText)
+            );
+        });
+        return resultString;
+    }
+
+    private getTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        const text = FormatterHelper.getCurrentText(node, fullText).trim();
+        switch (node.type) {
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;

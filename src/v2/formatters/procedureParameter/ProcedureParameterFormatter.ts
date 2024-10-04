@@ -94,7 +94,7 @@ export class ProcedureParameterFormatter
             case SyntaxNodeType.TypeTuning:
                 ProcedureParameterFormatter.alignNoUndo = Math.max(
                     ProcedureParameterFormatter.alignNoUndo,
-                    FormatterHelper.getCurrentText(node, fullText).trim().length
+                    this.collectTypeTuningString(node, fullText).length
                 );
                 break;
             case SyntaxNodeType.Identifier:
@@ -122,11 +122,15 @@ export class ProcedureParameterFormatter
                 newString = text;
                 break;
             case SyntaxNodeType.TypeTuning:
+                const typeTuningText = this.collectTypeTuningString(
+                    node,
+                    fullText
+                );
                 newString =
-                    " " +
-                    text +
+                    typeTuningText +
                     " ".repeat(
-                        ProcedureParameterFormatter.alignNoUndo - text.length
+                        ProcedureParameterFormatter.alignNoUndo -
+                            typeTuningText.length
                     );
                 break;
             case SyntaxNodeType.Identifier:
@@ -145,6 +149,33 @@ export class ProcedureParameterFormatter
                         ProcedureParameterFormatter.alignParameter - text.length
                     );
                 break;
+            default:
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    private collectTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getTypeTuningString(child, fullText)
+            );
+        });
+        return resultString;
+    }
+
+    private getTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        const text = FormatterHelper.getCurrentText(node, fullText).trim();
+        switch (node.type) {
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;
