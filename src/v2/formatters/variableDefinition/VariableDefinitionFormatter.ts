@@ -95,7 +95,7 @@ export class VariableDefinitionFormatter
             case SyntaxNodeType.TypeTuning:
                 VariableDefinitionFormatter.alignNoUndo = Math.max(
                     VariableDefinitionFormatter.alignNoUndo,
-                    FormatterHelper.getCurrentText(node, fullText).trim().length
+                    this.collectTypeTuningString(node, fullText).length
                 );
                 break;
             case SyntaxNodeType.Identifier:
@@ -112,22 +112,32 @@ export class VariableDefinitionFormatter
         fullText: Readonly<FullText>
     ): string {
         let newString = "";
-        const text = FormatterHelper.getCurrentText(node, fullText).trim();
         switch (node.type) {
             case SyntaxNodeType.DotKeyword:
                 break;
             case definitionKeywords.hasFancy(node.type, ""):
-                newString = text;
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trimEnd();
                 break;
             case SyntaxNodeType.TypeTuning:
+                const typeTuningText = this.collectTypeTuningString(
+                    node,
+                    fullText
+                );
                 newString =
-                    " " +
-                    text +
+                    typeTuningText +
                     " ".repeat(
-                        VariableDefinitionFormatter.alignNoUndo - text.length
+                        VariableDefinitionFormatter.alignNoUndo -
+                            typeTuningText.length
                     );
                 break;
             case SyntaxNodeType.Identifier:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
                 newString =
                     " " +
                     text +
@@ -135,6 +145,38 @@ export class VariableDefinitionFormatter
                         VariableDefinitionFormatter.alignType - text.length
                     );
                 break;
+            default: {
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+            }
+        }
+        return newString;
+    }
+
+    private collectTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getTypeTuningString(child, fullText)
+            );
+        });
+        return resultString;
+    }
+
+    private getTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        const text = FormatterHelper.getCurrentText(node, fullText).trim();
+        switch (node.type) {
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;
