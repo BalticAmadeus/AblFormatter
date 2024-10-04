@@ -112,12 +112,14 @@ export class VariableDefinitionFormatter
         fullText: Readonly<FullText>
     ): string {
         let newString = "";
-        const text = FormatterHelper.getCurrentText(node, fullText).trim();
         switch (node.type) {
             case SyntaxNodeType.DotKeyword:
                 break;
             case definitionKeywords.hasFancy(node.type, ""):
-                newString = text;
+                newString = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trimEnd();
                 break;
             case SyntaxNodeType.TypeTuning:
                 const typeTuningText = this.collectTypeTuningString(
@@ -132,6 +134,10 @@ export class VariableDefinitionFormatter
                     );
                 break;
             case SyntaxNodeType.Identifier:
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
                 newString =
                     " " +
                     text +
@@ -139,9 +145,14 @@ export class VariableDefinitionFormatter
                         VariableDefinitionFormatter.alignType - text.length
                     );
                 break;
-            default:
+            default: {
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
                 newString = text.length === 0 ? "" : " " + text;
                 break;
+            }
         }
         return newString;
     }
