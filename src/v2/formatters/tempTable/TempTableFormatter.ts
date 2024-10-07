@@ -125,10 +125,40 @@ export class TempTableFormatter extends AFormatter implements IFormatter {
                     fullText
                 ).trim();
                 break;
+            case SyntaxNodeType.TypeTuning:
+                newString = this.collectTypeTuningString(node, fullText);
+                break;
             case SyntaxNodeType.Identifier:
                 newString =
                     " " + text + " ".repeat(this.alignType - text.length);
                 break;
+            default:
+                newString = text.length === 0 ? "" : " " + text;
+                break;
+        }
+        return newString;
+    }
+
+    private collectTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let resultString = "";
+        node.children.forEach((child) => {
+            resultString = resultString.concat(
+                this.getTypeTuningString(child, fullText)
+            );
+        });
+        return resultString;
+    }
+
+    private getTypeTuningString(
+        node: SyntaxNode,
+        fullText: Readonly<FullText>
+    ): string {
+        let newString = "";
+        const text = FormatterHelper.getCurrentText(node, fullText).trim();
+        switch (node.type) {
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;
