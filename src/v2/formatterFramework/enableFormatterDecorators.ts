@@ -4,6 +4,7 @@ import { IfFormatter } from "../formatters/if/IfFormatter";
 import { DefineFormatter } from "../formatters/define/DefineFormatter";
 import { UsingFormatter } from "../formatters/using/UsingFormatter";
 import { CaseFormatter } from "../formatters/case/CaseFormatter";
+import { FindFormatter } from "../formatters/find/FindFormatter";
 import { ForFormatter } from "../formatters/for/ForFormatter";
 import { IfFunctionFormatter } from "../formatters/ifFunction/IfFunctionFormatter";
 import { TempTableFormatter } from "../formatters/tempTable/TempTableFormatter";
@@ -20,6 +21,7 @@ export function enableFormatterDecorators(): void {
     DefineFormatter;
     UsingFormatter;
     CaseFormatter;
+    FindFormatter;
     ForFormatter;
     TempTableFormatter;
     PropertyFormatter;
