@@ -58,6 +58,7 @@ export enum SyntaxNodeType {
     EnumMember = "enum_member",
     EnumDefinition = "enum_definition",
     TypeTuning = "type_tuning",
+    AccessTuning = "access_tuning",
     Comment = "comment",
     Getter = "getter",
     Setter = "setter",
@@ -103,6 +104,7 @@ export enum SyntaxNodeType {
     InputOutputKeyword = "INPUT-OUTPUT",
     ReturnKeyword = "RETURN",
     ParameterKeyword = "PARAMETER",
+    VariableKeyword = "VARIABLE",
 }
 
 export const afterThenStatements = new MyFancySet<string>([

@@ -22,6 +22,8 @@ export class VariableDefinitionFormatter
     private static visitedNodes: Set<number> = new Set();
     private static alignType = 0;
     private static alignNoUndo = 0;
+    private static alignVariableKeyword = 0;
+    private hasAccessTuning = false;
 
     public constructor(configurationManager: IConfigurationManager) {
         super(configurationManager);
@@ -39,6 +41,8 @@ export class VariableDefinitionFormatter
         fullText: Readonly<FullText>
     ): CodeEdit | CodeEdit[] | undefined {
         const oldText = FormatterHelper.getCurrentText(node, fullText);
+        this.resetNodeVariables();
+
         if (VariableDefinitionFormatter.visitedNodes.has(node.id)) {
             const newText = this.collectDefineString(node, fullText);
             return this.getCodeEdit(node, oldText, newText, fullText);
@@ -104,6 +108,12 @@ export class VariableDefinitionFormatter
                     FormatterHelper.getCurrentText(node, fullText).trim().length
                 );
                 break;
+            case SyntaxNodeType.AccessTuning:
+                VariableDefinitionFormatter.alignVariableKeyword = Math.max(
+                    VariableDefinitionFormatter.alignVariableKeyword,
+                    FormatterHelper.getCurrentText(node, fullText).trim().length
+                );
+                break;
         }
     }
 
@@ -133,6 +143,40 @@ export class VariableDefinitionFormatter
                             typeTuningText.length
                     );
                 break;
+            case SyntaxNodeType.AccessTuning: {
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                newString =
+                    " " +
+                    text +
+                    " ".repeat(
+                        VariableDefinitionFormatter.alignVariableKeyword -
+                            text.length
+                    );
+                this.hasAccessTuning = true;
+                break;
+            }
+            case SyntaxNodeType.VariableKeyword: {
+                const text = FormatterHelper.getCurrentText(
+                    node,
+                    fullText
+                ).trim();
+                if (
+                    !this.hasAccessTuning &&
+                    VariableDefinitionFormatter.alignVariableKeyword !== 0
+                ) {
+                    newString =
+                        " ".repeat(
+                            2 + VariableDefinitionFormatter.alignVariableKeyword
+                        ) + text;
+                    this.hasAccessTuning = true;
+                } else {
+                    newString = " " + text;
+                }
+                break;
+            }
             case SyntaxNodeType.Identifier:
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -184,8 +228,13 @@ export class VariableDefinitionFormatter
         return newString;
     }
 
+    private resetNodeVariables() {
+        this.hasAccessTuning = false;
+    }
+
     private resetStaticVariables() {
         VariableDefinitionFormatter.alignType = 0;
         VariableDefinitionFormatter.alignNoUndo = 0;
+        VariableDefinitionFormatter.alignVariableKeyword = 0;
     }
 }
