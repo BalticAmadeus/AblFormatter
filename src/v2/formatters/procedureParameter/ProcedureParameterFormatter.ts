@@ -160,6 +160,9 @@ export class ProcedureParameterFormatter
                     );
                 break;
             }
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default: {
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -192,6 +195,9 @@ export class ProcedureParameterFormatter
         let newString = "";
         const text = FormatterHelper.getCurrentText(node, fullText).trim();
         switch (node.type) {
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;

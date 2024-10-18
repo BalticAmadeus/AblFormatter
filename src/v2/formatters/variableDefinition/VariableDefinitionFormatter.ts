@@ -189,6 +189,9 @@ export class VariableDefinitionFormatter
                         VariableDefinitionFormatter.alignType - text.length
                     );
                 break;
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default: {
                 const text = FormatterHelper.getCurrentText(
                     node,
@@ -221,6 +224,9 @@ export class VariableDefinitionFormatter
         let newString = "";
         const text = FormatterHelper.getCurrentText(node, fullText).trim();
         switch (node.type) {
+            case SyntaxNodeType.Error:
+                newString = FormatterHelper.getCurrentText(node, fullText);
+                break;
             default:
                 newString = text.length === 0 ? "" : " " + text;
                 break;
