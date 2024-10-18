@@ -1,6 +1,5 @@
 /* formatterSettingsOverride */
 /*  { "AblFormatter.ifFormatting": true,
-"AblFormatter.blockFormatting": true,
 "AblFormatter.ifFormattingThenLocation": "Same",
 "AblFormatter.ifFormattingDoLocation": "Same"}*/
 

@@ -1,5 +1,5 @@
 /* formatterSettingsOverride */
-/*  { "AblFormatter.emptyBlockFormatting": true}*/
+/*  { "AblFormatter.blockFormatting": true}*/
 
 class A inherits B:
     destructor public A():

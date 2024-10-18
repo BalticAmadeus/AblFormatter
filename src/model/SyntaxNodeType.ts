@@ -22,6 +22,7 @@ export enum SyntaxNodeType {
     FieldDefinition = "field_definition",
     IndexDefinition = "index_definition",
     VariableDefinition = "variable_definition",
+    ProcedureParameterDefinition = "procedure_parameter_definition",
     VariableAssignment = "variable_assignment",
     ConstructorDefinition = "constructor_definition",
     DestructorDefinition = "destructor_definition",
@@ -31,10 +32,13 @@ export enum SyntaxNodeType {
     UndoStatement = "undo_statement",
     AssignStatement = "assign_statement",
     Assignment = "assignment",
+    Identifier = "identifier",
     SourceCode = "source_code",
+    ForPhrase = "for_phrase",
     ForStatement = "for_statement",
     QueryTuning = "query_tuning",
     SortClause = "sort_clause",
+    SortColumn = "sort_column",
     ComparisonExpression = "comparison_expression",
     TernaryExpression = "ternary_expression",
     ParenthesizedExpression = "parenthesized_expression",
@@ -50,6 +54,12 @@ export enum SyntaxNodeType {
     ProcedureStatement = "procedure_statement",
     RepeatStatement = "repeat_statement",
     OnStatement = "on_statement",
+    EnumStatement = "enum_statement",
+    EnumMember = "enum_member",
+    EnumDefinition = "enum_definition",
+    TypeTuning = "type_tuning",
+    AccessTuning = "access_tuning",
+    Comment = "comment",
     Getter = "getter",
     Setter = "setter",
     LeftParenthesis = "(",
@@ -57,6 +67,7 @@ export enum SyntaxNodeType {
 
     // keywords
     WhenKeyword = "WHEN",
+    ByKeyword = "BY",
     ThenKeyword = "THEN",
     ElseKeyword = "ELSE",
     AndKeyword = "AND",
@@ -80,9 +91,21 @@ export enum SyntaxNodeType {
     EachKeyword = "EACH",
     EndKeyword = "END",
     IfKeyword = "IF",
+    FindKeyword = "FIND",
+    ForKeyword = "FOR",
+    DotKeyword = ".",
+    ColonKeyword = ":",
+    CommaKeyword = ",",
     DefineKeyword = "DEFINE",
     DefiKeyword = "DEFI",
     DefKeyword = "DEF",
+    NoUndoKeyword = "NO-UNDO",
+    InputKeyword = "INPUT",
+    OutputKeyword = "OUTPUT",
+    InputOutputKeyword = "INPUT-OUTPUT",
+    ReturnKeyword = "RETURN",
+    ParameterKeyword = "PARAMETER",
+    VariableKeyword = "VARIABLE",
 }
 
 export const afterThenStatements = new MyFancySet<string>([
@@ -105,4 +128,11 @@ export const bodyBlockKeywords = new MyFancySet<string>([
     SyntaxNodeType.CaseBody,
     SyntaxNodeType.ClassBody,
     SyntaxNodeType.InterfaceBody,
+]);
+
+export const parameterTypes = new MyFancySet<string>([
+    SyntaxNodeType.InputKeyword,
+    SyntaxNodeType.OutputKeyword,
+    SyntaxNodeType.InputOutputKeyword,
+    SyntaxNodeType.ReturnKeyword,
 ]);
