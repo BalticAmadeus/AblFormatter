@@ -16,7 +16,9 @@ class AClass:
                     END.
         END SET.
     
-    define PRIVATE VARIABLE propertyWidthGetter_ AS SomeClass NO-UNDO.
+    define PRIVATE VARIABLE propertyWidthGetter1 AS SomeClass NO-UNDO.
+    define PRIVATE VARIABLE propertyWidthGetter2 AS SomeClass NO-UNDO.
+    define PRIVATE VARIABLE propertyWidthGetter3 AS SomeClass NO-UNDO.
     define PROTECTED PROPERTY propertyWidthGetter AS SomeClass NO-UNDO
             GET():
                             
