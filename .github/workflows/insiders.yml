@@ -1,8 +1,5 @@
 name: VSCode Insiders Daily Stability Test
 
-permissions:
-    contents: read
-
 on:
     schedule:
         - cron: "0 4 * * *" #4:00 AM UTC
@@ -15,15 +12,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v4
 
             - name: Install Node.js
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v4
               with:
-                  node-version: 24.x
-                  cache: npm
+                  node-version: 20.x
 
-            - run: npm ci
+            - run: npm install
 
             - name: Compile
               run: xvfb-run -a npm run compile
@@ -43,15 +39,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v4
 
             - name: Install Node.js
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v4
               with:
-                  node-version: 24.x
-                  cache: npm
+                  node-version: 20.x
 
-            - run: npm ci
+            - run: npm install
 
             - name: Compile
               run: xvfb-run -a npm run compile
