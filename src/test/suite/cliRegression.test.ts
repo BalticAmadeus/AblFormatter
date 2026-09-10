@@ -249,6 +249,50 @@ suite("CLI Regression", function () {
         assert.doesNotMatch(configFirst.stdout, /"assignFormatting"/);
     });
 
+    test("multiple files exit 1 instead of silently checking only the first", () => {
+        // Guards a CI false-negative: `abl-format *.p --check` expands to many
+        // files; checking only the first would exit 0 and let unformatted files
+        // through a formatting gate unnoticed.
+        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abl-cli-multifile-"));
+        const nodePathDir = createVscodeModulePath(tempDir, extensionRoot);
+
+        const formatted = path.join(tempDir, "a-formatted.p");
+        const unformatted = path.join(tempDir, "b-unformatted.p");
+        fs.copyFileSync(path.join(fixtureDir, "target.p"), formatted);
+        fs.copyFileSync(path.join(fixtureDir, "input.p"), unformatted);
+
+        const result = spawnSync(process.execPath, [
+            cliPath,
+            formatted,
+            unformatted,
+            "--check",
+            "--config",
+            settingsPath,
+        ], {
+            encoding: "utf8",
+            env: { ...process.env, ABL_FORMATTER_QUIET: "1", NODE_PATH: nodePathDir },
+        });
+
+        assert.strictEqual(result.status, 1);
+        assert.match(result.stderr, /Expected exactly one file/);
+    });
+
+    test("a directory argument is reported clearly rather than as a raw EISDIR", () => {
+        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abl-cli-isdir-"));
+        const nodePathDir = createVscodeModulePath(tempDir, extensionRoot);
+        const subDir = path.join(tempDir, "some-directory");
+        fs.mkdirSync(subDir);
+
+        const result = spawnSync(process.execPath, [cliPath, subDir], {
+            encoding: "utf8",
+            env: { ...process.env, ABL_FORMATTER_QUIET: "1", NODE_PATH: nodePathDir },
+        });
+
+        assert.strictEqual(result.status, 1);
+        assert.match(result.stderr, /Not a file/);
+        assert.doesNotMatch(result.stderr, /EISDIR/);
+    });
+
     test("--config without a value exits 1 instead of silently using defaults", () => {
         const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abl-cli-noconfigval-"));
         const nodePathDir = createVscodeModulePath(tempDir, extensionRoot);

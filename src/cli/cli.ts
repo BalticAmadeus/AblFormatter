@@ -30,7 +30,7 @@ async function main() {
         // mistaken for the input file (e.g. `--config settings.json file.p`).
         const valueFlags = new Set(["--config"]);
 
-        let fileArg: string | undefined;
+        const positionalArgs: string[] = [];
         let configFile: string | undefined;
 
         for (let i = 0; i < args.length; i++) {
@@ -53,21 +53,45 @@ async function main() {
                 continue;
             }
 
-            if (fileArg === undefined) {
-                fileArg = arg;
-            }
+            positionalArgs.push(arg);
         }
 
-        if (!fileArg) {
+        if (positionalArgs.length === 0) {
             console.error("Error: No file specified");
             printUsage();
             process.exit(1);
         }
 
+        // Only one file per run is supported. Silently ignoring the extras is
+        // dangerous: `abl-format *.p --check` would expand to many files, check
+        // only the first, and exit 0 - a CI gate that passes while unformatted
+        // files go unnoticed. Fail loudly instead.
+        if (positionalArgs.length > 1) {
+            console.error(
+                `Error: Expected exactly one file, but got ${positionalArgs.length}: ${positionalArgs.join(", ")}`
+            );
+            console.error(
+                "The CLI formats one file per run. Loop over files instead, e.g.:"
+            );
+            console.error(
+                '  for f in *.p; do abl-format "$f" --check || exit 1; done'
+            );
+            process.exit(1);
+        }
+
+        const fileArg = positionalArgs[0];
+
         const filePath = path.resolve(fileArg);
 
         if (!fs.existsSync(filePath)) {
             console.error(`Error: File not found: ${filePath}`);
+            process.exit(1);
+        }
+
+        // existsSync() is true for directories too, and reading one throws a
+        // raw EISDIR further down. Report it clearly instead.
+        if (!fs.statSync(filePath).isFile()) {
+            console.error(`Error: Not a file: ${filePath}`);
             process.exit(1);
         }
 

@@ -63,10 +63,12 @@ npx openedge-abl-formatter myfile.p
 
 ## Usage
 
-Each invocation takes exactly **one** file. Passing more than one silently
-processes only the first and ignores the rest — there is no glob expansion or
-multi-file support built in. To process many files, loop over them yourself
-(see [CI/CD Integration](#cicd-integration) below).
+Each invocation takes exactly **one** file. Passing more than one is an error
+(exit code `1`) rather than silently formatting just the first — otherwise
+`abl-format *.p --check` would expand to many files, check only one, and exit
+`0`, quietly letting unformatted files through a CI gate. There is no glob
+expansion or batch mode built in; loop over files yourself (see
+[CI/CD Integration](#cicd-integration) below).
 
 ### Basic Formatting (output to stdout)
 
@@ -259,7 +261,9 @@ The CLI formatter is optimized for single-file operations. For batch processing 
 - The CLI supports the same formatting rules as the VS Code extension,
   including `/* formatterSettingsOverride */` comments in the source file
   itself — they're handled by the same shared formatting engine
-- Each invocation processes exactly one file — no glob expansion or batch mode
+- Each invocation processes exactly one file — no glob expansion or batch mode;
+  passing multiple files exits `1` with an error rather than silently
+  formatting only the first
 - Telemetry is opt-in in CLI mode
 
 ## Building from Source
