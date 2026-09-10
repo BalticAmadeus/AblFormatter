@@ -102,7 +102,6 @@ function nodeToJson(node, filter = null) {
 
   const json = {
     type: node.type,
-    text: node.text,
     start: node.startPosition,
     end: node.endPosition,
     startIndex: node.startIndex,
@@ -110,6 +109,11 @@ function nodeToJson(node, filter = null) {
     childCount: node.childCount,
     children: [],
   };
+
+  // Only leaves carry text: non-leaves would just repeat the full text of every descendant.
+  if (node.childCount === 0) {
+    json.text = node.text;
+  }
 
   const children = [];
   for (const child of node.children) {
@@ -131,7 +135,18 @@ function nodeToJson(node, filter = null) {
   return json;
 }
 
+function subtreeMatchesFilter(node, filter) {
+  if (node.type === filter) {
+    return true;
+  }
+  return node.children.some((child) => subtreeMatchesFilter(child, filter));
+}
+
 function printNode(node, depth = 0, options) {
+  if (options.filter && !subtreeMatchesFilter(node, options.filter)) {
+    return;
+  }
+
   const indent = '  '.repeat(depth);
   const isMatch = options.filter && node.type === options.filter;
 

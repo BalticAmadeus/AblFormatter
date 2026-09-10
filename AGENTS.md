@@ -87,4 +87,4 @@ It has no built-in "this is a parser bug" signal — it just prints the tree. Re
 - Contributing & `.wasm` rebuild steps: [CONTRIBUTING.md](CONTRIBUTING.md)
 - AST inspection tool: [scripts/inspect-abl.js](scripts/inspect-abl.js)
 - Debug hover: README ["Debugging"](README.md)
-- Tests: `npm test`, `npm run test-ast`, `npm run test-symbol`, `npm run test-compilation`
+- Tests: `npm test`, `npm run test-w-metamorphic`, `npm run test-ast`, `npm run test-symbol`, `npm run test-compilation`
