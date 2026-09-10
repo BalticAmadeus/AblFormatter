@@ -26,8 +26,38 @@ async function main() {
     }
 
     try {
-        // Extract the file path (first non-flag argument)
-        const fileArg = args.find((arg) => !arg.startsWith("-"));
+        // Options that consume the following argument, so its value is never
+        // mistaken for the input file (e.g. `--config settings.json file.p`).
+        const valueFlags = new Set(["--config"]);
+
+        let fileArg: string | undefined;
+        let configFile: string | undefined;
+
+        for (let i = 0; i < args.length; i++) {
+            const arg = args[i];
+
+            if (valueFlags.has(arg)) {
+                const value = args[i + 1];
+                if (value === undefined || value.startsWith("-")) {
+                    console.error(`Error: ${arg} requires a value`);
+                    process.exit(1);
+                }
+                if (arg === "--config") {
+                    configFile = value;
+                }
+                i++; // skip the consumed value
+                continue;
+            }
+
+            if (arg.startsWith("-")) {
+                continue;
+            }
+
+            if (fileArg === undefined) {
+                fileArg = arg;
+            }
+        }
+
         if (!fileArg) {
             console.error("Error: No file specified");
             printUsage();
@@ -48,26 +78,29 @@ async function main() {
             ["1", "true", "yes"].includes(
                 (process.env.ABL_FORMATTER_TELEMETRY || "").toLowerCase()
             );
-        const configIndex = args.indexOf("--config");
-        const configFile =
-            configIndex !== -1 ? args[configIndex + 1] : undefined;
         const verbose = args.includes("--verbose") || args.includes("-v");
 
         if (telemetryEnabled) {
             CliTelemetry.initialize();
         }
 
-        // Initialize formatter
-        // Look for WASM file in multiple locations
-        let wasmPath = path.join(__dirname, "../../tree-sitter-abl.wasm");
-        if (!fs.existsSync(wasmPath)) {
-            wasmPath = path.join(__dirname, "../tree-sitter-abl.wasm");
-        }
-        if (!fs.existsSync(wasmPath)) {
-            wasmPath = path.join(__dirname, "tree-sitter-abl.wasm");
-        }
-        if (!fs.existsSync(wasmPath)) {
-            console.error("Error: tree-sitter-abl.wasm not found. Make sure to run 'npm run build-cli'");
+        // Locate the ABL grammar. `resources/` is the canonical location and is
+        // already shipped with the extension, so the CLI reads it from there
+        // rather than requiring a duplicate ~3MB copy next to the bundle.
+        const wasmCandidates = [
+            path.join(__dirname, "../../resources/tree-sitter-abl.wasm"),
+            path.join(__dirname, "../resources/tree-sitter-abl.wasm"),
+            path.join(__dirname, "tree-sitter-abl.wasm"),
+            path.join(__dirname, "../tree-sitter-abl.wasm"),
+            path.join(__dirname, "../../tree-sitter-abl.wasm"),
+        ];
+        const wasmPath = wasmCandidates.find((candidate) =>
+            fs.existsSync(candidate)
+        );
+        if (!wasmPath) {
+            console.error(
+                "Error: tree-sitter-abl.wasm not found. Make sure to run 'npm run build-cli'"
+            );
             process.exit(1);
         }
         const parserHelper = new CliParserHelper(wasmPath);
@@ -106,24 +139,41 @@ async function main() {
 
         const fileEol = originalCode.includes("\r\n") ? "\r\n" : "\n";
 
+        const formatStartTime = Date.now();
         const formattedCode = formatter.formatText(
             originalCode,
             new EOL(fileEol),
             false
         );
+        const durationMs = Date.now() - formatStartTime;
 
         if (telemetryEnabled) {
+            const fileExtension = path.extname(filePath).toLowerCase() || "none";
+            const enabledFormatters = Object.entries(configManager.getAll())
+                .filter(([key, value]) => key.endsWith("Formatting") && value === true)
+                .map(([key]) => key.replace(/^AblFormatter\./, ""));
+
             CliTelemetry.sendEvent(
                 "CLI.Format",
                 {
                     mode: isWrite ? "write" : isCheck ? "check" : "stdout",
                     verbose: verbose ? "true" : "false",
+                    fileExtension,
                 },
                 {
                     characters: originalCode.length,
                     lines: originalCode.split(/\r?\n/).length,
                     parseErrors: initialParseErrorCount,
+                    durationMs,
                 }
+            );
+
+            // Separate from CLI.Format so a run's performance/error data isn't
+            // bloated with a per-formatter property list on every event.
+            CliTelemetry.sendEvent(
+                "CLI.Settings",
+                { enabledFormatters: enabledFormatters.join(",") },
+                { enabledFormatterCount: enabledFormatters.length }
             );
         }
 
@@ -137,18 +187,22 @@ async function main() {
         if (isCheck) {
             if (originalCode !== formattedCode) {
                 console.log(`${filePath} would be reformatted`);
+                await CliTelemetry.dispose();
                 process.exit(1);
             } else {
                 console.log(`${filePath} is already formatted`);
+                await CliTelemetry.dispose();
                 process.exit(0);
             }
         } else if (isWrite) {
             fs.writeFileSync(filePath, formattedCode, "utf-8");
             console.log(`Formatted: ${filePath}`);
+            await CliTelemetry.dispose();
             process.exit(0);
         } else {
             // Output to stdout
             console.log(formattedCode);
+            await CliTelemetry.dispose();
             process.exit(0);
         }
     } catch (error) {
@@ -156,6 +210,7 @@ async function main() {
         CliTelemetry.sendEvent("CLI.Error", {
             message: error instanceof Error ? error.message : String(error),
         });
+        await CliTelemetry.dispose();
         process.exit(1);
     }
 }
@@ -168,12 +223,12 @@ USAGE:
   abl-format <file> [OPTIONS]
 
 OPTIONS:
-  --write, -w        Write formatted code back to file
-  --check, -c        Check if file would be reformatted (exit 1 if yes)
-  --config <path>    Path to .ablformatter.json config file
-    --telemetry        Enable CLI telemetry if a telemetry key is available
-  --verbose, -v      Show verbose output
-  --help, -h         Show this help message
+  --write, -w      Write formatted code back to file
+  --check, -c      Check if file would be reformatted (exit 1 if yes)
+  --config <path>  Path to .ablformatter.json config file
+  --telemetry      Enable CLI telemetry if a telemetry key is available
+  --verbose, -v    Show verbose output
+  --help, -h       Show this help message
 
 EXAMPLES:
   # Format and output to stdout
@@ -188,22 +243,18 @@ EXAMPLES:
   # Use custom config
   abl-format myfile.p --write --config .ablformatter.json
 
-    # Opt into CLI telemetry with a key provided via environment variables
-    ABL_FORMATTER_TELEMETRY=1 ABL_FORMATTER_TELEMETRY_KEY=... abl-format myfile.p --telemetry
+  # Opt into CLI telemetry with a key provided via environment variables
+  ABL_FORMATTER_TELEMETRY=1 ABL_FORMATTER_TELEMETRY_KEY=... abl-format myfile.p --telemetry
 `);
 }
 
-main().catch((error) => {
+main().catch(async (error) => {
     console.error("Unexpected error:", error);
-        CliTelemetry.sendEvent("CLI.FatalError", {
-                message: error instanceof Error ? error.message : String(error),
-        });
-        CliTelemetry.dispose();
+    CliTelemetry.sendEvent("CLI.FatalError", {
+        message: error instanceof Error ? error.message : String(error),
+    });
+    await CliTelemetry.dispose();
     process.exit(1);
-});
-
-process.on("exit", () => {
-        CliTelemetry.dispose();
 });
 
 function countErrorNodes(node: any, isRoot: boolean): number {

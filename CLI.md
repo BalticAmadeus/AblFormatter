@@ -14,20 +14,59 @@ npm run build-cli
 node out/cli/cli.js --help
 ```
 
-### Option 2: Global Installation (when published to npm)
+To try the real `abl-format` command name before the package is published,
+link it locally — this points a global `abl-format` command at your local
+build (rebuild with `npm run build-cli` after any change; the link does not
+auto-rebuild):
 
 ```bash
-npm install -g abl-format
+npm link
 abl-format --help
 ```
 
-### Option 3: Via npx
+Remove it later with `npm uninstall -g openedge-abl-formatter`.
+
+### Option 2: From an installed VS Code extension
+
+The CLI ships inside the extension package, so if you already have the
+OpenEdge ABL Formatter installed you can run it without cloning anything.
+VS Code does not put extension binaries on your `PATH`, so invoke it via `node`:
 
 ```bash
-npx abl-format myfile.p
+# Linux / macOS
+node ~/.vscode/extensions/BalticAmadeus.openedge-abl-formatter-*/out/cli/cli.js myfile.p
+
+# Windows (PowerShell)
+node $env:USERPROFILE\.vscode\extensions\BalticAmadeus.openedge-abl-formatter-*\out\cli\cli.js myfile.p
+```
+
+Add a shell alias or function if you use it often.
+
+### Option 3: Global installation via npm (not yet available)
+
+The package is not currently published to npm. Once it is, the `bin` entry in
+`package.json` will make the following work:
+
+```bash
+npm install -g openedge-abl-formatter
+abl-format --help
+```
+
+### Option 4: Via npx (not yet available)
+
+Also depends on the package being published. Once it is, this runs the CLI
+on demand without a global install:
+
+```bash
+npx openedge-abl-formatter myfile.p
 ```
 
 ## Usage
+
+Each invocation takes exactly **one** file. Passing more than one silently
+processes only the first and ignores the rest — there is no glob expansion or
+multi-file support built in. To process many files, loop over them yourself
+(see [CI/CD Integration](#cicd-integration) below).
 
 ### Basic Formatting (output to stdout)
 
@@ -63,7 +102,10 @@ Great for CI/CD pipelines to enforce formatting standards.
 abl-format myfile.p --config .ablformatter.json
 ```
 
-Load formatting settings from a JSON configuration file.
+Load formatting settings from a JSON configuration file. If the path doesn't
+exist, the CLI prints a warning to stderr and falls back to default settings
+rather than failing silently; if the file exists but isn't valid JSON, it
+warns and falls back the same way.
 
 ### Verbose Output
 
@@ -79,7 +121,20 @@ Show diagnostic information during formatting.
 ABL_FORMATTER_TELEMETRY=1 ABL_FORMATTER_TELEMETRY_KEY=... abl-format myfile.p --telemetry
 ```
 
-CLI telemetry is opt-in and best-effort. If no key is provided, the formatter runs normally and does not send telemetry.
+CLI telemetry is opt-in and best-effort. If no key is provided — or the key is
+not a valid instrumentation key / connection string — the formatter runs
+normally and sends nothing. Telemetry failures never affect formatting or the
+exit code.
+
+Two events are sent per run:
+
+| Event | Properties | Measures |
+| --- | --- | --- |
+| `CLI.Format` | `mode` (`write`/`check`/`stdout`), `verbose`, `fileExtension` | `characters`, `lines`, `parseErrors`, `durationMs` |
+| `CLI.Settings` | `enabledFormatters` (comma-separated list) | `enabledFormatterCount` |
+
+On failure, `CLI.Error` or `CLI.FatalError` is sent with the error message
+instead. No file contents, file names, or paths are ever included.
 
 ## Configuration File Format
 
@@ -109,12 +164,18 @@ Create a `.ablformatter.json` file in your project root:
 
 ### GitHub Actions Example
 
+The CLI checks one file per invocation, so loop over your files explicitly:
+
 ```yaml
 - name: Check ABL formatting
   run: |
     npm install
     npm run build-cli
-    node out/cli/cli.js --check "**/*.p" "**/*.cls" "**/*.i"
+    status=0
+    while IFS= read -r -d '' file; do
+      node out/cli/cli.js --check "$file" || status=1
+    done < <(find . \( -name '*.p' -o -name '*.cls' -o -name '*.i' \) -print0)
+    exit $status
 ```
 
 ### Pre-commit Hook Example
@@ -195,23 +256,26 @@ The CLI formatter is optimized for single-file operations. For batch processing 
 
 ## Limitations
 
-- The CLI supports the same formatting rules as the VS Code extension
-- File-level formatting overrides (comments in ABL source) are not supported in CLI mode
+- The CLI supports the same formatting rules as the VS Code extension,
+  including `/* formatterSettingsOverride */` comments in the source file
+  itself — they're handled by the same shared formatting engine
+- Each invocation processes exactly one file — no glob expansion or batch mode
 - Telemetry is opt-in in CLI mode
 
 ## Building from Source
 
 ```bash
-# Development build
+# Development build (with sourcemaps)
 npm run build-cli-dev
 
 # Production build (minified)
 npm run build-cli-prod
-
-# Watch mode
-npm run watch
-npm run build-cli-dev
 ```
+
+There is no watch mode for the CLI bundle itself — `npm run build-cli-dev`
+rebuilds `out/cli/cli.js` once per run. `npm run watch` only type-checks the
+TypeScript sources in the background; it does not rebuild the CLI bundle, so
+re-run `npm run build-cli-dev` after each change you want reflected.
 
 ## License
 

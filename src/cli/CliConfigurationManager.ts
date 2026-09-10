@@ -14,13 +14,22 @@ export class CliConfigurationManager implements IConfigurationManager {
         this.initializeDefaults();
 
         // Load from config file if provided
-        if (configFilePath && fs.existsSync(configFilePath)) {
-            try {
-                const configContent = fs.readFileSync(configFilePath, "utf-8");
-                const fileSettings = JSON.parse(configContent);
-                this.settings = { ...this.settings, ...fileSettings };
-            } catch (error) {
-                console.warn(`Warning: Could not parse config file: ${error}`);
+        if (configFilePath) {
+            if (!fs.existsSync(configFilePath)) {
+                // A mistyped --config path must not fail silently: without this,
+                // the CLI falls back to defaults with no indication the
+                // requested settings were never applied.
+                console.warn(
+                    `Warning: Config file not found: ${configFilePath}. Using default settings.`
+                );
+            } else {
+                try {
+                    const configContent = fs.readFileSync(configFilePath, "utf-8");
+                    const fileSettings = JSON.parse(configContent);
+                    this.settings = { ...this.settings, ...fileSettings };
+                } catch (error) {
+                    console.warn(`Warning: Could not parse config file: ${error}`);
+                }
             }
         }
 

@@ -10,7 +10,7 @@ export class CliTelemetry {
             process.env.ABL_FORMATTER_TELEMETRY_KEY ||
             process.env.ABL_FORMATTER_TELEMETRY_CONNECTION;
 
-        if (!key) {
+        if (!key || !this.isValidKey(key)) {
             return;
         }
 
@@ -26,6 +26,13 @@ export class CliTelemetry {
         } catch {
             this.reporter = undefined;
         }
+    }
+
+    // Real instrumentation keys and Application Insights connection strings
+    // always contain this segment. Rejecting anything else avoids handing the
+    // reporter a malformed value that would otherwise fail silently on every send.
+    private static isValidKey(key: string): boolean {
+        return key.includes("InstrumentationKey=");
     }
 
     public static sendEvent(
@@ -44,17 +51,21 @@ export class CliTelemetry {
         }
     }
 
-    public static dispose(): void {
+    // dispose() flushes buffered/queued events and must be awaited: calling it
+    // fire-and-forget (or from a synchronous process "exit" handler) means the
+    // process can exit before the flush completes, silently dropping events.
+    public static async dispose(): Promise<void> {
         if (!this.reporter) {
             return;
         }
 
+        const reporter = this.reporter;
+        this.reporter = undefined;
+
         try {
-            this.reporter.dispose();
+            await reporter.dispose();
         } catch {
             // ignore
-        } finally {
-            this.reporter = undefined;
         }
     }
 }

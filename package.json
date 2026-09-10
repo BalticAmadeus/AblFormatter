@@ -467,10 +467,10 @@
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node && npm run copy-wasm && npm run inject-telemetry-key",
     "build": "npm run esbuild",
     "esbuild": "npm run esbuild-base -- --sourcemap",
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "vscode:prepublish": "npm run esbuild-base -- --minify && npm run build-cli-prod",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile && npm run lint && npm run build-cli",
     "lint": "eslint src --ext ts",
     "prep-ui-test": "npm run delete-out && npm run compile && extest setup-tests -s ./.test_dir -e ./.ext_dir -c 1.85.1 -t stable",
     "run-ui-test": "npm run copy-test-settings && npm run copy-test-cases && npm run compile && extest run-tests './out/ui-test/testRunner.js' -s ./.test_dir -e ./.ext_dir -c 1.85.1 -t stable",
@@ -483,9 +483,11 @@
     "test-ast-metamorphic": "node ./out/test-ast/runTest.js --metamorphic",
     "test-compilation": "npm run compile && node ./out/test-compilation/runTest.js",
     "get-ade-test": "git clone https://github.com/progress/ADE.git resources/ade",
-    "build-cli": "esbuild ./src/cli/cli.ts --bundle --outfile=out/cli/cli.js --format=cjs --platform=node --alias:vscode=./src/cli/vscode-stub.js && npm run copy-wasm",
-    "build-cli-dev": "npm run build-cli -- --sourcemap",
-    "build-cli-prod": "npm run build-cli -- --minify"
+    "build-cli-base": "esbuild ./src/cli/cli.ts --bundle --outfile=out/cli/cli.js --format=cjs --platform=node --alias:vscode=./src/cli/vscode-stub.js",
+    "copy-cli-wasm": "copyfiles -u 2 ./node_modules/web-tree-sitter/*.wasm out/cli",
+    "build-cli": "npm run build-cli-base && npm run copy-wasm && npm run copy-cli-wasm",
+    "build-cli-dev": "npm run build-cli-base -- --sourcemap && npm run copy-wasm && npm run copy-cli-wasm",
+    "build-cli-prod": "npm run build-cli-base -- --minify && npm run copy-wasm && npm run copy-cli-wasm"
   },
   "devDependencies": {
     "@electron/rebuild": "^0.0.0",
