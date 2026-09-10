@@ -56,7 +56,12 @@ npm run inspect-abl -- "if x = y then do: end."
 npm run inspect-abl -- --file resources/samples/ifelse1.p
 npm run inspect-abl -- --filter if_statement --json "if x = y then do: end."
 npm run inspect-abl -- --show-ancestors "if x = y then do: end."
+npm run inspect-abl -- --against-file good.p --file bug.p
 ```
+
+`--against`/`--against-file` prints a unified diff between two parse trees — this is the tool for
+the "isolate the suspicious sub-expression and diff its tree against the same construct in an
+unambiguous context" step below.
 
 It has no built-in "this is a parser bug" signal — it just prints the tree. Read it yourself using the decision procedure below.
 
