@@ -63,8 +63,12 @@ It has no built-in "this is a parser bug" signal — it just prints the tree. Re
 ## Decision procedure: parser bug or formatter bug?
 
 1. **Reproduce** on the smallest possible `.p` snippet.
-2. **Inspect the AST**: `npm run inspect-abl -- --file bug.p` (or the VS Code debug hover — `AblFormatter.showTreeInfoOnHover` / status-bar debug mode).
-3. **A missing `ERROR`/`MISSING` node is not proof the AST is right.** Check both of these — either one failing means parser bug:
+2. **Diff the before/after first — it's often conclusive and costs nothing.** A bug report already contains both. Strip all whitespace from each and compare:
+   - **Characters differ → parser bug.** The formatter only decides whitespace and line breaks; it re-emits source slices verbatim via `getCurrentText()`. It has no mechanism to alter identifier text, so a changed character came from a bad AST leaf. Classic shape: a space appearing *inside* an identifier (`GenTools` → `Gen Tools`) — no `ERROR` node, invisible to error counting. Stop here; fix the grammar.
+   - **Only whitespace differs → unresolved.** Could be either. Continue to the AST inspection below.
+   - (Exception: `ifFunctionFormattingAddParentheses` and `usingFormattingFromPropath` legitimately add characters. The rule holds with them off.)
+3. **Inspect the AST**: `npm run inspect-abl -- --file bug.p` (or the VS Code debug hover — `AblFormatter.showTreeInfoOnHover` / status-bar debug mode).
+4. **A missing `ERROR`/`MISSING` node is not proof the AST is right.** Check both of these — either one failing means parser bug:
    - **Leaf text**: does each identifier appear as a single leaf with its full text, not as two adjacent leaves that together spell it? An identifier split at a keyword prefix — say `SomeField` emerging as a keyword leaf plus `omeField` — can produce **no `ERROR` node at all**. Wrong tokenization parses "cleanly", so read leaf token text rather than only scanning for error nodes.
    - **Node type**: does the node type at the point of interest match what ABL semantics say this construct should produce? A standalone `OTHERWISE.` should sit inside a `case_otherwise_branch`; if it's an `ERROR` node sibling of `body` instead, that's wrong regardless of what the text says.
    - If it still looks ambiguous, **isolate the suspicious sub-expression into its own minimal snippet and diff its tree against the same construct in an unambiguous context** — the difference between the two trees is the evidence. Tokenization bugs are often positional: a name may parse correctly alone but split when it follows another token, so vary the surrounding context rather than testing one snippet.
@@ -75,6 +79,7 @@ It has no built-in "this is a parser bug" signal — it just prints the tree. Re
 
 | Symptom | Layer |
 | --- | --- |
+| Output differs from input after stripping all whitespace — characters, not just spacing, changed | **Parser** |
 | Identifier loses/gains characters or gets split in the output — **no `ERROR` node required** | **Parser** |
 | Keyword prefixes (`MOD`, `NOT`, `CONTAINS`, `MATCHES`, `BEGINS`, `LT`, `GT`, `EQ`, `GE`, `LE`, `NE`, …) break identifiers | **Parser** |
 | `ERROR`/`MISSING` nodes for valid ABL | **Parser** |
