@@ -477,6 +477,8 @@
     "copy-test-cases": "copyfiles -u 2 ./resources/samples/* .test_dir/samples",
     "copy-test-settings": "copyfiles -u 2 ./resources/samples/.vscode/* .test_dir/samples/",
     "test": "node ./out/test/runTest.js",
+    "test-cli-regression": "node ./out/test/runTest.js --grep \"CLI Regression\"",
+    "pretest-cli-regression": "npm run compile && npm run lint && npm run build-cli",
     "test-w-metamorphic": "node ./out/test/runTest.js --metamorphic",
     "test-symbol": "node ./out/test-symbol/runTest.js",
     "test-ast": "node ./out/test-ast/runTest.js",

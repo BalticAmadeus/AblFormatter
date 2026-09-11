@@ -164,6 +164,17 @@ Create a `.ablformatter.json` file in your project root:
 
 ## CI/CD Integration
 
+### Running CLI regression tests locally
+
+The regression suite runs the built CLI through the VS Code test host:
+
+```bash
+npm run test-cli-regression
+```
+
+This command compiles and lints the source, builds `out/cli/cli.js`, and runs
+only the `CLI Regression` suite.
+
 ### GitHub Actions Example
 
 The CLI checks one file per invocation, so loop over your files explicitly:
